@@ -1,0 +1,16 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/MYTYKit/UI/Bone2DCon.uss?fileID=7433441132597879392&amp;guid=61da35d4500e948e697bd5d8bbd0fb7a&amp;type=3#Bone2DCon" />
+    <uie:ObjectField label="Controller" name="OBJController" />
+    <ui:VisualElement name="GRPButton" style="flex-direction: row; justify-content: center;">
+        <ui:Button text="Add" display-tooltip-when-elided="true" name="BTNAdd" style="width: 32%;" />
+        <ui:Button text="Remove" display-tooltip-when-elided="true" name="BTNRemove" style="width: 32%;" />
+        <ui:Button text="RemoveAll" display-tooltip-when-elided="true" name="BTNRemoveAll" style="width: 32%;" />
+    </ui:VisualElement>
+    <ui:ListView focusable="true" name="LSTSpriteGO" fixed-item-height="15" virtualization-method="DynamicHeight" selection-type="Multiple" style="max-height: 200px; min-height: 100px; border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; border-left-color: rgb(125, 125, 125); border-right-color: rgb(125, 125, 125); border-top-color: rgb(125, 125, 125); border-bottom-color: rgb(125, 125, 125);" />
+    <uie:FloatField label="Min" value="0" name="FLTMin" />
+    <uie:FloatField label="Max" value="1" name="FLTMax" />
+    <ui:Slider picking-mode="Ignore" label="Value" value="0.5" high-value="1" name="SLDValue" />
+    <ui:TextField picking-mode="Ignore" label="Current Label" readonly="true" name="TXTCurrent" />
+    <ui:Button text="Auto Load Labels" display-tooltip-when-elided="true" name="BTNAutoSetup" />
+    <uie:PropertyField name="PRPIntervals" />
+</ui:UXML>

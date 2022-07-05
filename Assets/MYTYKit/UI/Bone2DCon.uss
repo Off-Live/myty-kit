@@ -1,0 +1,82 @@
+.toggleButton {
+    padding-right: 0;
+    -unity-text-align: upper-center;
+    flex-direction: column;
+    flex-basis: auto;
+    flex-shrink: 0;
+}
+
+.toggleButton #unity-checkmark {
+    display: none;
+    visibility: hidden;
+    overflow: hidden;
+    width: 0;
+    flex-shrink: 0;
+}
+
+.toggleButton Label {
+    width: 100%;
+    height: auto;
+    -unity-text-align: upper-center;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    background-color: rgb(88, 88, 88);
+    -unity-background-image-tint-color: rgb(32, 32, 32);
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    border-left-color: rgb(46, 46, 46);
+    border-right-color: rgb(46, 46, 46);
+    border-top-color: rgb(46, 46, 46);
+    border-bottom-color: rgb(46, 46, 46);
+    color: rgb(255, 255, 255);
+    flex-shrink: 0;
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.toggleButton:checked Label {
+    background-color: rgb(4, 166, 8);
+    color: rgb(0, 0, 0);
+}
+
+.markerUnset {
+    width: 30px;
+    height: 30px;
+    background-color: rgb(106, 105, 105);
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    -unity-text-align: middle-center;
+    font-size: 25px;
+    color: rgb(255, 255, 255);
+}
+
+.markerSet {
+    width: 30px;
+    height: 30px;
+    -unity-text-align: middle-center;
+    color: rgb(0, 0, 0);
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    background-color: rgb(5, 165, 7);
+    font-size: 25px;
+}
+
+.noEditableObjField ObjectFieldSelector {
+    display: none;
+}
+
+.itemSize {
+    width: 95%;
+}

@@ -1,0 +1,6 @@
+[submodule "Assets/MYTYKit/Plugin/Mediapipe"]
+	path = Assets/MYTYKit/Plugin/Mediapipe
+	url = https://github.com/Off-Live/MediapipeUnityPrebuilt
+[submodule "Assets/MYTYKit/CmdTools/LayerTool"]
+	path = Assets/MYTYKit/CmdTools/LayerTool
+	url = https://github.com/Off-Live/LayerToolPrebuilt
