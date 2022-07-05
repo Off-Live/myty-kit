@@ -86,6 +86,11 @@ public class AvatarSelector: MonoBehaviour
         var library = m_activeInstance.GetComponent<SpriteLibrary>();
         if (library == null) library = m_activeInstance.AddComponent<SpriteLibrary>();
         library.spriteLibraryAsset = m_activeSLA;
+        if (m_activeSLA == null)
+        {
+            Debug.LogWarning("Sprite Library is not created yet!");
+            return;
+        }
         
         for (int i = 0; i < childCount; i++)
         {
