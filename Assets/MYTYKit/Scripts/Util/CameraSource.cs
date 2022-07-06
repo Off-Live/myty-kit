@@ -5,7 +5,7 @@ using UnityEngine;
 public class CameraSource : MonoBehaviour
 {
     public WebCamTexture camTexture;
-    public Renderer renderer;
+    public Renderer previewRenderer;
 
     public string camDeviceName = ""; 
     // Start is called before the first frame update
@@ -38,7 +38,7 @@ public class CameraSource : MonoBehaviour
         if(camTexture!=null) camTexture.Stop();
         camTexture = new WebCamTexture(name);
         camTexture.Play();
-        renderer.material.mainTexture = camTexture;
+        previewRenderer.material.mainTexture = camTexture;
     }
 
 }

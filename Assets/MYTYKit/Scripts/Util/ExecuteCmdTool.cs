@@ -15,11 +15,9 @@ public class LayerEffectInfo
     public string blendMode;
 }
 
-public class ExecuteCmdTool 
+public class ExecuteCmdTool
 {
-
-    private string layerToolPath = "Assets/MYTYKit/.CmdTools/macOS/export_layer_effect_x86/export_layer_effect_x86";
-
+    private string layerToolPath = "Assets/MYTYKit/CmdTools/LayerTool/.extracted/macOS/export_layer_effect_x86/export_layer_effect_x86";
 
     private class LayerToolArg
     {
@@ -32,7 +30,7 @@ public class ExecuteCmdTool
 
     public ExecuteCmdTool()
     {
-        
+
     }
 
     public void ExecuteLayerTool(string psbPath, GameObject rootNode)
@@ -46,26 +44,33 @@ public class ExecuteCmdTool
         Debug.Log("processor " + SystemInfo.processorType);
         Debug.Log("os : " + SystemInfo.operatingSystem);
 
-
+        
         if (SystemInfo.operatingSystem.StartsWith("Mac"))
         {
             if (SystemInfo.processorType.StartsWith("Apple"))
             {
-                layerToolPath = "Assets/MYTYKit/.CmdTools/macOS/export_layer_effect/export_layer_effect";
+                layerToolPath = "Assets/MYTYKit/CmdTools/LayerTool/.extracted/macOS/export_layer_effect/export_layer_effect";
             }
 
         }
         else
         {
-            layerToolPath = "Assets/MYTYKit/.CmdTools/Windows/export_layer_effect_win/export_layer_effect_win.exe";
+            layerToolPath = "Assets/MYTYKit/CmdTools/LayerTool/.extracted/Windows/export_layer_effect_win/export_layer_effect_win.exe";
         }
+
+        if (!File.Exists(layerToolPath))
+        {
+            Extract();
+        }
+
+        EnsureFileMode();
 
         worker.WorkerReportsProgress = true;
         worker.ProgressChanged += (_, progress) =>
         {
-            
-            EditorUtility.DisplayProgressBar("Import", "layer effect", progress.ProgressPercentage/100.0f);
-             
+
+            EditorUtility.DisplayProgressBar("Import", "layer effect", progress.ProgressPercentage / 100.0f);
+
         };
 
         worker.DoWork += (e, args) =>
@@ -97,13 +102,13 @@ public class ExecuteCmdTool
 
             StreamReader reader = process.StandardOutput;
             string output = reader.ReadToEnd();
-            
+
             process.WaitForExit();
             w.ReportProgress(100);
             timer.Enabled = false;
             toolArg.output = output;
             args.Result = toolArg;
-       
+
         };
 
         worker.RunWorkerAsync(new LayerToolArg
@@ -135,11 +140,11 @@ public class ExecuteCmdTool
     public static void ApplyLayerEffect(GameObject node, LayerEffectInfo[] effect, string history)
     {
         var curr_history = history + "/" + node.name;
-        
-        foreach( var elem in effect)
+
+        foreach (var elem in effect)
         {
-            
-            if(curr_history == "/" + elem.layerPath)
+
+            if (curr_history == "/" + elem.layerPath)
             {
                 var renderer = node.GetComponent<SpriteRenderer>();
 
@@ -147,7 +152,7 @@ public class ExecuteCmdTool
                 {
                     Debug.Log(curr_history + " " + elem.blendMode);
                 }
-                foreach(var layerEffect in effects.layerEffects)
+                foreach (var layerEffect in effects.layerEffects)
                 {
                     if (elem.blendMode == layerEffect.name)
                     {
@@ -157,9 +162,47 @@ public class ExecuteCmdTool
             }
         }
 
-        for(int i = 0; i < node.transform.childCount; i++)
+        for (int i = 0; i < node.transform.childCount; i++)
         {
             ApplyLayerEffect(node.transform.GetChild(i).gameObject, effect, curr_history);
+        }
+    }
+
+    private void Extract()
+    {
+        EditorUtility.DisplayProgressBar("Import", "Extracting tool", 1.0f);
+        Debug.Log("extract start");
+
+        using (Process process = new Process())
+        {
+            if (SystemInfo.operatingSystem.StartsWith("Mac"))
+            {
+                process.StartInfo.FileName = "ditto";
+                process.StartInfo.Arguments = "-x -k Assets/MYTYKit/CmdTools/LayerTool/macOS.zip Assets/MYTYKit/CmdTools/LayerTool/.extracted/";
+            }
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.Start();
+
+            process.WaitForExit();
+        }
+
+        EditorUtility.ClearProgressBar();
+    }
+
+    private void EnsureFileMode()
+    {
+        if (!SystemInfo.operatingSystem.StartsWith("Mac")) return;
+        
+        using (Process process = new Process())
+        {
+            process.StartInfo.FileName = "chmod";
+            process.StartInfo.Arguments = "755 "+layerToolPath;
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.Start();
+
+            process.WaitForExit();
         }
     }
 }
