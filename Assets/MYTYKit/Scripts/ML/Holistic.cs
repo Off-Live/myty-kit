@@ -25,8 +25,10 @@ public class Holistic : MonoBehaviour
     public List<RiggingModel> rightHandRig = new();
 
     public bool inputFlipped = true;
-    public bool isDetected = true;
+    
     public Vector3 _landmarkScale = new Vector3(10, -10, 10);
+
+    public UnityEvent<bool> detectedEvent;
 
     private Stopwatch _stopwatch;
     private Texture2D _sourceTexture;
@@ -93,7 +95,7 @@ public class Holistic : MonoBehaviour
     {
 
         if (imageSource.camTexture == null || !imageSource.camTexture.didUpdateThisFrame) {
-            isDetected = false;
+            if (detectedEvent != null) detectedEvent.Invoke(false);
             return;
         }
 
@@ -134,7 +136,7 @@ public class Holistic : MonoBehaviour
             if (!packet.IsEmpty())
             {
                 var pose = packet.Get();
-                holistic.m_poseEvent.Invoke(pose);
+                UnityMainThreadDispatcher.Instance().Enqueue(()=> holistic.m_poseEvent.Invoke(pose));
             }
         }
         return Status.Ok().mpPtr;
@@ -153,11 +155,16 @@ public class Holistic : MonoBehaviour
             if (!packet.IsEmpty())
             {
                 var face = packet.Get();
-                holistic.m_faceEvent.Invoke(face);
-                holistic.isDetected = true;
+                UnityMainThreadDispatcher.Instance().Enqueue(()=> {
+                    holistic.m_faceEvent.Invoke(face);
+                    if (holistic.detectedEvent != null) holistic.detectedEvent.Invoke(true);
+                });
+                
             }else
             {
-                holistic.isDetected = false;
+                UnityMainThreadDispatcher.Instance().Enqueue(() => {
+                    if (holistic.detectedEvent != null) holistic.detectedEvent.Invoke(false);
+                });
             }
         }
         return Status.Ok().mpPtr;
@@ -176,7 +183,7 @@ public class Holistic : MonoBehaviour
             if (!packet.IsEmpty())
             {
                 var hand = packet.Get();
-                holistic.m_LHEvent.Invoke(hand);
+                UnityMainThreadDispatcher.Instance().Enqueue(()=> holistic.m_LHEvent.Invoke(hand));
             }
         }
         return Status.Ok().mpPtr;
@@ -195,7 +202,7 @@ public class Holistic : MonoBehaviour
             if (!packet.IsEmpty())
             {
                 var hand = packet.Get();
-                holistic.m_RHEvent.Invoke(hand);
+                UnityMainThreadDispatcher.Instance().Enqueue(() => holistic.m_RHEvent.Invoke(hand));
             }
         }
         return Status.Ok().mpPtr;
@@ -214,7 +221,7 @@ public class Holistic : MonoBehaviour
             if (!packet.IsEmpty())
             {
                 var emotion = packet.Get();
-                holistic.m_emotionEvent.Invoke(emotion);
+                UnityMainThreadDispatcher.Instance().Enqueue(() => holistic.m_emotionEvent.Invoke(emotion));
             }
         }
         return Status.Ok().mpPtr;
