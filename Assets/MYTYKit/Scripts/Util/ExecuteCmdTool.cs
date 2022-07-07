@@ -179,6 +179,10 @@ public class ExecuteCmdTool
             {
                 process.StartInfo.FileName = "ditto";
                 process.StartInfo.Arguments = "-x -k Assets/MYTYKit/CmdTools/LayerTool/macOS.zip Assets/MYTYKit/CmdTools/LayerTool/.extracted/";
+            }else
+            {
+                process.StartInfo.FileName = "Assets/MYTYKit/CmdTools/LayerTool/7za.exe";
+                process.StartInfo.Arguments = "x Assets/MYTYKit/CmdTools/LayerTool/Windows.zip -oAssets/MYTYKit/CmdTools/LayerTool/.extracted/";
             }
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardOutput = true;
