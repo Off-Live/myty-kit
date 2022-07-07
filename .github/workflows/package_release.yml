@@ -1,0 +1,29 @@
+name: MYTY kit package release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Version Tag'
+        required: true
+        default: ''
+
+jobs:
+  extract_unity_package:
+    runs-on: windows-latest
+    name: extract_unity_package
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        run: |
+          ls -al
+      - name: Setup unity
+        id : extract_unity_package
+        uses: FrostBanditTeam/extract-unity-package-action@1
+        with:
+          unityProjectPath: './'
+          packagePath: 'Assets'
+          outputPackagePath: './mytykit.unitypackage'
+      - name: Upload package
+        uses: actions/upload-artifact@v2
+         
