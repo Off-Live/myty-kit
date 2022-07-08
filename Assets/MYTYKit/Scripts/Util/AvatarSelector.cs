@@ -28,14 +28,14 @@ public class AvatarSelector: MonoBehaviour
     private SpriteLibraryAsset m_activeSLA;
     private GameObject m_activeBoneRoot;
 
-    private ShaderMapAsset shaderMap;
-
+    private ShaderMapAsset m_shaderMap;
+    
     private void Start()
     {
         var shaderMapGO = FindObjectOfType<ShaderMap>();
         if (shaderMapGO != null)
         {
-            shaderMap = shaderMapGO.shaderMap;
+            m_shaderMap = shaderMapGO.shaderMap;
         }
         Configure();
     }
@@ -59,7 +59,24 @@ public class AvatarSelector: MonoBehaviour
     {
         m_activeInstance = null;
 
-        var traitItem = mytyAssetStorage.traits[id];
+
+        var index = -1;
+        for(int i = 0; i < mytyAssetStorage.traits.Count; i++)
+        {
+            if(id == mytyAssetStorage.traits[i].id)
+            {
+                index = i;
+            }
+        }
+
+        if (index < 0)
+        {
+            Debug.LogWarning("No trait item with id " + id);
+            return;
+        }
+
+        var traitItem = mytyAssetStorage.traits[index];
+        
 
         foreach(var template in templates)
         {
