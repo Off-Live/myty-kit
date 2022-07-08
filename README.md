@@ -21,17 +21,18 @@ At this time, MYTY Kit provides followings:
 - Build an application featured with MYTY Avatars, which is continuously added.
 - Deploy your application powered by MYTY Kit on multi-platforms such as Windows, macOS, Web, iOS, and Android
 
-<aside>
-💡 MYTY Kit currently only supports 2D avatars but we have a plan to expand our scope to 3D.
 
-</aside>
+>💡 MYTY Kit currently only supports 2D avatars but we have a plan to expand our scope to 3D.
+
 
 ### What are the examples of Social Metaverse?
 
 We do not want to limit your imagination. Any social activities in the physical world can be converted into Metaverse services based on MYTY Avatars. We expect/believe following activities are possible in Social Metaverse:
 
-<aside>
-💡 The basic assumption here is that users are already verified by their crypto wallets and can access MYTY Avatars that are connected to their NFT holdings.
+
+
+> 💡 The basic assumption here is that users are already verified by their crypto wallets and can access MYTY Avatars that are connected to their NFT 
+
 
 </aside>
 
@@ -45,23 +46,32 @@ We do not want to limit your imagination. Any social activities in the physical 
 - Talk to other people in web3 who are randomly suggested from your NFT ownership
 - Post a video that explains DAO proposals along with the proposals in order to get more votes
 - and many more! It all depends on what activities you want to experience in social metaverse
-- **Here are more examples:**
-    - Enjoy music concerts or Karaoke with other audiences
-        - Can express how much you are enjoying the music
-        - Can make your avatar’s lips synced with your physical lips while you are singing
-    - Participate in online conferences as your NFT avatars
-    - Run a customer service desk that deals with issues of your service
-    - Dance with other people along with the random music
-    - Try standup comedy on the virtual stage where you can see your audiences’ faces and reactions in realtime
-    - Find a datemate in a specific NFT community
-    - Create an audial blog where your NFT avatars read out loud your blogposts using tts (audio creation) and MYTY Kit (animation creation)
-    - To have a Gathertown-like remote work place where people can have a video chat whey they get close to each other not with their IRL faces but with their NFT Avatars’ faces
-    - To have your friends’ virtual faces on top of the game you are playing to see their reactions and get more feeling of being together.
-    - Join galleries or museums with your favorite avatars while you can see other audiences’ reactions to the exhibitions
-    - Have meditation sessions with other avatar users while you can naturally feel how much others are relaxed by observing their facial expressions.
-    - Visit a virtual photo booth where you can take pictures with your friends
-    - Visit a psychiatrist’s virtual office and have a session without being worried about exposing yourself
-        - Psychiatrists should be able to read your face to diagnose your mental status
+
+<details>
+<summary><strong>Here are more examples:</strong></summary>
+<ul>
+    <li>Enjoy music concerts or Karaoke with other audiences</li>
+    <ul>
+        <li>Can express how much you are enjoying the music</li>
+        <li>Can make your avatar’s lips synced with your physical lips while you are singing</li>
+    </ul>
+    <li>Participate in online conferences as your NFT avatars</li>
+    <li>Dance with other people along with the random music</li>
+    <li>Try standup comedy on the virtual stage where you can see your audiences’ faces and reactions in realtime</li>
+    <li>Find a datemate in a specific NFT community</li>
+    <li>Create an audial blog where your NFT avatars read out loud your blogposts using tts (audio creation) and MYTY Kit (animation creation)</li>
+    <li>To have a Gathertown-like remote work place where people can have a video chat whey they get close to each other not with their IRL faces but with their NFT Avatars’ faces</li>
+    <li>To have your friends’ virtual faces on top of the game you are playing to see their reactions and get more feeling of being together</li>
+    <li>Join galleries or museums with your favorite avatars while you can see other audiences’ reactions to the exhibitions</li>
+    <li>Have meditation sessions with other avatar users while you can naturally feel how much others are relaxed by observing their facial expressions</li>
+    <li>Visit a virtual photo booth where you can take pictures with your friends</li>
+    <li>Visit a psychiatrist’s virtual office and have a session without being worried about exposing yourself</li>
+    <ul>
+        <li>Psychiatrists should be able to read your face to diagnose your mental status</li>
+    </ul>
+</ul>
+</details> 
+
     
 
 ## How to use MYTY Kit
@@ -70,10 +80,8 @@ We do not want to limit your imagination. Any social activities in the physical 
 
 ### for Metaverse Creators
 
-<aside>
-🚧 We are still working on the documentation for Metaverse Creators. Thank you for your patience.
+> 🚧 We are still working on the documentation for Metaverse Creators. Thank you for your patience.
 
-</aside>
 
 ## Community
 
