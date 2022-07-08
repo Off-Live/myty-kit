@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/MainUI.uss?fileID=7433441132597879392&amp;guid=23c3d71dd20764596931d268fe586e06&amp;type=3#MainUI" />
+    <ui:VisualElement style="flex-direction: row; height: auto; bottom: auto; position: relative; left: auto;">
+        <ui:TextField picking-mode="Ignore" label="Ghost ID" text="Input Ghost ID" name="AvatarId" style="height: 50px; width: 80%; align-items: stretch; justify-content: flex-start; -unity-text-align: middle-left;" />
+        <ui:Button text="Apply" display-tooltip-when-elided="true" name="BtnApply" style="white-space: nowrap;" />
+    </ui:VisualElement>
+    <ui:DropdownField label="Select WebCam" index="-1" name="CamSelector" style="height: 53px; -unity-text-align: middle-left;" />
+</ui:UXML>

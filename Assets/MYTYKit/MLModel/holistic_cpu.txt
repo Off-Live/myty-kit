@@ -1,0 +1,257 @@
+# Copyright 2019 The MediaPipe Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Copied from mediapipe/graphs/holistic_tracking/holistic_tracking_gpu.pbtxt
+#
+# CHANGES:
+#   - Add ImageTransformationCalculator and rotate the input
+#   - Remove AnnotationOverlayCalculator
+
+# Tracks and renders pose + hands + face landmarks.
+
+# CPU image. (ImageFrame)
+input_stream: "input_video"
+
+# Throttles the images flowing downstream for flow control. It passes through
+# the very first incoming image unaltered, and waits for downstream nodes
+# (calculators and subgraphs) in the graph to finish their tasks before it
+# passes through another image. All images that come in while waiting are
+# dropped, limiting the number of in-flight images in most part of the graph to
+# 1. This prevents the downstream nodes from queuing up incoming images and data
+# excessively, which leads to increased latency and memory usage, unwanted in
+# real-time mobile applications. It also eliminates unnecessarily computation,
+# e.g., the output produced by a node may get dropped downstream if the
+# subsequent nodes are still busy processing previous inputs.
+node {
+  calculator: "FlowLimiterCalculator"
+  input_stream: "input_video"
+  input_stream: "FINISHED:face_landmarks"
+  input_stream_info: {
+    tag_index: "FINISHED"
+    back_edge: true
+  }
+  output_stream: "throttled_input_video"
+  node_options: {
+    [type.googleapis.com/mediapipe.FlowLimiterCalculatorOptions] {
+      max_in_flight: 1
+      max_in_queue: 1
+      # Timeout is disabled (set to 0) as first frame processing can take more
+      # than 1 second.
+      in_flight_timeout: 0
+    }
+  }
+}
+
+node: {
+  calculator: "ImageTransformationCalculator"
+  input_stream: "IMAGE:throttled_input_video"
+  input_side_packet: "ROTATION_DEGREES:input_rotation"
+  input_side_packet: "FLIP_HORIZONTALLY:input_horizontally_flipped"
+  input_side_packet: "FLIP_VERTICALLY:input_vertically_flipped"
+  output_stream: "IMAGE:transformed_input_video"
+}
+
+
+# Complexity of the pose landmark model: 0, 1 or 2. Landmark accuracy as well as
+# inference latency generally go up with the model complexity. If unspecified,
+# functions as set to 1. (int)
+input_side_packet: "MODEL_COMPLEXITY:model_complexity"
+
+# Whether to filter landmarks across different input images to reduce jitter.
+# If unspecified, functions as set to true. (bool)
+input_side_packet: "SMOOTH_LANDMARKS:smooth_landmarks"
+
+# Whether to predict the segmentation mask. If unspecified, functions as set to
+# false. (bool)
+input_side_packet: "ENABLE_SEGMENTATION:enable_segmentation"
+
+# Whether to filter segmentation mask across different input images to reduce
+# jitter. If unspecified, functions as set to true. (bool)
+input_side_packet: "SMOOTH_SEGMENTATION:smooth_segmentation"
+
+# Whether to run the face landmark model with attention on lips and eyes to
+# provide more accuracy, and additionally output iris landmarks. If unspecified,
+# functions as set to false. (bool)
+input_side_packet: "REFINE_FACE_LANDMARKS:refine_face_landmarks"
+
+# Whether landmarks on the previous image should be used to help localize
+# landmarks on the current image. (bool)
+input_side_packet: "USE_PREV_LANDMARKS:use_prev_landmarks"
+
+# Pose landmarks. (NormalizedLandmarkList)
+# 33 pose landmarks.
+output_stream: "POSE_LANDMARKS:pose_landmarks"
+# 33 pose world landmarks. (LandmarkList)
+output_stream: "WORLD_LANDMARKS:pose_world_landmarks"
+# 21 left hand landmarks. (NormalizedLandmarkList)
+output_stream: "LEFT_HAND_LANDMARKS:left_hand_landmarks"
+# 21 right hand landmarks. (NormalizedLandmarkList)
+output_stream: "RIGHT_HAND_LANDMARKS:right_hand_landmarks"
+# 468 face landmarks. (NormalizedLandmarkList)
+output_stream: "LANDMARKS:face_landmarks"
+output_stream: "FACE_EMOTIONS:face_emotions"
+# Segmentation mask. (ImageFrame in ImageFormat::VEC32F1)
+output_stream: "SEGMENTATION_MASK:segmentation_mask"
+
+# Debug outputs
+output_stream: "POSE_ROI:pose_landmarks_roi"
+output_stream: "POSE_DETECTION:pose_detection"
+
+# Predicts pose landmarks.
+node {
+  calculator: "PoseLandmarkCpu"
+  input_stream: "IMAGE:transformed_input_video"
+  input_side_packet: "MODEL_COMPLEXITY:model_complexity"
+  input_side_packet: "SMOOTH_LANDMARKS:smooth_landmarks"
+  input_side_packet: "ENABLE_SEGMENTATION:enable_segmentation"
+  input_side_packet: "SMOOTH_SEGMENTATION:smooth_segmentation"
+  input_side_packet: "USE_PREV_LANDMARKS:use_prev_landmarks"
+  output_stream: "LANDMARKS:pose_landmarks"
+  output_stream: "WORLD_LANDMARKS:pose_world_landmarks"
+  output_stream: "SEGMENTATION_MASK:segmentation_mask"
+  output_stream: "ROI_FROM_LANDMARKS:pose_landmarks_roi"
+  output_stream: "DETECTION:pose_detection"
+}
+
+# Predicts left and right hand landmarks based on the initial pose landmarks.
+node {
+  calculator: "HandLandmarksLeftAndRightCpu"
+  input_stream: "IMAGE:transformed_input_video"
+  input_stream: "POSE_LANDMARKS:pose_landmarks"
+  output_stream: "LEFT_HAND_LANDMARKS:left_hand_landmarks"
+  output_stream: "RIGHT_HAND_LANDMARKS:right_hand_landmarks"
+}
+
+# Extracts face-related pose landmarks.
+node {
+  calculator: "SplitNormalizedLandmarkListCalculator"
+  input_stream: "pose_landmarks"
+  output_stream: "face_landmarks_from_pose"
+  options: {
+    [mediapipe.SplitVectorCalculatorOptions.ext] {
+      ranges: { begin: 0 end: 11 }
+    }
+  }
+}
+# Predicts face landmarks based on the initial pose landmarks.
+#node {
+#  calculator: "FaceLandmarksFromPoseCpu"
+#  input_stream: "IMAGE:transformed_input_video"
+#  input_stream: "FACE_LANDMARKS_FROM_POSE:face_landmarks_from_pose"
+#  input_side_packet: "REFINE_LANDMARKS:refine_face_landmarks"
+#  output_stream: "FACE_LANDMARKS:face_landmarks"
+  
+#}
+
+
+
+
+# Extracts image size from the input images.
+node {
+  calculator: "ImagePropertiesCalculator"
+  input_stream: "IMAGE:transformed_input_video"
+  output_stream: "SIZE:image_size"
+}
+
+# Gets ROI for re-crop model from face-related pose landmarks.
+node {
+  calculator: "FaceLandmarksFromPoseToRecropRoi"
+  input_stream: "FACE_LANDMARKS_FROM_POSE:face_landmarks_from_pose"
+  input_stream: "IMAGE_SIZE:image_size"
+  output_stream: "ROI:face_roi_from_pose"
+}
+
+
+# Detects faces within the face ROI calculated from pose landmarks. This is done
+# to refine face ROI for further landmark detection as ROI calculated from
+# pose landmarks may be inaccurate.
+node {
+  calculator: "FaceDetectionShortRangeByRoiCpu"
+  input_stream: "IMAGE:transformed_input_video"
+  input_stream: "ROI:face_roi_from_pose"
+  output_stream: "DETECTIONS:face_detections"
+}
+
+# Calculates refined face ROI.
+node {
+  calculator: "FaceDetectionFrontDetectionsToRoi"
+  input_stream: "DETECTIONS:face_detections"
+  input_stream: "IMAGE_SIZE:image_size"
+  output_stream: "ROI:face_roi_from_detection"
+}
+
+
+# Gets face tracking rectangle (either face rectangle from the previous
+# frame or face re-crop rectangle from the current frame) for face prediction.
+node {
+  calculator: "FaceTracking"
+  input_stream: "LANDMARKS:face_landmarks"
+  input_stream: "FACE_RECROP_ROI:face_roi_from_detection"
+  input_stream: "IMAGE_SIZE:image_size"
+  output_stream: "FACE_TRACKING_ROI:face_tracking_roi"
+}
+
+# Predicts face landmarks from the tracking rectangle.
+node {
+  calculator: "FaceLandmarkCpu"
+  input_stream: "IMAGE:transformed_input_video"
+  input_stream: "ROI:face_tracking_roi"
+  input_side_packet: "WITH_ATTENTION:refine_face_landmarks"
+  output_stream: "LANDMARKS:face_landmarks"
+}
+
+node: {
+  calculator: "ImageToTensorCalculator"
+  input_stream: "IMAGE:transformed_input_video"
+  input_stream: "NORM_RECT:face_tracking_roi"
+  output_stream: "TENSORS:input_tensors"
+  output_stream: "MATRIX:matrix"
+  options: {
+    [mediapipe.ImageToTensorCalculatorOptions.ext] {
+      output_tensor_width: 48
+      output_tensor_height: 48
+      output_tensor_float_range {
+        min: 0.0
+        max: 1.0
+      }
+    }
+  }
+}
+
+node {
+  calculator: "InferenceCalculator"
+  input_stream: "TENSORS:input_tensors"
+#  input_side_packet: "MODEL:model"
+#  input_side_packet: "CUSTOM_OP_RESOLVER:op_resolver"
+  output_stream: "TENSORS:output_tensors"
+  options: {
+    [mediapipe.InferenceCalculatorOptions.ext] {
+	  model_path:"mediapipe/modules/emotion_detection/emotion_detection.tflite"
+      delegate { xnnpack {} }
+    }
+  }
+}
+
+node {
+  calculator: "TensorsToClassificationCalculator"
+  input_stream: "TENSORS:output_tensors"
+  output_stream: "CLASSIFICATIONS:face_emotions"
+  options: {
+    [mediapipe.TensorsToClassificationCalculatorOptions.ext] {
+      top_k: 1
+      label_map_path: "mediapipe/models/emotion_detection_labelmap.txt"
+      binary_classification: False
+    }
+  }
+}

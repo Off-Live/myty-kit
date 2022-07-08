@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/MYTYKit/UI/importer.uss?fileID=7433441132597879392&amp;guid=e4b343c8ff66a4b91ade8fadb29c72fb&amp;type=3#importer" />
+    <ui:VisualElement style="flex-direction: row; justify-content: space-between;">
+        <ui:TextField picking-mode="Ignore" label="Trait mapping file" value="filler text" readonly="true" name="TXTTraitFile" style="flex-grow: 1;" />
+        <ui:Button text="Open" display-tooltip-when-elided="true" name="BTNTraitOpen" style="width: 120px;" />
+    </ui:VisualElement>
+    <ui:VisualElement name="PANPadding" class="hide" style="height: 50px;" />
+    <ui:VisualElement name="PANPhotoshop" class="hide">
+        <ui:Label text="Photoshop files" display-tooltip-when-elided="true" name="LBLTitle" style="margin-bottom: 20px;" />
+        <ui:ListView focusable="true" fixed-item-height="22" name="LSTPSB" style="min-height: 40px; max-height: 300px;" />
+    </ui:VisualElement>
+    <ui:VisualElement name="PANBtn" class="hide" style="flex-direction: row; align-items: auto; justify-content: center;">
+        <ui:Button text="Import" display-tooltip-when-elided="true" name="BTNImport" style="width: 120px; flex-direction: column;" />
+    </ui:VisualElement>
+</ui:UXML>

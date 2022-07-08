@@ -1,0 +1,57 @@
+name: MYTY kit package release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Version Tag'
+        required: true
+        default: ''
+
+jobs:
+  extract_unity_package:
+    runs-on: ubuntu-latest
+    name: extract_unity_package
+    steps:
+      - name: setup Dotnet
+        uses: actions/setup-dotnet@v2
+      - name: checkout 
+        uses: actions/checkout@v2
+        with: 
+          ref: refs/tags/${{ github.event.inputs.tag }}
+      - name: List files
+        run: |
+          git submodule init
+          git submodule update --remote
+          ls -al
+     
+      - name: install Unity Packager
+        run: |
+          git clone https://github.com/Off-Live/Unity-Package-Exporter.git "../tools/unity-package-exporter"
+          dotnet publish -c Release -o ../tools "../tools/unity-package-exporter/UnityPackageExporter"
+
+      - name: package Project
+        run: |
+          dotnet ../tools/UnityPackageExporter.dll ./ mytykit.unitypackage -e "Packages/**.*" -e ".*" -e "*.md" -e "Assets/MYTYKit/CmdTools/LayerTool/.*" -e "Assets/MYTYKit/Plugin/Mediapipe/.*"
+          ls -al
+      - name: release
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: true
+          prerelease: false
+          release_name: myty-kit-${{ github.event.inputs.tag }}
+          tag_name: ${{ github.event.inputs.tag }}
+
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: upload unity package
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./mytykit.unitypackage
+          asset_name: mytykit-${{ github.event.inputs.tag }}.unitypackage
+          asset_content_type: application/octet-stream
+         
