@@ -170,6 +170,7 @@ public class ExecuteCmdTool
 
     private void Extract()
     {
+#if UNITY_EDITOR
         EditorUtility.DisplayProgressBar("Import", "Extracting tool", 1.0f);
         Debug.Log("extract start");
 
@@ -192,6 +193,7 @@ public class ExecuteCmdTool
         }
 
         EditorUtility.ClearProgressBar();
+#endif
     }
 
     private void EnsureFileMode()

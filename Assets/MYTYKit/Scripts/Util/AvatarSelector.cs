@@ -232,10 +232,10 @@ public class AvatarSelector: MonoBehaviour
             if (Application.isPlaying)
             {
                 var render = templateNode.GetComponent<SpriteRenderer>();
-                if (render != null && shaderMap != null)
+                if (render != null && m_shaderMap != null)
                 {
 
-                    foreach (var item in shaderMap.shaderMapList)
+                    foreach (var item in m_shaderMap.shaderMapList)
                     {
                         if (render.material != null)
                         {
