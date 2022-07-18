@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ByPassModel : RiggingModel
+public class RawPointsModel : RiggingModel
 {
     public Vector3[] points;
 
