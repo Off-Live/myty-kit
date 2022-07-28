@@ -86,6 +86,6 @@ We do not want to limit your imagination. Any social activities in the physical 
 ## Community
 
 - [Website](http://myty.space)
-- [Twitter](https://mobile.twitter.com/myty_official)
+- [Twitter](https://twitter.com/myty_official)
 - [Discord](https://discord.gg/myty)
 - [Medium](https://medium.com/@MYTY_Official)
