@@ -113,7 +113,8 @@ public class AvatarSelector: MonoBehaviour
         {
             FixName(m_activeInstance.transform.GetChild(i).gameObject);
         }
-                
+
+        DisableAllBones();
         for (int i = 0; i < childCount; i++)
         {
             FixLayer(m_activeInstance.transform.GetChild(i).gameObject, new List<string>(), traitItem.traits.ToArray());
@@ -187,7 +188,7 @@ public class AvatarSelector: MonoBehaviour
             }
         }
 
-        if (m_activeBoneRoot!=null && key.StartsWith("/" + m_activeBoneRoot.name)) active = true;
+        if (m_activeBoneRoot != null && key.StartsWith("/" + m_activeBoneRoot.name)) return;
 
         if (active)
         {
@@ -228,6 +229,18 @@ public class AvatarSelector: MonoBehaviour
                 resolver.SetCategoryAndLabel(catName, labelList[labelList.Count - 1]);
             }
 
+            if (active)
+            {
+                var spriteSkin = templateNode.GetComponent<SpriteSkin>();
+                if (spriteSkin != null)
+                {
+                    foreach (var bone in spriteSkin.boneTransforms)
+                    {
+                        EnableBone(bone);
+                    }
+                }
+            }
+
 #if !UNITY_EDITOR
             if (Application.isPlaying)
             {
@@ -255,6 +268,36 @@ public class AvatarSelector: MonoBehaviour
 
 
         history.RemoveAt(history.Count - 1);
+    }
+
+
+    void DisableAllBones()
+    {
+        if (m_activeBoneRoot == null) return;
+        Stack<GameObject> stack = new();
+        stack.Push(m_activeBoneRoot);
+
+        while (stack.Count > 0)
+        {
+            var curBone = stack.Pop();
+            curBone.SetActive(false);
+
+            for(int i = 0; i < curBone.transform.childCount; i++)
+            {
+                stack.Push(curBone.transform.GetChild(i).gameObject);
+            }
+        }
+
+    }
+
+    void EnableBone(Transform bone)
+    {
+        Transform current = bone;
+        while (current != null)
+        {
+            current.gameObject.SetActive(true);
+            current = current.parent;
+        }
     }
 
 }
