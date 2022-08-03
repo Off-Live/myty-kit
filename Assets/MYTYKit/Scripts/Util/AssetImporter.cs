@@ -65,9 +65,16 @@ public class AssetImporter : MonoBehaviour
             selector.templates.Add(template);
             
         }
+
+       
         selector.id = 0;
         selector.Configure();
         if (spriteOnly) yield break;
+
+        request = m_assetBundle.LoadAssetAsync<DefaultLayoutAsset>("DefaultLayoutAsset.asset");
+        yield return request;
+        var layout = request.asset as DefaultLayoutAsset;
+        SetupLayout(motionTemplateGO, selector, layout);
 
         yield return SetupAvatarAsync(root, avatarSelectorGO, motionTemplateGO);
         
@@ -101,7 +108,8 @@ public class AssetImporter : MonoBehaviour
         }
 
         if (spriteOnly) return retGO;
-
+        var layout = m_assetBundle.LoadAsset<DefaultLayoutAsset>("DefaultLayoutAsset.asset");
+        SetupLayout(motionTemplateGO, selector, layout);
         SetupAvatar(retGO, avatarSelectorGO, motionTemplateGO);
        
         return retGO;
@@ -262,6 +270,22 @@ public class AssetImporter : MonoBehaviour
         for (int i = 0; i < node.transform.childCount; i++)
         {
             RestoreController(node.transform.GetChild(i).gameObject);
+        }
+    }
+
+    void SetupLayout(GameObject parent, AvatarSelector selector, DefaultLayoutAsset layoutAsset)
+    {
+        var cameraGO = new GameObject("RenderCam");
+        cameraGO.transform.parent = parent.transform;
+
+        var camera = cameraGO.AddComponent<Camera>();
+        camera.CopyFrom(layoutAsset.camera);
+
+        for(int i = 0; i < selector.templates.Count; i++)
+        {
+            selector.templates[i].instance.transform.localPosition = layoutAsset.templateTransforms[i].position;
+            selector.templates[i].instance.transform.localScale = layoutAsset.templateTransforms[i].scale;
+            selector.templates[i].instance.transform.rotation = layoutAsset.templateTransforms[i].rotation;
         }
     }
 
