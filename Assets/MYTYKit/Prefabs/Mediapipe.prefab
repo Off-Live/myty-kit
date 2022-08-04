@@ -2166,6 +2166,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   configText: {fileID: 4900000, guid: 7d3c713906341c5419504bff27c359bb, type: 3}
+  configWithoutHandText: {fileID: 4900000, guid: f4401718886fc457a88a1ae992951fb3, type: 3}
   imageSource: {fileID: 4078142862266582302}
   poseRig:
   - {fileID: 4078142864170900454}
@@ -2218,11 +2219,16 @@ MonoBehaviour:
   - {fileID: 4078142862728089254}
   - {fileID: 4078142862654562849}
   - {fileID: 4078142862487900741}
-  inputFlipped: 1
-  _landmarkScale: {x: 10, y: -10, z: 10}
+  inputFlipped: 0
+  trackingHands: 0
+  landmarkScale: {x: 10, y: -10, z: 10}
   detectedEvent:
     m_PersistentCalls:
       m_Calls: []
+  fpsEmitter:
+    m_PersistentCalls:
+      m_Calls: []
+  m_targetFps: 10
 --- !u!114 &5716755542052014212
 MonoBehaviour:
   m_ObjectHideFlags: 0
