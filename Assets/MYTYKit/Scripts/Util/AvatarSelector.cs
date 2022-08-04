@@ -122,6 +122,70 @@ public class AvatarSelector: MonoBehaviour
 
     }
 
+    public void FindWithTraitObj(GameObject trait)
+    {
+#if UNITY_EDITOR
+        if (!Application.isEditor) return;
+        if (trait == null) return;
+        var curr = trait.transform;
+        var path = trait.name;
+        var templateIdx = -1;
+
+        while (curr != null)
+        {
+            bool flag = false;
+            for(int i = 0;i< templates.Count; i++)
+            {
+                if (templates[i].instance == curr.gameObject)
+                {
+                    templateIdx = i;
+                    flag = true;
+                }
+            }
+            if (flag) break;
+            curr = curr.parent;
+            
+            if (curr!=null) path = curr.name + "/" + path;
+           
+        }
+
+        if (curr == null) return;
+
+        
+        path = path.Substring(path.IndexOf('/') + 1);
+        Debug.Log("Trait path : " + path);
+
+        var found = false;
+        for(int i = id + 1, count = 0; count<10000; i++, count++)
+        {
+            i %= 10000;
+            var traitItem = mytyAssetStorage.traits[i];
+            var psbPath = templates[templateIdx].PSBPath;
+            if (traitItem.filename != psbPath) continue;
+
+            foreach(var traitPath in traitItem.traits)
+            {
+                if(path==traitPath || path.StartsWith(traitPath + "/"))
+                {
+                    id = i;
+                    found = true;
+                }
+            }
+            if (found) break;
+        }
+
+
+        if (found)
+        {
+            var so = new SerializedObject(this);
+            so.FindProperty("id").intValue = id;
+            so.ApplyModifiedProperties();
+            Configure();
+        }
+
+#endif
+    }
+
 
     private void FixName(GameObject templateNode)
     {

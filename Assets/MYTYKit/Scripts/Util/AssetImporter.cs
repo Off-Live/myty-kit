@@ -275,6 +275,7 @@ public class AssetImporter : MonoBehaviour
 
     void SetupLayout(GameObject parent, AvatarSelector selector, DefaultLayoutAsset layoutAsset)
     {
+        if (layoutAsset == null) return;
         var cameraGO = new GameObject("RenderCam");
         cameraGO.transform.parent = parent.transform;
 
