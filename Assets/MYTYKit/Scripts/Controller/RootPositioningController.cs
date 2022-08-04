@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 public class RootPositioningController : MYTYController, IVec3Input
 {
@@ -11,12 +12,22 @@ public class RootPositioningController : MYTYController, IVec3Input
 
     public override void PostprocessAfterLoad(Dictionary<GameObject, GameObject> objMap)
     {
-        throw new System.NotImplementedException();
+        targetObject = objMap[targetObject];
+#if UNITY_EDITOR
+        if (Application.isEditor)
+        {
+            var so = new SerializedObject(this);
+            so.FindProperty("targetObject").objectReferenceValue = targetObject;
+            so.ApplyModifiedProperties();
+        }
+#endif
     }
 
     public override void PrepareToSave()
     {
-        throw new System.NotImplementedException();
+#if UNITY_EDITOR
+        targetObject = PrefabUtility.GetCorrespondingObjectFromSource(targetObject);    
+#endif
     }
 
     // Start is called before the first frame update
