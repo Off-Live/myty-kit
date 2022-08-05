@@ -22,6 +22,12 @@ public class Exporter : EditorWindow
         wnd.titleContent = new GUIContent("AssetBundle Exporter");
     }
 
+    private void OnFocus()
+    {
+        Debug.Log("On Focus");
+        var avatarConfigElem = rootVisualElement.Q<ObjectField>("OBJConfig");
+        avatarConfigElem.value = GameObject.FindObjectOfType<AvatarSelector>().gameObject;
+    }
 
     private void CreateGUI()
     {
