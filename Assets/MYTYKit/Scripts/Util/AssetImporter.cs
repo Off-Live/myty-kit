@@ -38,7 +38,7 @@ public class AssetImporter : MonoBehaviour
         selector.templates = new();
 
 
-        foreach(var templateInfo in mytyasset.templateInfos)
+        foreach (var templateInfo in mytyasset.templateInfos)
         {
             var template = new AvatarTemplate();
             template.PSBPath = templateInfo.template;
@@ -52,7 +52,7 @@ public class AssetImporter : MonoBehaviour
             psb.transform.parent = root.transform;
             var splReq = m_assetBundle.LoadAssetAsync<SpriteLibraryAsset>(templateInfo.spriteLibrary);
             yield return splReq;
-          
+
             template.spriteLibrary = splReq.asset as SpriteLibraryAsset;
 
             int boneIdx = template.instance.transform.childCount - 1;
@@ -63,14 +63,21 @@ public class AssetImporter : MonoBehaviour
             }
 
             selector.templates.Add(template);
-            
+
         }
+
+
         selector.id = 0;
         selector.Configure();
         if (spriteOnly) yield break;
 
+        request = m_assetBundle.LoadAssetAsync<DefaultLayoutAsset>("DefaultLayoutAsset.asset");
+        yield return request;
+        var layout = request.asset as DefaultLayoutAsset;
+        SetupLayout(root, selector, layout);
+
         yield return SetupAvatarAsync(root, avatarSelectorGO, motionTemplateGO);
-        
+
     }
 
     public GameObject LoadMYTYAvatar(GameObject motionTemplateGO, AssetBundle bundle, string loadedName = "avatar", bool spriteOnly = false)
@@ -88,7 +95,6 @@ public class AssetImporter : MonoBehaviour
         var avatarSelectorGO = LoadAvatarSelector();
         var retGO = new GameObject(loadedName);
         var selector = avatarSelectorGO.GetComponent<AvatarSelector>();
-
         avatarSelectorGO.transform.parent = retGO.transform;
         foreach (var template in selector.templates)
         {
@@ -101,9 +107,11 @@ public class AssetImporter : MonoBehaviour
         }
 
         if (spriteOnly) return retGO;
+        var layout = m_assetBundle.LoadAsset<DefaultLayoutAsset>("DefaultLayoutAsset.asset");
 
+        SetupLayout(retGO, selector, layout);
         SetupAvatar(retGO, avatarSelectorGO, motionTemplateGO);
-       
+
         return retGO;
     }
 
@@ -115,7 +123,7 @@ public class AssetImporter : MonoBehaviour
 
         foreach (var rootConPrefabPath in selector.mytyAssetStorage.rootControllers)
         {
-           
+
             var request = m_assetBundle.LoadAssetAsync<GameObject>(rootConPrefabPath);
             yield return request;
             var rootConPrefab = request.asset as GameObject;
@@ -174,7 +182,7 @@ public class AssetImporter : MonoBehaviour
 
         foreach (var field in nativeAdapter.GetType().GetFields())
         {
-            if(field.FieldType.IsSubclassOf(typeof(MYTYController))|| field.FieldType.IsEquivalentTo(typeof(MYTYController)))
+            if (field.FieldType.IsSubclassOf(typeof(MYTYController)) || field.FieldType.IsEquivalentTo(typeof(MYTYController)))
             {
                 var prefab = (field.GetValue(nativeAdapter) as MYTYController).gameObject;
                 var conGO = m_goMap[prefab];
@@ -262,6 +270,26 @@ public class AssetImporter : MonoBehaviour
         for (int i = 0; i < node.transform.childCount; i++)
         {
             RestoreController(node.transform.GetChild(i).gameObject);
+        }
+    }
+
+    void SetupLayout(GameObject parent, AvatarSelector selector, DefaultLayoutAsset layoutAsset)
+    {
+        if (layoutAsset == null) return;
+        var cameraGO = new GameObject("RenderCam");
+        cameraGO.transform.parent = parent.transform;
+
+        var camera = cameraGO.AddComponent<Camera>();
+        camera.CopyFrom(layoutAsset.camera);
+        cameraGO.transform.localPosition = layoutAsset.camera.transform.position;
+        cameraGO.transform.localScale = layoutAsset.camera.transform.localScale;
+        cameraGO.transform.localRotation = layoutAsset.camera.transform.rotation;
+
+        for (int i = 0; i < selector.templates.Count; i++)
+        {
+            selector.templates[i].instance.transform.localPosition = layoutAsset.templateTransforms[i].position;
+            selector.templates[i].instance.transform.localScale = layoutAsset.templateTransforms[i].scale;
+            selector.templates[i].instance.transform.localRotation = layoutAsset.templateTransforms[i].rotation;
         }
     }
 

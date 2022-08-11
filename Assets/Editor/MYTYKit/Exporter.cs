@@ -22,18 +22,27 @@ public class Exporter : EditorWindow
         wnd.titleContent = new GUIContent("AssetBundle Exporter");
     }
 
+    private void OnFocus()
+    {
+        Debug.Log("On Focus");
+        var avatarConfigElem = rootVisualElement.Q<ObjectField>("OBJConfig");
+        avatarConfigElem.value = GameObject.FindObjectOfType<AvatarSelector>().gameObject;
+    }
 
     private void CreateGUI()
     {
         UI.CloneTree(rootVisualElement);
 
         var avatarConfigElem = rootVisualElement.Q<ObjectField>("OBJConfig");
+        var cameraElem = rootVisualElement.Q<ObjectField>("OBJCamera");
         var controllerListView = rootVisualElement.Q<ListView>("LSTController");
         var maListView = rootVisualElement.Q<ListView>("LSTMotionAdapter");
         avatarConfigElem.objectType = typeof(AvatarSelector);
+        cameraElem.objectType = typeof(Camera);
         rootVisualElement.Q<Button>("BTNExport").clicked += Export;
 
         avatarConfigElem.value = GameObject.FindObjectOfType<AvatarSelector>().gameObject;
+        cameraElem.value = Camera.main;
 
         controllerListView.makeItem = () =>
         {
@@ -113,6 +122,8 @@ public class Exporter : EditorWindow
             return;
         }
 
+        PrepareLayoutAsset(selector, assetName);
+
         EditorUtility.SetDirty(mytyAsset);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
@@ -177,6 +188,37 @@ public class Exporter : EditorWindow
         }
 
         Close();
+    }
+
+    void PrepareLayoutAsset(AvatarSelector selector, List<string> assetName)
+    {
+        var assetSCO = ScriptableObject.CreateInstance<DefaultLayoutAsset>();
+        var cameraElem = rootVisualElement.Q<ObjectField>("OBJCamera");
+        var mainCamera = cameraElem.value as Camera;
+
+        var path = AssetDatabase.GenerateUniqueAssetPath(MYTYUtil.PrefabPath + "/refCamera.prefab");
+        var savedCamera = PrefabUtility.SaveAsPrefabAsset(mainCamera.gameObject, path);
+        
+        AssetDatabase.CreateAsset(assetSCO, MYTYUtil.PrefabPath + "/" + "DefaultLayoutAsset.asset");
+        assetName.Add(path);
+        assetName.Add(MYTYUtil.PrefabPath + "/" + "DefaultLayoutAsset.asset");
+
+        assetSCO.camera = savedCamera.GetComponent<Camera>();
+        assetSCO.templateTransforms = new();
+
+        for(int i = 0; i < selector.templates.Count; i++)
+        {
+            assetSCO.templateTransforms.Add(new TransformProperty
+            {
+                position = selector.templates[i].instance.transform.position,
+                scale = selector.templates[i].instance.transform.localScale,
+                rotation = selector.templates[i].instance.transform.rotation
+            });
+        }
+        EditorUtility.SetDirty(assetSCO);
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+
     }
 
     private bool PrepareConfigurator(MYTYAssetScriptableObject mytyAsset, List<string> assetName)

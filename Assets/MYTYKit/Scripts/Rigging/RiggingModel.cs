@@ -21,18 +21,6 @@ public class RiggingModel : MonoBehaviour
         rawPoints[index] = point;
     }
 
-    //public void CopyFromModel(LandmarkData landmark)
-    //{
-    //    if(rawPoints==null || rawPoints.Length != landmark.landmarks.Count)
-    //    {
-    //        rawPoints = new Vector3[landmark.landmarks.Count];
-    //    }
-
-    //    for(int i = 0; i < rawPoints.Length; i++)
-    //    {
-    //        rawPoints[i] = landmark.landmarks[i];
-    //    }
-    //}
 }
 
 

@@ -26,6 +26,8 @@
     </ui:VisualElement>
     <ui:VisualElement name="SubPanel" style="height: auto; flex-direction: column;">
         <uie:Vector2Field label="Position" name="ControllerPos" />
+        <uie:FloatField label="X Scale" value="1" name="FLTXScale" style="height: 18px;" />
+        <uie:FloatField label="Y Scale" value="1" name="FLTYScale" />
         <ui:Button text="Reset Position" display-tooltip-when-elided="true" name="BTNReset" />
     </ui:VisualElement>
     <ui:VisualElement>

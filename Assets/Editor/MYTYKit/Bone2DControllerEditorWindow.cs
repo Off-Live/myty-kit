@@ -10,9 +10,9 @@ public class Bone2DControllerEditorWindow : EditorWindow
 {
     public VisualTreeAsset UITemplate;
 
-    bool _isPressed = false;
-    Vector2 _lastPos = new();
-    SerializedObject faceConSO;
+    bool m_isPressed = false;
+    Vector2 m_lastPos = new();
+    SerializedObject m_conSO;
 
     [MenuItem("MYTY Kit/Bone 2D Controller", false, 0)]
     public static void ShowController()
@@ -62,9 +62,11 @@ public class Bone2DControllerEditorWindow : EditorWindow
 
         posController.RegisterValueChangedCallback((ChangeEvent<Vector2> e) =>
         {
-            if (faceConSO == null) return;
-            var target = (Bone2DController)faceConSO.targetObject;
-            controller.transform.position = e.newValue * new Vector2(panel.localBound.width / 2, panel.localBound.height / 2);
+            if (m_conSO == null) return;
+            var xScaleVE = rootVisualElement.Q<FloatField>("FLTXScale");
+            var yScaleVE = rootVisualElement.Q<FloatField>("FLTYScale");
+            var target = (Bone2DController)m_conSO.targetObject;
+            controller.transform.position = e.newValue * new Vector2(panel.localBound.width / 2/xScaleVE.value, panel.localBound.height / 2/yScaleVE.value);
             target.InterpolateGUI();
 
         });
@@ -73,11 +75,11 @@ public class Bone2DControllerEditorWindow : EditorWindow
         panel.RegisterCallback<MouseMoveEvent>(OnMouseMove);
         panel.RegisterCallback((MouseUpEvent e) =>
         {
-            _isPressed = false;
+            m_isPressed = false;
         });
         panel.RegisterCallback((MouseLeaveEvent e) =>
         {
-            _isPressed = false;
+            m_isPressed = false;
         });
 
         rootVisualElement.Q<Toggle>("BTNRegOrigin").RegisterCallback((MouseUpEvent e) =>
@@ -91,28 +93,32 @@ public class Bone2DControllerEditorWindow : EditorWindow
         {
             if (HandleRigToggle(e, "xminRig"))
             {
-                SetControlPos(new Vector2(-1, 0));
+                var xScaleVE = rootVisualElement.Q<FloatField>("FLTXScale");
+                SetControlPos(new Vector2(-xScaleVE.value, 0));
             }
         });
         rootVisualElement.Q<Toggle>("BTNRegRight").RegisterCallback((MouseUpEvent e) =>
         {
             if (HandleRigToggle(e, "xmaxRig"))
             {
-                SetControlPos(new Vector2(1, 0));
+                var xScaleVE = rootVisualElement.Q<FloatField>("FLTXScale");
+                SetControlPos(new Vector2(xScaleVE.value, 0));
             }
         });
         rootVisualElement.Q<Toggle>("BTNRegUp").RegisterCallback((MouseUpEvent e) =>
         {
             if (HandleRigToggle(e, "yminRig"))
             {
-                SetControlPos(new Vector2(0, -1));
+                var yScaleVE = rootVisualElement.Q<FloatField>("FLTYScale");
+                SetControlPos(new Vector2(0, -yScaleVE.value));
             }
         });
         rootVisualElement.Q<Toggle>("BTNRegDown").RegisterCallback((MouseUpEvent e) =>
         {
             if (HandleRigToggle(e, "ymaxRig"))
             {
-                SetControlPos(new Vector2(0, 1));
+                var yScaleVE = rootVisualElement.Q<FloatField>("FLTYScale");
+                SetControlPos(new Vector2(0, yScaleVE.value));
             }
         });
 
@@ -125,12 +131,18 @@ public class Bone2DControllerEditorWindow : EditorWindow
 
     private void InitializeWithFaceCon(Bone2DController obj)
     {
-        faceConSO = new SerializedObject(obj);
+        m_conSO = new SerializedObject(obj);
 
         var fcObjField = rootVisualElement.Q<ObjectField>("Bone2DController");
-        var targetsProp = faceConSO.FindProperty("rigTarget");
+        var targetsProp = m_conSO.FindProperty("rigTarget");
         var posController = rootVisualElement.Q<Vector2Field>("ControllerPos");
-        var controlPosProp = faceConSO.FindProperty("controlPosition");
+        var controlPosProp = m_conSO.FindProperty("controlPosition");
+
+        var xScaleVE = rootVisualElement.Q<FloatField>("FLTXScale");
+        var yScaleVE = rootVisualElement.Q<FloatField>("FLTYScale");
+
+        xScaleVE.BindProperty(m_conSO.FindProperty("xScale"));
+        yScaleVE.BindProperty(m_conSO.FindProperty("yScale"));
 
         posController.BindProperty(controlPosProp);
         fcObjField.value = obj;
@@ -152,17 +164,17 @@ public class Bone2DControllerEditorWindow : EditorWindow
 
     private bool HandleRigToggle(MouseUpEvent e, string prop)
     {
-        if (faceConSO == null) return false;
+        if (m_conSO == null) return false;
         var elem = e.target as Toggle;
         var result = true;
         if (elem.value)
         {
-            Record(faceConSO.FindProperty(prop));
+            Record(m_conSO.FindProperty(prop));
         }
         else
         {
-            faceConSO.FindProperty(prop).arraySize = 0;
-            faceConSO.ApplyModifiedProperties();
+            m_conSO.FindProperty(prop).arraySize = 0;
+            m_conSO.ApplyModifiedProperties();
             result = false;
         }
         SyncRiggingStatus();
@@ -180,7 +192,7 @@ public class Bone2DControllerEditorWindow : EditorWindow
 
     private void SyncRiggingHelper(string property, string element, string btnElem)
     {
-        if (faceConSO.FindProperty(property).arraySize > 0)
+        if (m_conSO.FindProperty(property).arraySize > 0)
         {
             rootVisualElement.Q(element).RemoveFromClassList("markerUnset");
             rootVisualElement.Q(element).AddToClassList("markerSet");
@@ -196,17 +208,17 @@ public class Bone2DControllerEditorWindow : EditorWindow
 
     private bool CheckPivots()
     {
-        if (faceConSO.FindProperty("orgRig").arraySize > 0) return false;
-        if (faceConSO.FindProperty("xminRig").arraySize > 0) return false;
-        if (faceConSO.FindProperty("xmaxRig").arraySize > 0) return false;
-        if (faceConSO.FindProperty("yminRig").arraySize > 0) return false;
-        if (faceConSO.FindProperty("ymaxRig").arraySize > 0) return false;
+        if (m_conSO.FindProperty("orgRig").arraySize > 0) return false;
+        if (m_conSO.FindProperty("xminRig").arraySize > 0) return false;
+        if (m_conSO.FindProperty("xmaxRig").arraySize > 0) return false;
+        if (m_conSO.FindProperty("yminRig").arraySize > 0) return false;
+        if (m_conSO.FindProperty("ymaxRig").arraySize > 0) return false;
         return true;
     }
 
     private void AddTarget()
     {
-        var targetsProp = faceConSO.FindProperty("rigTarget");
+        var targetsProp = m_conSO.FindProperty("rigTarget");
         var targets = Selection.GetFiltered<GameObject>(SelectionMode.Editable);
         var offset = targetsProp.arraySize;
         var isRecursive = rootVisualElement.Q<Toggle>("CHKRecursive").value;
@@ -247,18 +259,18 @@ public class Bone2DControllerEditorWindow : EditorWindow
         rootVisualElement.Q<ListView>("TargetList").itemsSource = newSource;
         rootVisualElement.Q<ListView>("TargetList").Rebuild();
 
-        faceConSO.FindProperty("xminRig").arraySize = 0;
-        faceConSO.FindProperty("xmaxRig").arraySize = 0;
-        faceConSO.FindProperty("yminRig").arraySize = 0;
-        faceConSO.FindProperty("ymaxRig").arraySize = 0;
-        faceConSO.FindProperty("orgRig").arraySize = 0;
+        m_conSO.FindProperty("xminRig").arraySize = 0;
+        m_conSO.FindProperty("xmaxRig").arraySize = 0;
+        m_conSO.FindProperty("yminRig").arraySize = 0;
+        m_conSO.FindProperty("ymaxRig").arraySize = 0;
+        m_conSO.FindProperty("orgRig").arraySize = 0;
 
-        faceConSO.ApplyModifiedProperties();
+        m_conSO.ApplyModifiedProperties();
     }
 
     private void RemoveSelection()
     {
-        var targetsProp = faceConSO.FindProperty("rigTarget");
+        var targetsProp = m_conSO.FindProperty("rigTarget");
         var listView = rootVisualElement.Q<ListView>("TargetList");
         var willRemove = listView.selectedIndices.ToList();
         var newList = new List<GameObject>();
@@ -284,7 +296,7 @@ public class Bone2DControllerEditorWindow : EditorWindow
         listView.itemsSource = newList;
         listView.Rebuild();
 
-        faceConSO.ApplyModifiedProperties();
+        m_conSO.ApplyModifiedProperties();
     }
 
     private void RemoveAll()
@@ -294,12 +306,12 @@ public class Bone2DControllerEditorWindow : EditorWindow
             EditorUtility.DisplayDialog("MYTY Kit", "Reset all pivots first.", "Ok");
             return;
         }
-        var targetsProp = faceConSO.FindProperty("rigTarget");
+        var targetsProp = m_conSO.FindProperty("rigTarget");
         var listView = rootVisualElement.Q<ListView>("TargetList");
         targetsProp.arraySize = 0;
         listView.itemsSource = new List<GameObject>();
         listView.Rebuild();
-        faceConSO.ApplyModifiedProperties();
+        m_conSO.ApplyModifiedProperties();
     }
 
     private void ResetPos()
@@ -308,11 +320,11 @@ public class Bone2DControllerEditorWindow : EditorWindow
     }
     private void SetControlPos(Vector2 pos)
     {
-        if (faceConSO != null && faceConSO.targetObject != null)
+        if (m_conSO != null && m_conSO.targetObject != null)
         {
-            var target = (Bone2DController)faceConSO.targetObject;
-            faceConSO.FindProperty("controlPosition").vector2Value = pos;
-            faceConSO.ApplyModifiedProperties();
+            var target = (Bone2DController)m_conSO.targetObject;
+            m_conSO.FindProperty("controlPosition").vector2Value = pos;
+            m_conSO.ApplyModifiedProperties();
             target.InterpolateGUI();
         }
     }
@@ -334,7 +346,7 @@ public class Bone2DControllerEditorWindow : EditorWindow
 
     private void Record(SerializedProperty prop)
     {
-        var rigProp = faceConSO.FindProperty("rigTarget");
+        var rigProp = m_conSO.FindProperty("rigTarget");
         prop.arraySize = rigProp.arraySize;
         for (int i = 0; i < rigProp.arraySize; i++)
         {
@@ -344,27 +356,32 @@ public class Bone2DControllerEditorWindow : EditorWindow
             prop.GetArrayElementAtIndex(i).FindPropertyRelative("scale").vector3Value = obj.transform.localScale;
         }
 
-        faceConSO.ApplyModifiedProperties();
+        m_conSO.ApplyModifiedProperties();
     }
 
     private void OnMousePress(MouseDownEvent e)
     {
+        var xScaleVE = rootVisualElement.Q<FloatField>("FLTXScale");
+        var yScaleVE = rootVisualElement.Q<FloatField>("FLTYScale");
         var controller = rootVisualElement.Q("Controller");
         var panel = controller.parent;
-        _isPressed = true;
-        _lastPos = e.localMousePosition;
+        m_isPressed = true;
+        m_lastPos = e.localMousePosition;
         var posController = rootVisualElement.Q<Vector2Field>("ControllerPos");
-        posController.value = new Vector2(_lastPos.x / panel.localBound.width * 2 - 1, _lastPos.y / panel.localBound.height * 2 - 1);
+        posController.value = new Vector2((m_lastPos.x / panel.localBound.width * 2 - 1)*xScaleVE.value, (m_lastPos.y / panel.localBound.height * 2 - 1)*yScaleVE.value);
 
 
     }
 
     private void OnMouseMove(MouseMoveEvent e)
     {
-        if (_isPressed)
+        if (m_isPressed)
         {
-            var diff = e.localMousePosition - _lastPos;
-            _lastPos = e.localMousePosition;
+            var diff = e.localMousePosition - m_lastPos;
+            m_lastPos = e.localMousePosition;
+
+            var xScaleVE = rootVisualElement.Q<FloatField>("FLTXScale");
+            var yScaleVE = rootVisualElement.Q<FloatField>("FLTYScale");
             var controller = rootVisualElement.Q("Controller");
             var panel = controller.parent;
             var pos = controller.transform.position += new Vector3(diff.x, diff.y, 0);
@@ -378,7 +395,7 @@ public class Bone2DControllerEditorWindow : EditorWindow
             controller.transform.position = pos;
 
             var posController = rootVisualElement.Q<Vector2Field>("ControllerPos");
-            posController.value = new Vector2(pos.x / panel.localBound.width * 2, pos.y / panel.localBound.height * 2);
+            posController.value = new Vector2(pos.x / panel.localBound.width * 2 * xScaleVE.value, pos.y / panel.localBound.height * 2*yScaleVE.value);
 
 
         }

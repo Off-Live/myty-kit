@@ -113,12 +113,77 @@ public class AvatarSelector: MonoBehaviour
         {
             FixName(m_activeInstance.transform.GetChild(i).gameObject);
         }
-                
+
+        DisableAllBones();
         for (int i = 0; i < childCount; i++)
         {
             FixLayer(m_activeInstance.transform.GetChild(i).gameObject, new List<string>(), traitItem.traits.ToArray());
         }
 
+    }
+
+    public void FindWithTraitObj(GameObject trait)
+    {
+#if UNITY_EDITOR
+        if (!Application.isEditor) return;
+        if (trait == null) return;
+        var curr = trait.transform;
+        var path = trait.name;
+        var templateIdx = -1;
+
+        while (curr != null)
+        {
+            bool flag = false;
+            for(int i = 0;i< templates.Count; i++)
+            {
+                if (templates[i].instance == curr.gameObject)
+                {
+                    templateIdx = i;
+                    flag = true;
+                }
+            }
+            if (flag) break;
+            curr = curr.parent;
+            
+            if (curr!=null) path = curr.name + "/" + path;
+           
+        }
+
+        if (curr == null) return;
+
+        
+        path = path.Substring(path.IndexOf('/') + 1);
+        Debug.Log("Trait path : " + path);
+
+        var found = false;
+        for(int i = id + 1, count = 0; count<10000; i++, count++)
+        {
+            i %= 10000;
+            var traitItem = mytyAssetStorage.traits[i];
+            var psbPath = templates[templateIdx].PSBPath;
+            if (traitItem.filename != psbPath) continue;
+
+            foreach(var traitPath in traitItem.traits)
+            {
+                if(path==traitPath || path.StartsWith(traitPath + "/"))
+                {
+                    id = i;
+                    found = true;
+                }
+            }
+            if (found) break;
+        }
+
+
+        if (found)
+        {
+            var so = new SerializedObject(this);
+            so.FindProperty("id").intValue = id;
+            so.ApplyModifiedProperties();
+            Configure();
+        }
+
+#endif
     }
 
 
@@ -187,7 +252,7 @@ public class AvatarSelector: MonoBehaviour
             }
         }
 
-        if (m_activeBoneRoot!=null && key.StartsWith("/" + m_activeBoneRoot.name)) active = true;
+        if (m_activeBoneRoot != null && key.StartsWith("/" + m_activeBoneRoot.name)) return;
 
         if (active)
         {
@@ -228,6 +293,18 @@ public class AvatarSelector: MonoBehaviour
                 resolver.SetCategoryAndLabel(catName, labelList[labelList.Count - 1]);
             }
 
+            if (active)
+            {
+                var spriteSkin = templateNode.GetComponent<SpriteSkin>();
+                if (spriteSkin != null)
+                {
+                    foreach (var bone in spriteSkin.boneTransforms)
+                    {
+                        EnableBone(bone);
+                    }
+                }
+            }
+
 #if !UNITY_EDITOR
             if (Application.isPlaying)
             {
@@ -255,6 +332,36 @@ public class AvatarSelector: MonoBehaviour
 
 
         history.RemoveAt(history.Count - 1);
+    }
+
+
+    void DisableAllBones()
+    {
+        if (m_activeBoneRoot == null) return;
+        Stack<GameObject> stack = new();
+        stack.Push(m_activeBoneRoot);
+
+        while (stack.Count > 0)
+        {
+            var curBone = stack.Pop();
+            curBone.SetActive(false);
+
+            for(int i = 0; i < curBone.transform.childCount; i++)
+            {
+                stack.Push(curBone.transform.GetChild(i).gameObject);
+            }
+        }
+
+    }
+
+    void EnableBone(Transform bone)
+    {
+        Transform current = bone;
+        while (current != null)
+        {
+            current.gameObject.SetActive(true);
+            current = current.parent;
+        }
     }
 
 }
