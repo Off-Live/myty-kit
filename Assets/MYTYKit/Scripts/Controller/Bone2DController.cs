@@ -5,12 +5,17 @@ using UnityEngine;
 public class Bone2DController : BoneController, IVec2Input
 {
     public Vector2 controlPosition;
+    public float xScale = 1.0f;
+    public float yScale = 1.0f;
+
     public List<RiggingEntity> xminRig;
     public List<RiggingEntity> xmaxRig;
     public List<RiggingEntity> yminRig;
     public List<RiggingEntity> ymaxRig;
 
     private List<RiggingEntity> diffBuffer;
+
+
 
    
     void Update()
@@ -81,8 +86,11 @@ public class Bone2DController : BoneController, IVec2Input
             xyMax.rotation = xMax.rotation * Quaternion.Inverse(origin.rotation) * yMax.rotation;
             xyMax.scale = (xMax.scale - origin.scale) + (yMax.scale - origin.scale) + origin.scale;
 
-            var u = Math.Abs(controlPosition.x);
-            var v = Math.Abs(controlPosition.y);
+            if (xScale == 0) xScale = 1.0f;
+            if (yScale == 0) yScale = 1.0f;
+
+            var u = Math.Abs(controlPosition.x)/xScale;
+            var v = Math.Abs(controlPosition.y)/yScale;
 
             interp.position = (1 - u) * (1 - v) * origin.position + u * (1 - v) * xMax.position + (1 - u) * v * yMax.position + u * v * xyMax.position;
             interp.scale = (1 - u) * (1 - v) * origin.scale + u * (1 - v) * xMax.scale + (1 - u) * v * yMax.scale + u * v * xyMax.scale;
