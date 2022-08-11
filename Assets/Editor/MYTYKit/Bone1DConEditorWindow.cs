@@ -28,6 +28,8 @@ public class Bone1DConEditorWindow : EditorWindow
         var removeBtn = rootVisualElement.Q<Button>("BTNRemove");
         var removeAllBtn = rootVisualElement.Q<Button>("BTNRemoveAll");
         var valueSlider = rootVisualElement.Q<Slider>("SLDValue");
+        var maxVE = rootVisualElement.Q<FloatField>("FLTMax");
+        var minVE = rootVisualElement.Q<FloatField>("FLTMin");
 
         addBtn.clicked += AddSelections;
         removeBtn.clicked += Remove;
@@ -70,6 +72,16 @@ public class Bone1DConEditorWindow : EditorWindow
             SetControlPos(1);
         });
 
+        minVE.RegisterValueChangedCallback((ChangeEvent<float> e) =>
+        {
+            RescaleSlider();
+        });
+
+        maxVE.RegisterValueChangedCallback((ChangeEvent<float> e) =>
+        {
+            RescaleSlider();
+        });
+
         if (selectedGOs.Length == 0) return;
         
 
@@ -84,6 +96,9 @@ public class Bone1DConEditorWindow : EditorWindow
         var valueSlider = rootVisualElement.Q<Slider>("SLDValue");
         var listView = rootVisualElement.Q<ListView>("LSTBoneGO");
         var listSource = new List<GameObject>();
+        var maxVE = rootVisualElement.Q<FloatField>("FLTMax");
+        var minVE = rootVisualElement.Q<FloatField>("FLTMin");
+        var valueVE = rootVisualElement.Q<FloatField>("FLTValue");
 
         var rigProps = _conSO.FindProperty("rigTarget");
         for (int i = 0; i < rigProps.arraySize; i++)
@@ -95,7 +110,24 @@ public class Bone1DConEditorWindow : EditorWindow
         listView.Rebuild();
         conVE.value = controller;
         valueSlider.BindProperty(_conSO.FindProperty("controlValue"));
+        maxVE.BindProperty(_conSO.FindProperty("maxValue"));
+        minVE.BindProperty(_conSO.FindProperty("minValue"));
+        valueVE.BindProperty(_conSO.FindProperty("controlValue"));
+
         SyncRiggingStatus();
+    }
+
+    void RescaleSlider()
+    {
+        if (_conSO == null) return;
+        var valueSlider = rootVisualElement.Q<Slider>("SLDValue");
+        var maxVE = rootVisualElement.Q<FloatField>("FLTMax");
+        var minVE = rootVisualElement.Q<FloatField>("FLTMin");
+
+        if (maxVE.value < minVE.value) maxVE.value = minVE.value;
+
+        valueSlider.lowValue = minVE.value;
+        valueSlider.highValue = maxVE.value;
     }
 
     private void SetControlPos(float value)
