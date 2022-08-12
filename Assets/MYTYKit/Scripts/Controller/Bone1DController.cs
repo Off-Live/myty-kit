@@ -36,6 +36,7 @@ public class Bone1DController : BoneController, IFloatInput
         List<RiggingEntity> interpList = new();
 
         var u = Mathf.Clamp(controlValue, minValue, maxValue);
+
         u -= minValue;
         u /= maxValue - minValue;
 

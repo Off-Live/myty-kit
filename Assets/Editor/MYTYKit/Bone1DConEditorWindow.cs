@@ -82,6 +82,16 @@ public class Bone1DConEditorWindow : EditorWindow
             RescaleSlider();
         });
 
+        minVE.RegisterValueChangedCallback((ChangeEvent<float> e) =>
+        {
+            RescaleSlider();
+        });
+
+        maxVE.RegisterValueChangedCallback((ChangeEvent<float> e) =>
+        {
+            RescaleSlider();
+        });
+
         if (selectedGOs.Length == 0) return;
         
 
