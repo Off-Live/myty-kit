@@ -64,12 +64,12 @@ public class Bone1DConEditorWindow : EditorWindow
         rootVisualElement.Q<Toggle>("BTNMin").RegisterCallback((MouseUpEvent e) =>
         {
             HandleRigToggle(e, "xminRig");
-            SetControlPos(0);
+            SetControlPos(minVE.value);
         });
         rootVisualElement.Q<Toggle>("BTNMax").RegisterCallback((MouseUpEvent e) =>
         {
             HandleRigToggle(e, "xmaxRig");
-            SetControlPos(1);
+            SetControlPos(maxVE.value);
         });
 
         minVE.RegisterValueChangedCallback((ChangeEvent<float> e) =>
