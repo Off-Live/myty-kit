@@ -69,12 +69,13 @@ public class AssetImporter : MonoBehaviour
 
         selector.id = 0;
         selector.Configure();
-        if (spriteOnly) yield break;
 
         request = m_assetBundle.LoadAssetAsync<DefaultLayoutAsset>("DefaultLayoutAsset.asset");
         yield return request;
         var layout = request.asset as DefaultLayoutAsset;
         SetupLayout(root, selector, layout);
+
+        if (spriteOnly) yield break;
 
         yield return SetupAvatarAsync(root, avatarSelectorGO, motionTemplateGO);
 
