@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class Bone1DController : BoneController, IFloatInput
 {
+    public float minValue = 0.0f;
+    public float maxValue = 1.0f;
     public float controlValue;
+
     public List<RiggingEntity> xminRig;
     public List<RiggingEntity> xmaxRig;
 
@@ -32,7 +35,10 @@ public class Bone1DController : BoneController, IFloatInput
 
         List<RiggingEntity> interpList = new();
 
-        var u = Mathf.Clamp01(controlValue);
+        var u = Mathf.Clamp(controlValue, minValue, maxValue);
+
+        u -= minValue;
+        u /= maxValue - minValue;
 
         for (int i = 0; i < rigTarget.Count; i++)
         {

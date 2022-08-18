@@ -10,20 +10,38 @@ public class AvatarSelectorEditor : Editor
 {
     public override VisualElement CreateInspectorGUI()
     {
-        VisualElement root = new VisualElement();
-        IntegerField idField = new IntegerField();
-        PropertyField templateField = new PropertyField();
+        var root = new VisualElement();
+        var idField = new IntegerField();
+        var configureBtn = new Button();
+        var templateField = new PropertyField();
+        var searchObj = new ObjectField();
+        var findBtn = new Button();
+
         idField.label = "Avatar ID";
         idField.BindProperty(serializedObject.FindProperty("id"));
         idField.isDelayed = true;
-        idField.RegisterValueChangedCallback((ChangeEvent<int> e) =>
+
+        configureBtn.text = "Configure";
+        configureBtn.clicked += () =>
         {
             (target as AvatarSelector).Configure();
-        });
+        };
+
+        searchObj.label = "Find with";
+        searchObj.objectType = typeof(GameObject);
+
+        findBtn.text = "Find next";
+        findBtn.clicked += () =>
+        {
+            (target as AvatarSelector).FindWithTraitObj(searchObj.value as GameObject);
+        };
 
         templateField.BindProperty(serializedObject.FindProperty("templates"));
         root.Add(templateField);
         root.Add(idField);
+        root.Add(configureBtn);
+        root.Add(searchObj);
+        root.Add(findBtn);
         return root;
     }
    
