@@ -60,7 +60,7 @@ public class MYTYSpriteResolver : MonoBehaviour
 
 #endif
         }
-        if (m_category == category && m_label == label) return;
+        
         m_category = category;
         m_label = label;
         

@@ -21,47 +21,60 @@ public class MYTYSpriteResolverEditor : Editor
         slaField.BindProperty(serializedObject.FindProperty("m_spriteLibraryAsset"));
         categoryField.label = "Category";
         labelDropDownField.label = "Label";
-        var resolver = target as MYTYSpriteResolver;
+        labelDropDownField.BindProperty(serializedObject.FindProperty("m_label"));
+
+        
 
         slaField.RegisterValueChangeCallback((SerializedPropertyChangeEvent e) =>
         {
+            var resolver = target as MYTYSpriteResolver;
             categoryField.choices.Clear();
             labelDropDownField.choices.Clear();
             imageArea.sprite = null;
 
             RefreshCategory(categoryField);
-            RefreshLabel(labelDropDownField);
-            imageArea.sprite = resolver.spriteLibraryAsset.GetSprite(resolver.GetCategory(), resolver.GetLabel());
+            RefreshLabel(labelDropDownField, resolver.GetCategory());
+            if (resolver.spriteLibraryAsset != null)
+            {
+                imageArea.sprite = resolver.spriteLibraryAsset.GetSprite(resolver.GetCategory(), resolver.GetLabel());
+            }
+            
             resolver.SetCategoryAndLabel(resolver.GetCategory(), resolver.GetLabel());
         });
 
         categoryField.RegisterValueChangedCallback((ChangeEvent<string> e) =>
         {
-            Debug.Log("test 1");
+            var resolver = target as MYTYSpriteResolver;
             labelDropDownField.choices.Clear();
             imageArea.sprite = null;
-            RefreshLabel(labelDropDownField);
+            RefreshLabel(labelDropDownField, e.newValue);
             resolver.SetCategoryAndLabel(e.newValue, "");
         });
 
         labelDropDownField.RegisterValueChangedCallback((ChangeEvent<string> e) =>
         {
-            Debug.Log("changed " + e.newValue);
-            imageArea.sprite = resolver.spriteLibraryAsset.GetSprite(resolver.GetCategory(), e.newValue);
+            var resolver = target as MYTYSpriteResolver;
+            if (resolver.spriteLibraryAsset != null)
+            {
+                imageArea.sprite = resolver.spriteLibraryAsset.GetSprite(resolver.GetCategory(), e.newValue);
+            }
             resolver.SetCategoryAndLabel(resolver.GetCategory(), e.newValue);
         });
 
-
+        var resolver = target as MYTYSpriteResolver;
         RefreshCategory(categoryField);
 
         categoryField.value = resolver.GetCategory();
         categoryField.AddToClassList("sprite_resolver_drop_down");
 
-        RefreshLabel(labelDropDownField);
+        RefreshLabel(labelDropDownField, resolver.GetCategory());
 
         labelDropDownField.value = resolver.GetLabel();
         labelDropDownField.AddToClassList("sprite_resolver_drop_down");
-        imageArea.sprite = resolver.spriteLibraryAsset.GetSprite(resolver.GetCategory(), resolver.GetLabel());
+        if (resolver.spriteLibraryAsset != null)
+        {
+            imageArea.sprite = resolver.spriteLibraryAsset.GetSprite(resolver.GetCategory(), resolver.GetLabel());
+        }
         imageArea.AddToClassList("imageArea");
 
         rootElem.Add(slaField);
@@ -75,6 +88,7 @@ public class MYTYSpriteResolverEditor : Editor
     void RefreshCategory(DropdownField categoryField)
     {
         var resolver = target as MYTYSpriteResolver;
+        if (resolver.spriteLibraryAsset == null) return;
         var categories = resolver.spriteLibraryAsset.GetCategoryNames();
 
         foreach (var cat in categories)
@@ -84,10 +98,11 @@ public class MYTYSpriteResolverEditor : Editor
         
     }
 
-    void RefreshLabel(DropdownField labelDropDownField)
+    void RefreshLabel(DropdownField labelDropDownField, string category)
     {
         var resolver = target as MYTYSpriteResolver;
-        var labels = resolver.spriteLibraryAsset.GetCategoryLabelNames(resolver.GetCategory());
+        if (resolver.spriteLibraryAsset == null) return;
+        var labels = resolver.spriteLibraryAsset.GetCategoryLabelNames(category);
         foreach (var label in labels)
         {
             labelDropDownField.choices.Add(label);
