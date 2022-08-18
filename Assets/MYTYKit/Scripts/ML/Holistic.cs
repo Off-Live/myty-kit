@@ -100,11 +100,7 @@ public class Holistic : MonoBehaviour
         var sidePacket = new SidePacket();
         sidePacket.Emplace("input_rotation", new IntPacket(180));
         sidePacket.Emplace("input_horizontally_flipped", new BoolPacket(inputFlipped));
-#if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
-        sidePacket.Emplace("input_vertically_flipped", new BoolPacket(true));
-#else
         sidePacket.Emplace("input_vertically_flipped", new BoolPacket(false));
-#endif
         sidePacket.Emplace("refine_face_landmarks", new BoolPacket(true));
         sidePacket.Emplace("model_complexity", new IntPacket((int)0));
 

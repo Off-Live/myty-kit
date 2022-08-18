@@ -18,18 +18,18 @@ public class AvatarTemplate
     public GameObject boneRootObj;
 }
 
-public class AvatarSelector: MonoBehaviour
+public class AvatarSelector : MonoBehaviour
 {
     public List<AvatarTemplate> templates;
     public MYTYAssetScriptableObject mytyAssetStorage;
     public int id;
-    
+
     private GameObject m_activeInstance;
     private SpriteLibraryAsset m_activeSLA;
     private GameObject m_activeBoneRoot;
 
     private ShaderMapAsset m_shaderMap;
-    
+
     private void Start()
     {
         var shaderMapGO = FindObjectOfType<ShaderMap>();
@@ -42,11 +42,11 @@ public class AvatarSelector: MonoBehaviour
 
     public void ResetAvatar()
     {
-        foreach(var template in templates)
+        foreach (var template in templates)
         {
             var childCount = template.instance.transform.childCount;
             template.instance.SetActive(true);
-            for(int i = 0; i < childCount; i++)
+            for (int i = 0; i < childCount; i++)
             {
                 FixName(template.instance.transform.GetChild(i).gameObject);
                 EnableLayer(template.instance.transform.GetChild(i).gameObject);
@@ -61,9 +61,9 @@ public class AvatarSelector: MonoBehaviour
 
 
         var index = -1;
-        for(int i = 0; i < mytyAssetStorage.traits.Count; i++)
+        for (int i = 0; i < mytyAssetStorage.traits.Count; i++)
         {
-            if(id == mytyAssetStorage.traits[i].id)
+            if (id == mytyAssetStorage.traits[i].id)
             {
                 index = i;
             }
@@ -76,29 +76,30 @@ public class AvatarSelector: MonoBehaviour
         }
 
         var traitItem = mytyAssetStorage.traits[index];
-        
 
-        foreach(var template in templates)
+
+        foreach (var template in templates)
         {
 
-            if(template.PSBPath == traitItem.filename)
+            if (template.PSBPath == traitItem.filename)
             {
                 m_activeInstance = template.instance;
                 m_activeSLA = template.spriteLibrary;
                 m_activeBoneRoot = template.boneRootObj;
-            }else
+            }
+            else
             {
                 template.instance.SetActive(false);
-        
+
             }
         }
 
         if (m_activeInstance == null)
         {
-            Debug.Log("Proper psb template is not found. "+traitItem.filename);
+            Debug.Log("Proper psb template is not found. " + traitItem.filename);
             return;
         }
-   
+
         int childCount = m_activeInstance.transform.childCount;
         var library = m_activeInstance.GetComponent<SpriteLibrary>();
         if (library == null) library = m_activeInstance.AddComponent<SpriteLibrary>();
@@ -108,7 +109,7 @@ public class AvatarSelector: MonoBehaviour
             Debug.LogWarning("Sprite Library is not created yet!");
             return;
         }
-        
+
         for (int i = 0; i < childCount; i++)
         {
             FixName(m_activeInstance.transform.GetChild(i).gameObject);
@@ -134,7 +135,7 @@ public class AvatarSelector: MonoBehaviour
         while (curr != null)
         {
             bool flag = false;
-            for(int i = 0;i< templates.Count; i++)
+            for (int i = 0; i < templates.Count; i++)
             {
                 if (templates[i].instance == curr.gameObject)
                 {
@@ -144,28 +145,28 @@ public class AvatarSelector: MonoBehaviour
             }
             if (flag) break;
             curr = curr.parent;
-            
-            if (curr!=null) path = curr.name + "/" + path;
-           
+
+            if (curr != null) path = curr.name + "/" + path;
+
         }
 
         if (curr == null) return;
 
-        
+
         path = path.Substring(path.IndexOf('/') + 1);
         Debug.Log("Trait path : " + path);
 
         var found = false;
-        for(int i = id + 1, count = 0; count<10000; i++, count++)
+        for (int i = id + 1, count = 0; count < 10000; i++, count++)
         {
             i %= 10000;
             var traitItem = mytyAssetStorage.traits[i];
             var psbPath = templates[templateIdx].PSBPath;
             if (traitItem.filename != psbPath) continue;
 
-            foreach(var traitPath in traitItem.traits)
+            foreach (var traitPath in traitItem.traits)
             {
-                if(path==traitPath || path.StartsWith(traitPath + "/"))
+                if (path == traitPath || path.StartsWith(traitPath + "/"))
                 {
                     id = i;
                     found = true;
@@ -227,7 +228,7 @@ public class AvatarSelector: MonoBehaviour
     private void EnableLayer(GameObject node)
     {
         node.SetActive(true);
-        for(int i = 0; i < node.transform.childCount; i++)
+        for (int i = 0; i < node.transform.childCount; i++)
         {
             EnableLayer(node.transform.GetChild(i).gameObject);
         }
@@ -242,11 +243,11 @@ public class AvatarSelector: MonoBehaviour
         string key = HistoryToKey(history);
 
         bool active = false;
-        
-        for(int i = 0; i < traits.Length; i++)
+
+        for (int i = 0; i < traits.Length; i++)
         {
             string trait = "/" + traits[i];
-            if (key==trait || key.StartsWith(trait+"/"))
+            if (key == trait || key.StartsWith(trait + "/"))
             {
                 active = true;
             }
@@ -291,6 +292,19 @@ public class AvatarSelector: MonoBehaviour
                 var resolver = templateNode.GetComponent<SpriteResolver>();
                 if (resolver == null) resolver = templateNode.AddComponent<SpriteResolver>();
                 resolver.SetCategoryAndLabel(catName, labelList[labelList.Count - 1]);
+                var mytySR = templateNode.GetComponent<MYTYSpriteResolver>();
+                if (mytySR == null) mytySR = templateNode.AddComponent<MYTYSpriteResolver>();
+                mytySR.spriteLibraryAsset = m_activeSLA;
+#if UNITY_EDITOR
+                if (Application.isEditor)
+                {
+                    var so = new SerializedObject(mytySR);
+                    so.FindProperty("m_spriteLibraryAsset").objectReferenceValue = m_activeSLA;
+                    so.ApplyModifiedProperties();
+                }
+#endif
+
+                mytySR.SetCategoryAndLabel(catName, labelList[labelList.Count - 1]);
             }
 
             if (active)
@@ -346,7 +360,7 @@ public class AvatarSelector: MonoBehaviour
             var curBone = stack.Pop();
             curBone.SetActive(false);
 
-            for(int i = 0; i < curBone.transform.childCount; i++)
+            for (int i = 0; i < curBone.transform.childCount; i++)
             {
                 stack.Push(curBone.transform.GetChild(i).gameObject);
             }

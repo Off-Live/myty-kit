@@ -1,0 +1,10 @@
+.sprite_resolver_drop_down Label {
+    width: auto;
+    max-width: 80px;
+    min-width: 80px;
+}
+
+.imageArea {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
