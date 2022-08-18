@@ -13,7 +13,7 @@ public class Sprite1DRangeConEditorWindow : EditorWindow
 
     private SerializedObject _conSO;
 
-    [MenuItem("MYTY Kit/Sprite 1D Range Controller", false, 0)]
+    [MenuItem("MYTY Kit/Controller/Sprite 1D Range Controller", false,20)]
     public static void ShowController()
     {
         var wnd = GetWindow<Sprite1DRangeConEditorWindow>();

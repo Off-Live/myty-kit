@@ -81,3 +81,5 @@ crashlytics-build.properties
 /UIElementsSchema
 
 mono_crash*
+
+Assets/StreamingAssets/VERSION.txt

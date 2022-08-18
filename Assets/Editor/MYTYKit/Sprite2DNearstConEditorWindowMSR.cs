@@ -7,7 +7,7 @@ using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using UnityEngine.U2D.Animation;
 
-public class Sprite2DNearstConEditorWindow : EditorWindow
+public class Sprite2DNearstConEditorWindowMSR : EditorWindow
 {
     public VisualTreeAsset UITemplate;
 
@@ -16,17 +16,17 @@ public class Sprite2DNearstConEditorWindow : EditorWindow
     private bool _isPressed = false;
     private Vector2 _lastPos = new();
 
-    [MenuItem("MYTY Kit/Controller/Sprite 2D Nearst Controller", false, 20)]
+    [MenuItem("MYTY Kit/Controller/Sprite 2D Nearst Controller MSR", false, 20)]
     public static void ShowController()
     {
-        var wnd = GetWindow<Sprite2DNearstConEditorWindow>();
+        var wnd = GetWindow<Sprite2DNearstConEditorWindowMSR>();
         wnd.titleContent = new GUIContent("Sprite 2D Nearst Controller");
     }
 
     private void CreateGUI()
     {
         UITemplate.CloneTree(rootVisualElement);
-        var selectedGOs = Selection.GetFiltered<Sprite2DNearstController>(SelectionMode.Editable);
+        var selectedGOs = Selection.GetFiltered<Sprite2DNearstControllerMSR>(SelectionMode.Editable);
         var conVE = rootVisualElement.Q<ObjectField>("OBJController");
         var listView = rootVisualElement.Q<ListView>("LSTSpriteGO");
         var addBtn = rootVisualElement.Q<Button>("BTNAdd");
@@ -38,7 +38,7 @@ public class Sprite2DNearstConEditorWindow : EditorWindow
         removeBtn.clicked += Remove;
         removeAllBtn.clicked += RemoveAll;
 
-        conVE.objectType = typeof(Sprite2DNearstController);
+        conVE.objectType = typeof(Sprite2DNearstControllerMSR);
         listView.makeItem = () =>
         {
             var objItem = new ObjectField();
@@ -54,7 +54,7 @@ public class Sprite2DNearstConEditorWindow : EditorWindow
 
         conVE.RegisterValueChangedCallback((ChangeEvent<Object> e) =>
         {
-            InitWithController(e.newValue as Sprite2DNearstController);
+            InitWithController(e.newValue as Sprite2DNearstControllerMSR);
 
         });
 
@@ -70,7 +70,7 @@ public class Sprite2DNearstConEditorWindow : EditorWindow
         rootVisualElement.Q<Vector2Field>("VEC2Value").RegisterValueChangedCallback((ChangeEvent<Vector2> e) =>
         {
             if (_conSO == null) return;
-            var controller = _conSO.targetObject as Sprite2DNearstController;
+            var controller = _conSO.targetObject as Sprite2DNearstControllerMSR;
             if (controller == null) return;
             controller.UpdateLabel();
         });
@@ -82,7 +82,7 @@ public class Sprite2DNearstConEditorWindow : EditorWindow
         InitWithController(selectedGOs[0]);
     }
 
-    void InitWithController(Sprite2DNearstController controller)
+    void InitWithController(Sprite2DNearstControllerMSR controller)
     {
         _conSO = new SerializedObject(controller);
 
@@ -97,7 +97,7 @@ public class Sprite2DNearstConEditorWindow : EditorWindow
             {
                 listSource.Add(null);
             }
-            else listSource.Add((spritesProps.GetArrayElementAtIndex(i).objectReferenceValue as SpriteResolver).gameObject);
+            else listSource.Add((spritesProps.GetArrayElementAtIndex(i).objectReferenceValue as MYTYSpriteResolver).gameObject);
         }
 
         listView.itemsSource = listSource;
@@ -130,7 +130,7 @@ public class Sprite2DNearstConEditorWindow : EditorWindow
 
     void AddSelections()
     {
-        var sprites = Selection.GetFiltered<SpriteResolver>(SelectionMode.Editable);
+        var sprites = Selection.GetFiltered<MYTYSpriteResolver>(SelectionMode.Editable);
         var spritesProps = _conSO.FindProperty("spriteObjects");
         var newSource = new List<GameObject>();
 
@@ -152,14 +152,14 @@ public class Sprite2DNearstConEditorWindow : EditorWindow
         var spritesProps = _conSO.FindProperty("spriteObjects");
         var listView = rootVisualElement.Q<ListView>("LSTSpriteGO");
         var willRemove = listView.selectedIndices.ToList();
-        var newList = new List<SpriteResolver>();
+        var newList = new List<MYTYSpriteResolver>();
         var newSource = new List<GameObject>();
         if (willRemove.Count == 0) return;
 
         for (int i = 0; i < spritesProps.arraySize; i++)
         {
             if (willRemove.Contains(i)) continue;
-            newList.Add(spritesProps.GetArrayElementAtIndex(i).objectReferenceValue as SpriteResolver);
+            newList.Add(spritesProps.GetArrayElementAtIndex(i).objectReferenceValue as MYTYSpriteResolver);
         }
 
         spritesProps.arraySize = newList.Count();
@@ -238,9 +238,9 @@ public class Sprite2DNearstConEditorWindow : EditorWindow
 
         for (int i = 0; i < spritesProp.arraySize; i++)
         {
-            var spriteResolver = spritesProp.GetArrayElementAtIndex(i).objectReferenceValue as SpriteResolver;
+            var spriteResolver = spritesProp.GetArrayElementAtIndex(i).objectReferenceValue as MYTYSpriteResolver;
             var cat = spriteResolver.GetCategory();
-            var labelIter = spriteResolver.spriteLibrary.spriteLibraryAsset.GetCategoryLabelNames(cat);
+            var labelIter = spriteResolver.spriteLibraryAsset.GetCategoryLabelNames(cat);
             var labelSet = new SortedSet<string>();
             foreach (var label in labelIter)
             {

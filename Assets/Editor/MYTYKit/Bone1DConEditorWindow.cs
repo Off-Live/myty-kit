@@ -11,7 +11,7 @@ public class Bone1DConEditorWindow : EditorWindow
     public VisualTreeAsset UITemplate;
     private SerializedObject _conSO;
 
-    [MenuItem("MYTY Kit/Bone 1D Controller", false, 0)]
+    [MenuItem("MYTY Kit/Controller/Bone 1D Controller", false, 20)]
     public static void ShowController()
     {
         var wnd = GetWindow<Bone1DConEditorWindow>();
