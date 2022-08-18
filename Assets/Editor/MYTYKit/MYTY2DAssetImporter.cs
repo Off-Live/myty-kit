@@ -18,7 +18,7 @@ public class MYTY2DAssetImporter : EditorWindow
     private TraitItem[] m_traits;
 
     
-    [MenuItem("MYTY Kit/Import 2D Avatar Asset")]
+    [MenuItem("MYTY Kit/Import 2D Avatar Asset", false, 0)]
     public static void ShowGUI()
     {
         GetWindow<MYTY2DAssetImporter>().titleContent = new GUIContent("Import 2D Avatar Asset");

@@ -14,7 +14,7 @@ public class Bone2DControllerEditorWindow : EditorWindow
     Vector2 m_lastPos = new();
     SerializedObject m_conSO;
 
-    [MenuItem("MYTY Kit/Bone 2D Controller", false, 0)]
+    [MenuItem("MYTY Kit/Controller/Bone 2D Controller", false, 20)]
     public static void ShowController()
     {
         var wnd = GetWindow<Bone2DControllerEditorWindow>();
