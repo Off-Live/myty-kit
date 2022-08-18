@@ -294,4 +294,14 @@ public class AssetImporter : MonoBehaviour
         }
     }
 
+    public string GetKitVersionInfo()
+    {
+        if (m_assetBundle == null) return "";
+
+        var textAsset = m_assetBundle.LoadAsset<TextAsset>("VERSION.txt");
+        if (textAsset == null) return "";
+
+        return textAsset.text;
+    }
+
 }
