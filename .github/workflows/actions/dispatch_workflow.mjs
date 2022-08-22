@@ -7,12 +7,6 @@ const { Octokit, App, Action } = pkg;
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 
 async function dispatch_workflow(repo, workflow, ref) {
-//   let result = await octokit.request("GET /repos/{owner}/{repo}/actions/workflows/main.yml", {
-//     owner: "Off-Live",
-//     repo: repo,
-//   });
-
-//   console.log(result);
 
   const versionTag = process.env.VERSION_TAG;
   console.log(versionTag);
