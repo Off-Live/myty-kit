@@ -10,7 +10,7 @@ on:
 
 env: 
   VERSION_TAG: ${{ github.event.inputs.tag }}
-
+  GITHUB_TOKEN: ${{ secrets.GITPAT }}
 jobs:
   extract_unity_package:
     runs-on: ubuntu-latest
@@ -58,4 +58,9 @@ jobs:
           asset_path: ./mytykit.unitypackage
           asset_name: mytykit-${{ github.event.inputs.tag }}.unitypackage
           asset_content_type: application/octet-stream
+      - name: workflow dispatch
+        run: |
+          cd .github/workflows/actions
+          yarn
+          node dispatch_workflow.mjs  
          

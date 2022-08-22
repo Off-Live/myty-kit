@@ -16,11 +16,11 @@ jobs:
     name: Trigger creator viewer CI
     runs-on: ubuntu-latest
     steps:
-      - uses: benc-uk/workflow-dispatch@v1
-        with:
-          workflow: Build MYTY Creator App
-          repo: Off-Live/myty-creator-viewer
-          token: ${{ secrets.GITHUB_TOKEN}}
-          inputs: '{ "tag": "${{ env.VERSION_TAG }} " }'
+      - uses: actions/checkout@v3
+      - name: workflow dispatch
+        run: |
+          cd .github/workflows/actions
+          yarn
+          node dispatch_workflow.mjs
 
 
