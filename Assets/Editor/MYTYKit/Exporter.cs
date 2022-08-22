@@ -123,6 +123,7 @@ public class Exporter : EditorWindow
         }
 
         PrepareLayoutAsset(selector, assetName);
+        PrepareVersionInfo(assetName);
 
         EditorUtility.SetDirty(mytyAsset);
         AssetDatabase.SaveAssets();
@@ -350,6 +351,15 @@ public class Exporter : EditorWindow
         }
 
         return true;
+    }
+
+    void PrepareVersionInfo(List<string> assetName)
+    {
+        var filepath = Application.streamingAssetsPath + "/VERSION.txt";
+        if (!File.Exists(filepath)) return;
+
+        File.Copy(filepath, MYTYUtil.PrefabPath + "/VERSION.txt");
+        assetName.Add(MYTYUtil.PrefabPath + "/VERSION.txt");
     }
 
 }
