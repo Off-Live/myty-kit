@@ -1,0 +1,26 @@
+name: CI Test
+
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'MYTY Kit Version Tag'
+        required: true
+        default: ""
+env:
+  VERSION_TAG: ${{ github.event.inputs.tag }}
+  GITHUB_TOKEN: ${{ secrets.GITPAT }}
+jobs:
+  triggerDispatch:
+    name: Trigger creator viewer CI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: Build MYTY Creator App
+          repo: Off-Live/myty-creator-viewer
+          token: ${{ secrets.GITHUB_TOKEN}}
+          inputs: '{ "tag": "${{ env.VERSION_TAG }} " }'
+
+
