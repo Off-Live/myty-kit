@@ -16,15 +16,9 @@ jobs:
     name: Trigger creator viewer CI
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - name: workflow dispatch
-        uses: mathze/workflow-dispatch-action@v1.1.0
-        with:
-          workflow-name:  build.yml
-          token: ${{ secrets.GITHUB_TOKEN}}
-          repo: Off-Live/myty-creator-viewer
-          payload: | 
-            {
-              "tag": "${{ env.VERSION_TAG }}" 
-            }
+        run: |
+          node .github/workflows/actions/dispatch_workflow.mjs
 
 
