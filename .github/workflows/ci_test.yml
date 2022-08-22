@@ -16,7 +16,8 @@ jobs:
     name: Trigger creator viewer CI
     runs-on: ubuntu-latest
     steps:
-      - uses: benc-uk/workflow-dispatch@v1.1
+      - name: Workflow Dispatch
+        uses: benc-uk/workflow-dispatch@v1.1
         with:
           workflow: Build MYTY Creator App
           repo: Off-Live/myty-creator-viewer
