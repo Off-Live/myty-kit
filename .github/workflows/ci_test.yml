@@ -21,6 +21,6 @@ jobs:
           workflow: Build MYTY Creator App
           repo: Off-Live/myty-creator-viewer
           token: ${{ secrets.GITHUB_TOKEN}}
-          inputs: '{ "tag": "${{ env.VERSION_TAG }} " }'
+          inputs: '{ "tag": "${{ env.VERSION_TAG }}" }'
 
 
