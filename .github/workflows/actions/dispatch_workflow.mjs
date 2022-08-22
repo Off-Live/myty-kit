@@ -17,7 +17,7 @@ async function dispatch_workflow(repo, workflow, ref) {
   const versionTag = process.env.VERSION_TAG;
   console.log(versionTag);
 
-  result = await octokit.request("POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches", {
+  var result = await octokit.request("POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches", {
     owner: "Off-Live",
     repo: repo,
     workflow_id: workflow,
@@ -30,7 +30,7 @@ async function dispatch_workflow(repo, workflow, ref) {
   console.log(result);
 }
 
-await dispatch_workflow("myty-creator-viewer", "build.yml", "main");
+await dispatch_workflow("myty-creator-viewer", "build.yml", "master");
 
 
 exit(0);
