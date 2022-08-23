@@ -6,6 +6,10 @@ Our goal is to help our users become **mighty** by setting themselves free from 
 
 Project MYTY introduces **Open Standard for Social Metaverse**, and creates a network effect among the “Metaverses”. In turn, MYTY helps Metaverses to benefit from this network effect by providing various products both on-chain and off-chain.
 
+### More about MYTY
+To learn more, please visit our [website](https://myty.space/)  or [medium](https://medium.com/@MYTY_Official).
+
+
 ## MYTY Kit
 
 MYTY Kit is an **Open Avatar Development Kit for Social Metaverse**. As the first product of MYTY ecosystem, it helps Avatar Creators (PFP projects and community artists) to turn their beloved PFPs into MYTY Avatars. Unlike original JPEG images, MYTY Avatars can be animated and utilize motion capture technology to express users’ emotions.
@@ -76,16 +80,37 @@ We do not want to limit your imagination. Any social activities in the physical 
 
 ## How to use MYTY Kit
 
-### for  Avatar Creators [[Link]](https://myty.gitbook.io/english/)
+### for  Avatar Creators [[Link]](https://myty.gitbook.io/myty-kit-guide/)
 
 ### for Metaverse Creators
 
 > 🚧 We are still working on the documentation for Metaverse Creators. Thank you for your patience.
 
+* * * 
 
-## Community
+## About Us
+**Get "OFF" physical limits!**
 
-- [Website](http://myty.space)
-- [Twitter](https://twitter.com/myty_official)
-- [Discord](https://discord.gg/myty)
-- [Medium](https://medium.com/@MYTY_Official)
+We enable the metaverse where anyone can express themsleves by maximizing their imaginations. 
+Our goal as a company is to suitably combine multiple technologies that can be utilized in the metaverse and to aid user interactions.
+### Join the team
+OFF is seeking a talented individual who believes humanity will spend more time in the Metaverse with the Avatars. Getting closer to the future we dream of, OFF took the initiative and became a fully remote company, adopting asynchronous work.
+
+👉 [Explore Open Positions](http://weare.off.live)
+
+
+## Contact Channels
+
+- Email : <myty@off.live>
+- [Website](http://myty.space) 
+- [Discord](https://discord.gg/myty)  |  [Twitter](https://twitter.com/myty_official)  |  [Medium](https://medium.com/@MYTY_Official)  |  [Youtube](https://www.youtube.com/channel/UCKqsyiL_WZqIHEMqc7da4zA)
+
+
+
+
+
+
+
+
+
+created by OFF Live PTE.LTD
