@@ -25,6 +25,7 @@ public class Bone1DController : BoneController, IFloatInput
 
     public override void ApplyDiff()
     {
+        if (diffBuffer == null|| diffBuffer.Count==0) return;
         AccumulatePose(diffBuffer);
     }
 

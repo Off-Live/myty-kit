@@ -29,6 +29,7 @@ public class Bone2DController : BoneController, IVec2Input
 
     public override void ApplyDiff()
     {
+        if (diffBuffer == null|| diffBuffer.Count==0) return;
         AccumulatePose(diffBuffer);
     }
 
