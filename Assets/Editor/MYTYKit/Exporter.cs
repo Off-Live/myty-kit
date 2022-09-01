@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -124,6 +125,7 @@ public class Exporter : EditorWindow
 
         PrepareLayoutAsset(selector, assetName);
         PrepareVersionInfo(assetName);
+        PrepareEditorInfo(assetName);
 
         EditorUtility.SetDirty(mytyAsset);
         AssetDatabase.SaveAssets();
@@ -187,7 +189,7 @@ public class Exporter : EditorWindow
         {
             Debug.LogWarning("You should install iOS support to build ios bundle");
         }
-
+        
         Close();
     }
 
@@ -360,6 +362,15 @@ public class Exporter : EditorWindow
 
         File.Copy(filepath, MYTYUtil.PrefabPath + "/VERSION.txt");
         assetName.Add(MYTYUtil.PrefabPath + "/VERSION.txt");
+    }
+
+    void PrepareEditorInfo(List<string> assetName)
+    {
+        var filepath = MYTYUtil.PrefabPath + "/EditorInfo.txt";
+        StreamWriter file = new(filepath); 
+        file.Write(Application.unityVersion);
+        file.Close();
+        assetName.Add(filepath);
     }
 
 }
