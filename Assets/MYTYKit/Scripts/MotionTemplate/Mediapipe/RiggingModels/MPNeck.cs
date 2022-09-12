@@ -1,0 +1,25 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace MYTYKit.MotionTemplate.Mediapipe.Model
+{
+    public class MPNeck : MPJointModel
+    {
+       
+
+        private void LateUpdate()
+        {
+            if (rawPoints == null) return;
+            var shoulderLR = rawPoints[11] - rawPoints[12];
+            var shoulderHalf = (rawPoints[11] + rawPoints[12]) / 2;
+            var headCenter = (rawPoints[7] + rawPoints[8]) / 2;
+            up = headCenter - shoulderHalf;
+            up.Normalize();
+            shoulderLR.Normalize();
+            lookAt = Vector3.Cross(shoulderLR, up);
+            UpdateAnchor();
+
+        }
+    }
+}
