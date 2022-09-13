@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FrameSequence1DAdapteV2 : NativeAdapter
+public class FrameSequence1DAdapter : NativeAdapter
 {
     public MYTYController controller;
 

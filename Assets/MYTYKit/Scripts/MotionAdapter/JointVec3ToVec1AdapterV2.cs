@@ -11,9 +11,9 @@ public enum ComponentIndex
     Z
 }
 
-public class JointVec3ToVec1Adapter : NativeAdapter
+public class JointVec3ToVec1AdapterV2 : NativeAdapter
 {
-    public JointModel joint;
+    public AnchorTemplate joint;
     public JointVector from;
     public ComponentIndex component;
     public bool negate = false;
@@ -44,7 +44,7 @@ public class JointVec3ToVec1Adapter : NativeAdapter
                 vec3 = joint.lookAt;
                 break;
             case JointVector.Up:
-                vec3 = joint.upVector;
+                vec3 = joint.up;
                 break;
         }
 

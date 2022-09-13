@@ -4,23 +4,6 @@ using System;
 using System.Reflection;
 using UnityEngine;
 
-
-[Serializable]
-public enum JointVector
-{
-    LookAt,
-    Up
-}
-
-[Serializable]
-public enum ProjectionPlane
-{
-    XY,
-    YZ,
-    XZ
-}
-
-
 public class JointVec3ToVec2Adapter : NativeAdapter
 {
     public JointModel joint;

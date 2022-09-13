@@ -13,27 +13,27 @@ public class MotionCategory
 }
 
 [Serializable]
-public class MTBrigdeItem
+public class MTBridgeItem
 {
     public string name;
-    public GameObject anchorBrigde;
+    public GameObject templateBridge;
 }
 public class MotionSource : MonoBehaviour
 {
-    [SerializeField] List<MotionCategory> m_motionCategories = new();
-    [SerializeField] List<MTBrigdeItem> m_templateBrigdeMap = new();
+    [SerializeField] List<MotionCategory> motionCategories = new();
+    [SerializeField] List<MTBridgeItem> templateBridgeMap = new();
     
-    [SerializeField] MotionTemplateMapper motionTemplateMapper;
+    public MotionTemplateMapper motionTemplateMapper;
 
     void Start()
     {
-        UpdateMotionAndAnchors();
+        UpdateMotionAndTemplates();
     }
 
     public List<string> GetCategoryList()
     {
         List<string> ret = new();
-        foreach (var category in m_motionCategories)
+        foreach (var category in motionCategories)
         {
             ret.Add(category.name);
         }
@@ -43,7 +43,7 @@ public class MotionSource : MonoBehaviour
 
     public List<RiggingModel> GetRiggingModelsInCategory(string categoryName)
     {
-        foreach (var category in m_motionCategories)
+        foreach (var category in motionCategories)
         {
             if (category.name == categoryName)
             {
@@ -57,9 +57,9 @@ public class MotionSource : MonoBehaviour
     public void AddRiggingModel(string categoryName, RiggingModel model)
     {
         var index1 = -1;
-        for (int i = 0; i < m_motionCategories.Count; i++)
+        for (int i = 0; i < motionCategories.Count; i++)
         {
-            if (categoryName == m_motionCategories[i].name)
+            if (categoryName == motionCategories[i].name)
             {
                 index1 = i;
                 break;
@@ -74,28 +74,28 @@ public class MotionSource : MonoBehaviour
                 riggingModels = new()
             };
             newItem.riggingModels.Add(model);
-            m_motionCategories.Add(newItem);
+            motionCategories.Add(newItem);
         }
         else
         {
-            var list = m_motionCategories[index1].riggingModels;
+            var list = motionCategories[index1].riggingModels;
             list.Add(model);
         }
     }
 
     public void Clear()
     {
-        m_motionCategories.Clear();
+        motionCategories.Clear();
     }
 
-    public void UpdateMotionAndAnchors()
+    public void UpdateMotionAndTemplates()
     {
-        foreach (var brigdeItem in m_templateBrigdeMap)
+        foreach (var brigdeItem in templateBridgeMap)
         {
-            var anchor = motionTemplateMapper.GetAnchor(brigdeItem.name);
+            var anchor = motionTemplateMapper.GetTemplate(brigdeItem.name);
             if (anchor == null) return;
 
-            var bridge = brigdeItem.anchorBrigde.GetComponent<IMTBrigde>();
+            var bridge = brigdeItem.templateBridge.GetComponent<IMTBridge>();
             if (bridge == null) return;
             bridge.SetMotionTemplate(anchor);
         }

@@ -2,10 +2,10 @@ using UnityEngine;
 
 namespace MYTYKit.MotionTemplate.Mediapipe.Model
 {
-    public class MPFace : RiggingModel, IMTBrigde
+    public class MPFace : RiggingModel, IMTBridge
     {
         ParametricTemplate m_template;
-        bool m_isAnchorSet;
+        bool m_isTemplateSet;
         
         public float leftEye;
         public float rightEye;
@@ -47,15 +47,15 @@ namespace MYTYKit.MotionTemplate.Mediapipe.Model
            
             UpdateTemplate();
         }
-        public void SetMotionTemplate(IMotionTemplate anchor)
+        public void SetMotionTemplate(IMotionTemplate template)
         {
-            m_template = anchor as ParametricTemplate;
-            if(m_template!=null) m_isAnchorSet = true;
+            m_template = template as ParametricTemplate;
+            if(m_template!=null) m_isTemplateSet = true;
         }
 
         public void UpdateTemplate()
         {
-            if (!m_isAnchorSet) return;
+            if (!m_isTemplateSet) return;
             m_template.SetValue("leftEye",leftEye);
             m_template.SetValue("rightEye",rightEye);
             m_template.SetValue("leftEyeBrow", leftEyeBrow);
