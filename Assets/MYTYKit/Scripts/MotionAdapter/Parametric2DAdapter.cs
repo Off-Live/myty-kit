@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-public class Facial2DAdapterV2 : NativeAdapter
+public class Parametric2DAdapter : NativeAdapter
 {
     public ParametricTemplate face;
     public string xParamName;

@@ -4,7 +4,7 @@ using System.Reflection;
 using System;
 using UnityEngine;
 
-public class Facial1DAdapterV2 : NativeAdapter
+public class Parametric1DAdapter : NativeAdapter
 {
     public ParametricTemplate face;
     public string paramName;
