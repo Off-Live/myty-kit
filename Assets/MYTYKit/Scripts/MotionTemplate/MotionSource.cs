@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 
 [Serializable]
@@ -12,7 +13,7 @@ public class MotionCategory
 }
 
 [Serializable]
-public class AnchorBrigdeItem
+public class MTBrigdeItem
 {
     public string name;
     public GameObject anchorBrigde;
@@ -20,10 +21,15 @@ public class AnchorBrigdeItem
 public class MotionSource : MonoBehaviour
 {
     [SerializeField] List<MotionCategory> m_motionCategories = new();
-    [SerializeField] List<AnchorBrigdeItem> m_anchorBrigdeMap = new();
+    [SerializeField] List<MTBrigdeItem> m_templateBrigdeMap = new();
     
-    [SerializeField] MotionTemplate m_motionTemplate;
-    // Start is called before the first frame update
+    [SerializeField] MotionTemplateMapper motionTemplateMapper;
+
+    void Start()
+    {
+        UpdateMotionAndAnchors();
+    }
+
     public List<string> GetCategoryList()
     {
         List<string> ret = new();
@@ -80,5 +86,18 @@ public class MotionSource : MonoBehaviour
     public void Clear()
     {
         m_motionCategories.Clear();
+    }
+
+    public void UpdateMotionAndAnchors()
+    {
+        foreach (var brigdeItem in m_templateBrigdeMap)
+        {
+            var anchor = motionTemplateMapper.GetAnchor(brigdeItem.name);
+            if (anchor == null) return;
+
+            var bridge = brigdeItem.anchorBrigde.GetComponent<IMTBrigde>();
+            if (bridge == null) return;
+            bridge.SetMotionTemplate(anchor);
+        }
     }
 }

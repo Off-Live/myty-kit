@@ -22,7 +22,7 @@ namespace MYTYKit.MotionTemplate.Mediapipe.Model
 
             lookAt = -Vector3.Cross(up, shoulderLR);
             up = -Vector3.Cross(shoulderLR, lookAt);
-            UpdateAnchor();
+            UpdateTemplate();
 
         }
     }

@@ -33,7 +33,7 @@ namespace MYTYKit.MotionTemplate.Mediapipe.Model
                 lookAt.Normalize();
                 m_lastLA = lookAt;
             }
-            UpdateAnchor();
+            UpdateTemplate();
         }
     }
 }

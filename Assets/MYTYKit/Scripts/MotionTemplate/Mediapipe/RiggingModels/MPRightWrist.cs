@@ -17,7 +17,7 @@ namespace MYTYKit.MotionTemplate.Mediapipe.Model
             up = -Vector3.Cross(pinkey, lookAt);
             lookAt.Normalize();
             up.Normalize();
-            UpdateAnchor();
+            UpdateTemplate();
         }
 
     }

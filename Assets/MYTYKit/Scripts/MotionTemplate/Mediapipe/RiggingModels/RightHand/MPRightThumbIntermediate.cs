@@ -20,7 +20,7 @@ namespace MYTYKit.MotionTemplate.Mediapipe.Model
 
             up = intermediate;
             lookAt = Vector3.Cross(thumbPlane, proximal);
-            UpdateAnchor();
+            UpdateTemplate();
         }
     }
 }

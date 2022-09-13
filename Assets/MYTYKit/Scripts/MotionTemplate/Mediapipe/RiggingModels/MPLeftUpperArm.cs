@@ -35,7 +35,7 @@ namespace MYTYKit.MotionTemplate.Mediapipe.Model
             lookAt.Normalize();
 
             m_lastUp = up;
-            UpdateAnchor();
+            UpdateTemplate();
         }
     }
 }

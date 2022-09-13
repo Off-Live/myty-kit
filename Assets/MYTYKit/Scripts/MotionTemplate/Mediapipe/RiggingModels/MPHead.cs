@@ -15,7 +15,7 @@ namespace MYTYKit.MotionTemplate.Mediapipe.Model
             up.Normalize();
             lookAt = -Vector3.Cross(up.normalized, faceLr.normalized);
             up = -Vector3.Cross(faceLr, lookAt);
-            UpdateAnchor();
+            UpdateTemplate();
         }
 
     }

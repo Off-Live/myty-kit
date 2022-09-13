@@ -2,18 +2,18 @@ using UnityEngine;
 
 namespace MYTYKit.MotionTemplate.Mediapipe.Model
 {
-    public class MPJointModel:RiggingModel, IAnchorBrigde
+    public class MPJointModel:RiggingModel, IMTBrigde
     {
         protected TransformAnchor anchor;
         protected bool isAnchorSet;
         protected Vector3 up, lookAt;
-        public void SetAnchor(IMYTYAnchor anchor)
+        public void SetMotionTemplate(IMotionTemplate anchor)
         {
             this.anchor = anchor as TransformAnchor;
             isAnchorSet = true;
         }
 
-        public void UpdateAnchor()
+        public void UpdateTemplate()
         {
             if (!isAnchorSet) return;
             anchor.up = up;

@@ -22,7 +22,7 @@ namespace MYTYKit.MotionTemplate.Mediapipe.Model
             axis.Normalize();
             up = intermediate;
             lookAt = Vector3.Cross(axis, intermediate);
-            UpdateAnchor();
+            UpdateTemplate();
         }
     }
 }

@@ -14,7 +14,7 @@ namespace MYTYKit.MotionTemplate.Mediapipe.Model
             lookAt.Normalize();
             up.Normalize();
 
-            UpdateAnchor();
+            UpdateTemplate();
 
         }
     }

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class TransformAnchor : MonoBehaviour, IMYTYAnchor
+public class TransformAnchor : MonoBehaviour, IMotionTemplate
 {
     public Vector3 up;
     public Vector3 lookAt;

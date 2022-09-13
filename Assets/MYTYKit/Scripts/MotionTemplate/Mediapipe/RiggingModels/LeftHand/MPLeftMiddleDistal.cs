@@ -24,7 +24,7 @@ namespace MYTYKit.MotionTemplate.Mediapipe.Model
             axis.Normalize();
             up = distal;
             lookAt = Vector3.Cross(axis, distal);
-            UpdateAnchor();
+            UpdateTemplate();
         }
     }
 }

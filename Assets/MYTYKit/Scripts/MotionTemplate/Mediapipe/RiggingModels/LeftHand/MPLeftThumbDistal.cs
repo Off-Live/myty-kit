@@ -22,7 +22,7 @@ namespace MYTYKit.MotionTemplate.Mediapipe.Model
 
             up = distal;
             lookAt = Vector3.Cross(thumbPlane, proximal);
-            UpdateAnchor();
+            UpdateTemplate();
         }
     }
 }
