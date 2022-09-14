@@ -83,3 +83,7 @@ crashlytics-build.properties
 mono_crash*
 
 Assets/StreamingAssets/VERSION.txt
+
+.idea/
+Assets/Scene/
+Assets/Scene.meta
