@@ -6,7 +6,7 @@ using UnityEngine;
 public class WeightedSum2DAdapterV2 : NativeAdapter
 {
 
-    public ParametricTemplate face;
+    public ParametricTemplate template;
     public List<string> xParamNames;
     public List<string> yParamNames;
     public List<float> weights;
@@ -34,7 +34,7 @@ public class WeightedSum2DAdapterV2 : NativeAdapter
         var weightedSum = Vector2.zero;
         for (int i = 0; i < weights.Count; i++)
         {
-            weightedSum += weights[i] * new Vector2(face.GetValue(xParamNames[i]), face.GetValue(yParamNames[i]));
+            weightedSum += weights[i] * new Vector2(template.GetValue(xParamNames[i]), template.GetValue(yParamNames[i]));
         }
 
         Stabilize(weightedSum);

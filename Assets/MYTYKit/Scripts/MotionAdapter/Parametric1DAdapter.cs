@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class Parametric1DAdapter : NativeAdapter
 {
-    public ParametricTemplate face;
+    public ParametricTemplate template;
     public string paramName;
     public MYTYController con;
 
@@ -26,7 +26,7 @@ public class Parametric1DAdapter : NativeAdapter
 
         m_elapsed = 0;
         
-        float val = face.GetValue(paramName);
+        float val = template.GetValue(paramName);
         Stabilize(val);
         input.SetInput(GetStabilizedFloat());
         

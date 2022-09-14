@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Parametric2DAdapter : NativeAdapter
 {
-    public ParametricTemplate face;
+    public ParametricTemplate template;
     public string xParamName;
     public string yParamName;
     public MYTYController con;
@@ -26,7 +26,7 @@ public class Parametric2DAdapter : NativeAdapter
 
         m_elapsed = 0;
 
-        Vector2 val = new Vector2(face.GetValue(xParamName), face.GetValue(yParamName));
+        Vector2 val = new Vector2(template.GetValue(xParamName), template.GetValue(yParamName));
 
         Stabilize(val);
         input.SetInput(GetStabilizedVec2());
