@@ -9,21 +9,21 @@ using UnityEngine.Serialization;
 public class MotionCategory
 {
     public string name;
-    public List<RiggingModel> riggingModels;
+    public List<MotionTemplateBridge> bridges;
 }
 
 [Serializable]
 public class MTBridgeItem
 {
     public string name;
-    public GameObject templateBridge;
+    public MotionTemplateBridge templateBridge;
 }
 public class MotionSource : MonoBehaviour
 {
     [SerializeField] List<MotionCategory> motionCategories = new();
     [SerializeField] List<MTBridgeItem> templateBridgeMap = new();
     
-    public MotionTemplateMapper motionTemplateMapper;
+    public List<MotionTemplateMapper> motionTemplateMapperList;
 
     void Start()
     {
@@ -41,45 +41,45 @@ public class MotionSource : MonoBehaviour
         return ret;
     }
 
-    public List<RiggingModel> GetRiggingModelsInCategory(string categoryName)
+    public List<MotionTemplateBridge> GetBridgesInCategory(string categoryName)
     {
         foreach (var category in motionCategories)
         {
             if (category.name == categoryName)
             {
-                return category.riggingModels;
+                return category.bridges;
             }  
         }
 
         return null;
     }
 
-    public void AddRiggingModel(string categoryName, RiggingModel model)
+    public void AddMotionTemplateBridge(string categoryName, MotionTemplateBridge bridge)
     {
-        var index1 = -1;
+        var index = -1;
         for (int i = 0; i < motionCategories.Count; i++)
         {
             if (categoryName == motionCategories[i].name)
             {
-                index1 = i;
+                index = i;
                 break;
             }
         }
         
-        if (index1 < 0)
+        if (index < 0)
         {
             var newItem = new MotionCategory()
             {
                 name = categoryName,
-                riggingModels = new()
+                bridges = new()
             };
-            newItem.riggingModels.Add(model);
+            newItem.bridges.Add(bridge);
             motionCategories.Add(newItem);
         }
         else
         {
-            var list = motionCategories[index1].riggingModels;
-            list.Add(model);
+            var list = motionCategories[index].bridges;
+            list.Add(bridge);
         }
     }
 
@@ -92,12 +92,22 @@ public class MotionSource : MonoBehaviour
     {
         foreach (var brigdeItem in templateBridgeMap)
         {
-            var anchor = motionTemplateMapper.GetTemplate(brigdeItem.name);
-            if (anchor == null) return;
+            brigdeItem.templateBridge.ClearMotionTemplate();
+        }
 
-            var bridge = brigdeItem.templateBridge.GetComponent<IMTBridge>();
-            if (bridge == null) return;
-            bridge.SetMotionTemplate(anchor);
+        foreach (var brigdeItem in templateBridgeMap)
+        {
+            foreach (var motionTemplateMapper in motionTemplateMapperList)
+            {
+                var template = motionTemplateMapper.GetTemplate(brigdeItem.name);
+                if (template == null) return;
+
+                var bridge = brigdeItem.templateBridge;
+                if (bridge == null) return;
+            
+                bridge.AddMotionTemplate(template);
+            }
+            
         }
     }
 }

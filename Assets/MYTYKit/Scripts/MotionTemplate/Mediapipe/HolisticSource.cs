@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using Mediapipe;
 using Mediapipe.Unity;
+using MYTYKit.MotionTemplate.Mediapipe.Model;
 using Debug = UnityEngine.Debug;
 
 namespace MYTYKit.MotionTemplate.Mediapipe
@@ -321,37 +322,38 @@ namespace MYTYKit.MotionTemplate.Mediapipe
 
         void ProcessPose(NormalizedLandmarkList pose)
         {
-            var poseRig = motionSource.GetRiggingModelsInCategory("PoseLandmark");
+            var poseRig = motionSource.GetBridgesInCategory("PoseLandmark");
             foreach (var model in poseRig)
             {
-                ProcessNormalized(model, pose.Landmark);
+                
+                ProcessNormalized(model as MPBaseModel, pose.Landmark);
             }
 
         }
         void ProcessFace(NormalizedLandmarkList faceLM)
         {
-            var faceRig = motionSource.GetRiggingModelsInCategory("FaceLandmark");
+            var faceRig = motionSource.GetBridgesInCategory("FaceLandmark");
             foreach (var model in faceRig)
             {
-                ProcessNormalized(model, faceLM.Landmark);
+                ProcessNormalized(model as MPBaseModel, faceLM.Landmark);
             }
         }
 
         private void ProcessLH(NormalizedLandmarkList leftHand)
         {
-            var leftHandRig = motionSource.GetRiggingModelsInCategory("LeftHandLandmark");
+            var leftHandRig = motionSource.GetBridgesInCategory("LeftHandLandmark");
             foreach (var model in leftHandRig)
             {
-                ProcessNormalized(model, leftHand.Landmark);
+                ProcessNormalized(model as MPBaseModel, leftHand.Landmark);
             }
         }
 
         private void ProcessRH(NormalizedLandmarkList rightHand)
         {
-            var rightHandRig = motionSource.GetRiggingModelsInCategory("RightHandLandmark");
+            var rightHandRig = motionSource.GetBridgesInCategory("RightHandLandmark");
             foreach (var model in rightHandRig)
             {
-                ProcessNormalized(model, rightHand.Landmark);
+                ProcessNormalized(model as MPBaseModel , rightHand.Landmark);
             }
         }
 
@@ -364,7 +366,7 @@ namespace MYTYKit.MotionTemplate.Mediapipe
             }
         }
 
-        public void ProcessNormalized(RiggingModel model, IList<NormalizedLandmark> landmarkList)
+        public void ProcessNormalized(MPBaseModel model, IList<NormalizedLandmark> landmarkList)
         {
             if (model == null || landmarkList == null) return;
 

@@ -5,7 +5,8 @@ using UnityEditor;
 using UnityEngine.U2D.Animation;
 using System.Collections;
 
-public class AssetImporter : MonoBehaviour
+
+public class MYTYAvatarImporter : MonoBehaviour, IMYTYAvatarImporter
 {
     private AssetBundle m_assetBundle;
     private Dictionary<GameObject, GameObject> m_goMap;
@@ -299,6 +300,16 @@ public class AssetImporter : MonoBehaviour
         if (m_assetBundle == null) return "";
 
         var textAsset = m_assetBundle.LoadAsset<TextAsset>("VERSION.txt");
+        if (textAsset == null) return "";
+
+        return textAsset.text;
+    }
+
+    public string GetEditorVersionInfo()
+    {
+        if (m_assetBundle == null) return "";
+
+        var textAsset = m_assetBundle.LoadAsset<TextAsset>("EditorInfo.txt");
         if (textAsset == null) return "";
 
         return textAsset.text;

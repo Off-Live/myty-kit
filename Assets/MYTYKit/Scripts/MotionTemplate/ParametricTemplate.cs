@@ -9,7 +9,7 @@ public class ParameterItem
     public string name;
     public float value; 
 }
-public class ParametricTemplate : MonoBehaviour, IMotionTemplate
+public class ParametricTemplate : MotionTemplate
 {
     public List<ParameterItem> parameterItems = new();
 

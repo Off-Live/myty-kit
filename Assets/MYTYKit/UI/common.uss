@@ -8,3 +8,9 @@
     padding-top: 10px;
     padding-bottom: 10px;
 }
+
+.platform_item {
+    min-width: 180px;
+    color: rgba(0, 0, 0, 255);
+    flex-grow: 1;
+}

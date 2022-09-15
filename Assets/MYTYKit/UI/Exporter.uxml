@@ -1,10 +1,16 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/MYTYKit/UI/common.uss?fileID=7433441132597879392&amp;guid=38cc228c4ed611e42a46878cf3f168e9&amp;type=3#common" />
     <ui:VisualElement>
         <ui:TextField picking-mode="Ignore" label="File Name" name="TXTFilename" text="MYTYAsset" />
         <uie:ObjectField label="Avatar Selector" name="OBJConfig" />
         <uie:ObjectField label="Main Camera" name="OBJCamera" />
-        <ui:ListView focusable="true" name="LSTController" show-border="true" show-foldout-header="true" show-add-remove-footer="true" virtualization-method="DynamicHeight" header-title="Root Controllers" show-bound-collection-size="false" style="max-height: 400px;" />
-        <ui:ListView focusable="true" name="LSTMotionAdapter" show-border="true" show-foldout-header="true" show-bound-collection-size="false" show-add-remove-footer="true" header-title="Motion Adapters" virtualization-method="DynamicHeight" style="max-height: 400px;" />
+        <uie:ObjectField label="Motion Template" name="OBJMT" />
+        <ui:VisualElement style="margin-top: 10px; margin-bottom: 10px;">
+            <ui:Label text="Target platform" display-tooltip-when-elided="true" style="margin-left: 3px;" />
+            <ui:GroupBox name="GRPPlatform" style="flex-wrap: wrap; background-color: rgb(202, 202, 202);" />
+        </ui:VisualElement>
+        <ui:ListView focusable="true" name="LSTController" show-border="true" show-foldout-header="true" show-add-remove-footer="true" virtualization-method="DynamicHeight" header-title="Root Controllers" show-bound-collection-size="false" style="max-height: 400px; margin-top: 10px; min-height: 100px;" />
+        <ui:ListView focusable="true" name="LSTMotionAdapter" show-border="true" show-foldout-header="true" show-bound-collection-size="false" show-add-remove-footer="true" header-title="Motion Adapters" virtualization-method="DynamicHeight" style="max-height: 400px; min-height: 100px;" />
         <ui:Button text="Export" display-tooltip-when-elided="true" name="BTNExport" />
     </ui:VisualElement>
 </ui:UXML>

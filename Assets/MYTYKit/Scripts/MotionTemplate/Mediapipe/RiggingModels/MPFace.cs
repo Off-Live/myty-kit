@@ -2,11 +2,8 @@ using UnityEngine;
 
 namespace MYTYKit.MotionTemplate.Mediapipe.Model
 {
-    public class MPFace : RiggingModel, IMTBridge
+    public class MPFace : MPBaseModel
     {
-        ParametricTemplate m_template;
-        bool m_isTemplateSet;
-        
         public float leftEye;
         public float rightEye;
 
@@ -47,25 +44,28 @@ namespace MYTYKit.MotionTemplate.Mediapipe.Model
            
             UpdateTemplate();
         }
-        public void SetMotionTemplate(IMotionTemplate template)
+       
+        public override void UpdateTemplate()
         {
-            m_template = template as ParametricTemplate;
-            if(m_template!=null) m_isTemplateSet = true;
-        }
+            if (templateList.Count == 0) return;
 
-        public void UpdateTemplate()
-        {
-            if (!m_isTemplateSet) return;
-            m_template.SetValue("leftEye",leftEye);
-            m_template.SetValue("rightEye",rightEye);
-            m_template.SetValue("leftEyeBrow", leftEyeBrow);
-            m_template.SetValue("rightEyeBrow", rightEyeBrow);
-            m_template.SetValue("leftPupilX", leftPupil.x);
-            m_template.SetValue("leftPupilY", leftPupil.y);
-            m_template.SetValue("rightPupilX", rightPupil.x);
-            m_template.SetValue("rightPupilY", rightPupil.y);
-            m_template.SetValue("mouthX", mouthX);
-            m_template.SetValue("mouthY", mouthY);
+            foreach (var motionTemplate in templateList)
+            {
+                var template = (ParametricTemplate)motionTemplate;
+               
+                template.SetValue("leftEye",leftEye);
+                template.SetValue("rightEye",rightEye);
+                template.SetValue("leftEyeBrow", leftEyeBrow);
+                template.SetValue("rightEyeBrow", rightEyeBrow);
+                template.SetValue("leftPupilX", leftPupil.x);
+                template.SetValue("leftPupilY", leftPupil.y);
+                template.SetValue("rightPupilX", rightPupil.x);
+                template.SetValue("rightPupilY", rightPupil.y);
+                template.SetValue("mouthX", mouthX);
+                template.SetValue("mouthY", mouthY);
+                
+            }
+            
         }
     }
 }

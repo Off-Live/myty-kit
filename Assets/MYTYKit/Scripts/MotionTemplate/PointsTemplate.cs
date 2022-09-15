@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PointsTemplate : MonoBehaviour, IMotionTemplate
+public class PointsTemplate : MotionTemplate
 {
     public Vector3[] points;
 }

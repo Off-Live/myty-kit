@@ -1662,12 +1662,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   motionCategories:
   - name: FaceLandmark
-    riggingModels:
+    bridges:
     - {fileID: 9212716866925650113}
     - {fileID: 9212716865143691617}
     - {fileID: 9212716866570112463}
   - name: LeftHandLandmark
-    riggingModels:
+    bridges:
     - {fileID: 9212716866241781272}
     - {fileID: 9212716866462555855}
     - {fileID: 9212716867124954026}
@@ -1685,7 +1685,7 @@ MonoBehaviour:
     - {fileID: 9212716866851715512}
     - {fileID: 9212716866713915964}
   - name: RightHandLandmark
-    riggingModels:
+    bridges:
     - {fileID: 9212716866405549136}
     - {fileID: 9212716865235285320}
     - {fileID: 9212716866900902812}
@@ -1703,7 +1703,7 @@ MonoBehaviour:
     - {fileID: 9212716865784166302}
     - {fileID: 9212716866145742962}
   - name: PoseLandmark
-    riggingModels:
+    bridges:
     - {fileID: 9212716867129430691}
     - {fileID: 9212716865176072395}
     - {fileID: 9212716866782046550}
@@ -1718,100 +1718,100 @@ MonoBehaviour:
     - {fileID: 9212716866649197760}
   templateBridgeMap:
   - name: FaceParameters
-    templateBridge: {fileID: 9212716865143691619}
+    templateBridge: {fileID: 9212716865143691617}
   - name: BodyPoints
-    templateBridge: {fileID: 9212716866634426332}
+    templateBridge: {fileID: 9212716866634426330}
   - name: FacePoints
-    templateBridge: {fileID: 9212716866570112465}
+    templateBridge: {fileID: 9212716866570112463}
   - name: RightLittleDistal
-    templateBridge: {fileID: 9212716866145742964}
+    templateBridge: {fileID: 9212716866145742962}
   - name: RightLittleIntermediate
-    templateBridge: {fileID: 9212716865784166304}
+    templateBridge: {fileID: 9212716865784166302}
   - name: RightLittleProximal
-    templateBridge: {fileID: 9212716866503492907}
+    templateBridge: {fileID: 9212716866503492905}
   - name: RightRingDistal
-    templateBridge: {fileID: 9212716866786452251}
+    templateBridge: {fileID: 9212716866786452249}
   - name: RightRingIntermediate
-    templateBridge: {fileID: 9212716865709744590}
+    templateBridge: {fileID: 9212716865709744588}
   - name: RightRingProximal
-    templateBridge: {fileID: 9212716865497874197}
+    templateBridge: {fileID: 9212716865497874195}
   - name: RightMiddleDistal
-    templateBridge: {fileID: 9212716866608031995}
+    templateBridge: {fileID: 9212716866608031993}
   - name: RightMiddleIntermediate
-    templateBridge: {fileID: 9212716866643627590}
+    templateBridge: {fileID: 9212716866643627588}
   - name: RightMiddleProximal
-    templateBridge: {fileID: 9212716866729540376}
+    templateBridge: {fileID: 9212716866729540374}
   - name: RightIndexDistal
-    templateBridge: {fileID: 9212716866842695935}
+    templateBridge: {fileID: 9212716866842695933}
   - name: RightIndexIntermediate
-    templateBridge: {fileID: 9212716867198769513}
+    templateBridge: {fileID: 9212716867198769511}
   - name: RightIndexProximal
-    templateBridge: {fileID: 9212716866864955893}
+    templateBridge: {fileID: 9212716866864955891}
   - name: RightThumbDistal
-    templateBridge: {fileID: 9212716866550847153}
+    templateBridge: {fileID: 9212716866550847151}
   - name: RightThumbIntermediate
-    templateBridge: {fileID: 9212716866900902814}
+    templateBridge: {fileID: 9212716866900902812}
   - name: RightThumbProximal
-    templateBridge: {fileID: 9212716865235285322}
+    templateBridge: {fileID: 9212716865235285320}
   - name: LeftLittleDistal
-    templateBridge: {fileID: 9212716866713915966}
+    templateBridge: {fileID: 9212716866713915964}
   - name: LeftLittleIntermediate
-    templateBridge: {fileID: 9212716866851715514}
+    templateBridge: {fileID: 9212716866851715512}
   - name: LeftLittleProximal
-    templateBridge: {fileID: 9212716866784905330}
+    templateBridge: {fileID: 9212716866784905328}
   - name: LeftRingDistal
-    templateBridge: {fileID: 9212716865514855994}
+    templateBridge: {fileID: 9212716865514855992}
   - name: LeftRingIntermediate
-    templateBridge: {fileID: 9212716865983698206}
+    templateBridge: {fileID: 9212716865983698204}
   - name: LeftRingProximal
-    templateBridge: {fileID: 9212716866644202939}
+    templateBridge: {fileID: 9212716866644202937}
   - name: LeftMiddleDistal
-    templateBridge: {fileID: 9212716865595663187}
+    templateBridge: {fileID: 9212716865595663185}
   - name: LeftMiddleIntermediate
-    templateBridge: {fileID: 9212716865313643637}
+    templateBridge: {fileID: 9212716865313643635}
   - name: LeftMiddleProximal
-    templateBridge: {fileID: 9212716865127146806}
+    templateBridge: {fileID: 9212716865127146804}
   - name: LeftIndexDistal
-    templateBridge: {fileID: 9212716866445448852}
+    templateBridge: {fileID: 9212716866445448850}
   - name: LeftIndexIntermediate
-    templateBridge: {fileID: 9212716867203410299}
+    templateBridge: {fileID: 9212716867203410297}
   - name: LeftIndexProximal
-    templateBridge: {fileID: 9212716866308138071}
+    templateBridge: {fileID: 9212716866308138069}
   - name: LeftThumbDistal
-    templateBridge: {fileID: 9212716866724456181}
+    templateBridge: {fileID: 9212716866724456179}
   - name: LeftThumbIntermediate
-    templateBridge: {fileID: 9212716867124954028}
+    templateBridge: {fileID: 9212716867124954026}
   - name: LeftThumbProximal
-    templateBridge: {fileID: 9212716866462555857}
+    templateBridge: {fileID: 9212716866462555855}
   - name: RightLowerLeg
-    templateBridge: {fileID: 9212716865110274064}
+    templateBridge: {fileID: 9212716865110274062}
   - name: RightUpperLeg
-    templateBridge: {fileID: 9212716866758529932}
+    templateBridge: {fileID: 9212716866758529930}
   - name: LeftLowerLeg
-    templateBridge: {fileID: 9212716866666666027}
+    templateBridge: {fileID: 9212716866666666025}
   - name: LeftUpperLeg
-    templateBridge: {fileID: 9212716865389877528}
+    templateBridge: {fileID: 9212716865389877526}
   - name: RightWrist
-    templateBridge: {fileID: 9212716866405549138}
+    templateBridge: {fileID: 9212716866405549136}
   - name: RightLowerArm
-    templateBridge: {fileID: 9212716865883463186}
+    templateBridge: {fileID: 9212716865883463184}
   - name: RightUpperArm
-    templateBridge: {fileID: 9212716867211382810}
+    templateBridge: {fileID: 9212716867211382808}
   - name: LeftWrist
-    templateBridge: {fileID: 9212716866241781274}
+    templateBridge: {fileID: 9212716866241781272}
   - name: LeftLowerArm
-    templateBridge: {fileID: 9212716866821223533}
+    templateBridge: {fileID: 9212716866821223531}
   - name: LeftUpperArm
-    templateBridge: {fileID: 9212716866782046552}
+    templateBridge: {fileID: 9212716866782046550}
   - name: Hips
-    templateBridge: {fileID: 9212716867129430693}
+    templateBridge: {fileID: 9212716867129430691}
   - name: Chest
-    templateBridge: {fileID: 9212716866649197762}
+    templateBridge: {fileID: 9212716866649197760}
   - name: Neck
-    templateBridge: {fileID: 9212716865176072397}
+    templateBridge: {fileID: 9212716865176072395}
   - name: Head
-    templateBridge: {fileID: 9212716866925650115}
-  motionTemplateMapper: {fileID: 0}
+    templateBridge: {fileID: 9212716866925650113}
+  motionTemplateMapperList: []
 --- !u!1 &9212716866713915966
 GameObject:
   m_ObjectHideFlags: 0

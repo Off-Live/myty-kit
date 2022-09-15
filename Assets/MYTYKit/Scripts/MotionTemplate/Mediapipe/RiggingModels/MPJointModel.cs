@@ -2,22 +2,19 @@ using UnityEngine;
 
 namespace MYTYKit.MotionTemplate.Mediapipe.Model
 {
-    public class MPJointModel:RiggingModel, IMTBridge
+    public class MPJointModel: MPBaseModel
     {
-        protected AnchorTemplate anchorTemplate;
-        protected bool isTemplateSet;
         protected Vector3 up, lookAt;
-        public void SetMotionTemplate(IMotionTemplate template)
+        
+        public override void UpdateTemplate()
         {
-            this.anchorTemplate = template as AnchorTemplate;
-            isTemplateSet = true;
-        }
-
-        public void UpdateTemplate()
-        {
-            if (!isTemplateSet) return;
-            anchorTemplate.up = up;
-            anchorTemplate.lookAt = lookAt;
+            if (templateList.Count == 0) return;
+            foreach (var motionTemplate in templateList)
+            {
+                var anchorTemplate = (AnchorTemplate)motionTemplate;
+                anchorTemplate.up = up;
+                anchorTemplate.lookAt = lookAt;
+            }
         }
     }
 }

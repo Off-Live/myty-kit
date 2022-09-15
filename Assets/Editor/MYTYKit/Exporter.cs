@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -13,8 +14,9 @@ public class Exporter : EditorWindow
 {
     [SerializeField]
     VisualTreeAsset UI;
-
-    private Dictionary<GameObject, GameObject> m_controllerMap;
+    Dictionary<GameObject, GameObject> m_objectMap;
+    readonly string[] m_platforms = {"Desktop(Mac/Win)","iOS","Android","WebGL"};
+    const string ImportSig= "MYTYAvatarImporterV2";
 
     [MenuItem("MYTY Kit/Export AssetBundle", false, 1)]
     public static void ShowGUI()
@@ -36,13 +38,36 @@ public class Exporter : EditorWindow
 
         var avatarConfigElem = rootVisualElement.Q<ObjectField>("OBJConfig");
         var cameraElem = rootVisualElement.Q<ObjectField>("OBJCamera");
+        var mtElem = rootVisualElement.Q<ObjectField>("OBJMT");
         var controllerListView = rootVisualElement.Q<ListView>("LSTController");
         var maListView = rootVisualElement.Q<ListView>("LSTMotionAdapter");
+        var platformGroup = rootVisualElement.Q<GroupBox>("GRPPlatform");
+        var supportedPlatform = GetInfoAboutSupportedPlatform();
+
+        
+        for (int i = 0; i < m_platforms.Length; i++)
+        {
+            var toggle = new Toggle();
+            toggle.AddToClassList("platform_item");
+            toggle.text = m_platforms[i];
+            
+            var isSupported = supportedPlatform[m_platforms[i]];
+            if (isSupported) toggle.value = true;
+            else
+            {
+                toggle.value = false;
+                toggle.SetEnabled(false);
+            }
+            platformGroup.contentContainer.Add(toggle);
+        }
+        
         avatarConfigElem.objectType = typeof(AvatarSelector);
         cameraElem.objectType = typeof(Camera);
+        mtElem.objectType = typeof(MotionTemplateMapper);
         rootVisualElement.Q<Button>("BTNExport").clicked += Export;
 
-        avatarConfigElem.value = GameObject.FindObjectOfType<AvatarSelector>().gameObject;
+        avatarConfigElem.value = FindObjectOfType<AvatarSelector>().gameObject;
+        mtElem.value = FindObjectOfType<MotionTemplateMapper>().gameObject;
         cameraElem.value = Camera.main;
 
         controllerListView.makeItem = () =>
@@ -90,8 +115,9 @@ public class Exporter : EditorWindow
         savedPath = localPath;
     }
 
-    private void Export()
+    void Export()
     {
+        
         var assetName = new List<string>();
         var avatarConfigVE = rootVisualElement.Q<ObjectField>("OBJConfig");
         var selector = avatarConfigVE.value as AvatarSelector;
@@ -105,7 +131,10 @@ public class Exporter : EditorWindow
         MYTYUtil.BuildAssetPath(MYTYUtil.PrefabPath);
         AssetDatabase.Refresh();
         assetName.Add(AssetDatabase.GetAssetPath(mytyAsset));
-
+        
+        m_objectMap = new();
+        
+        PrepareMotionTemplateMapper(assetName);
         if (!PrepareConfigurator(mytyAsset, assetName))
         {
             Debug.Log("error in export config");
@@ -126,7 +155,8 @@ public class Exporter : EditorWindow
         PrepareLayoutAsset(selector, assetName);
         PrepareVersionInfo(assetName);
         PrepareEditorInfo(assetName);
-
+        PrepareImportSig(assetName);
+        
         EditorUtility.SetDirty(mytyAsset);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
@@ -259,7 +289,7 @@ public class Exporter : EditorWindow
         }
 
         PrefabUtility.SaveAsPrefabAsset(copyGO, MYTYUtil.PrefabPath+"/"+ MYTYUtil.SelectorPrefab);
-        GameObject.DestroyImmediate(copyGO);
+        DestroyImmediate(copyGO);
         assetName.Add(MYTYUtil.PrefabPath + "/" + MYTYUtil.SelectorPrefab);
         return true;
     }
@@ -278,12 +308,12 @@ public class Exporter : EditorWindow
         }
     }
 
-    private void BuildControllerMap(GameObject node, GameObject clone)
+    private void BuildCloneObjectMap(GameObject node, GameObject clone)
     {
-        m_controllerMap[node] = PrefabUtility.GetCorrespondingObjectFromSource(clone);
+        m_objectMap[node] = PrefabUtility.GetCorrespondingObjectFromSource(clone);
         for(int i = 0; i < node.transform.childCount; i++)
         {
-            BuildControllerMap(node.transform.GetChild(i).gameObject, clone.transform.GetChild(i).gameObject);
+            BuildCloneObjectMap(node.transform.GetChild(i).gameObject, clone.transform.GetChild(i).gameObject);
         }
     }
 
@@ -292,7 +322,7 @@ public class Exporter : EditorWindow
         var rootCons = rootVisualElement.Q<ListView>("LSTController").itemsSource;
        
         mytyAsset.rootControllers = new();
-        m_controllerMap = new();
+       
         foreach (var elem  in rootCons)
         {
             var rootConGO = (elem as RootController).gameObject;
@@ -306,7 +336,7 @@ public class Exporter : EditorWindow
             var savedPrefab = PrefabUtility.SaveAsPrefabAssetAndConnect(rootConCopy.gameObject, path,InteractionMode.UserAction);
             assetName.Add(path);
             mytyAsset.rootControllers.Add(path);
-            BuildControllerMap(rootConGO, rootConCopy);
+            BuildCloneObjectMap(rootConGO, rootConCopy);
             GameObject.DestroyImmediate(rootConCopy);
         }
       
@@ -329,18 +359,21 @@ public class Exporter : EditorWindow
 
             foreach (var fieldInfo in nativeAdapter.GetType().GetFields())
             {
-                if (fieldInfo.FieldType.IsSubclassOf(typeof(RiggingModel)))
+                if (fieldInfo.FieldType.IsSubclassOf(typeof(MotionTemplate)))
                 {
-                    var riggingModel = fieldInfo.GetValue(nativeAdapter) as RiggingModel;
-                    if (riggingModel != null)
+                    var motionTemplate = fieldInfo.GetValue(nativeAdapter) as MotionTemplate;
+                    
+                    if (motionTemplate != null)
                     {
-                        fieldInfo.SetValue(nativeAdapter, PrefabUtility.GetCorrespondingObjectFromSource(riggingModel));
+                        var mtGo = motionTemplate.gameObject;
+                        var prefabGo = m_objectMap[mtGo];
+                        fieldInfo.SetValue(nativeAdapter, prefabGo.GetComponent<MotionTemplate>());
                     }
                 }else if (fieldInfo.FieldType.IsSubclassOf(typeof(MYTYController)) || fieldInfo.FieldType.IsEquivalentTo(typeof(MYTYController)))
                 {
-                    Debug.Log(fieldInfo.Name);
+                    
                     var conGO = (fieldInfo.GetValue(nativeAdapter) as MYTYController).gameObject;
-                    var prefabGO = m_controllerMap[conGO];
+                    var prefabGO = m_objectMap[conGO];
                     fieldInfo.SetValue(nativeAdapter, prefabGO.GetComponent<MYTYController>());
                 }
             }
@@ -349,7 +382,7 @@ public class Exporter : EditorWindow
             var savedPrefab = PrefabUtility.SaveAsPrefabAsset(motionAdapterClone.gameObject, path);
             assetName.Add(path);
             mytyAsset.motionAdapters.Add(path);
-            GameObject.DestroyImmediate(motionAdapterClone);
+            DestroyImmediate(motionAdapterClone);
         }
 
         return true;
@@ -371,6 +404,68 @@ public class Exporter : EditorWindow
         file.Write(Application.unityVersion);
         file.Close();
         assetName.Add(filepath);
+    }
+
+    void PrepareMotionTemplateMapper(List<string> assetName)
+    {
+        var mtElem = rootVisualElement.Q<ObjectField>("OBJMT");
+        var motionTemplateMapper = mtElem.value as MotionTemplateMapper;
+        var mtGo = motionTemplateMapper.gameObject;
+        var mtClone = Instantiate(mtGo);
+        mtClone.name = mtGo.name;
+        var path = AssetDatabase.GenerateUniqueAssetPath(MYTYUtil.PrefabPath + "/MotionTemplate.prefab");
+        PrefabUtility.SaveAsPrefabAssetAndConnect(mtClone, path, InteractionMode.UserAction);
+        assetName.Add(path);
+        BuildCloneObjectMap(mtGo, mtClone);
+        DestroyImmediate(mtClone);
+    }
+
+    void PrepareImportSig(List<string> assetName)
+    {
+        var filepath = MYTYUtil.PrefabPath + "/AvatarImportSig.txt";
+        StreamWriter file = new(filepath); 
+        file.Write(ImportSig);
+        file.Close();
+        assetName.Add(filepath);
+    }
+    Dictionary<string, bool> GetInfoAboutSupportedPlatform()
+    {
+        var ret = new Dictionary<string, bool>();
+        ret["Desktop(Mac/Win)"] = false;
+        ret["iOS"] = false;
+        ret["Android"] = false;
+        ret["WebGL"] = false;
+        
+        if (SystemInfo.operatingSystem.StartsWith("Mac"))
+        {
+            if (BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.Standalone, BuildTarget.StandaloneOSX))
+            {
+                ret["Desktop(Mac/Win)"] = true;
+            }
+        }
+        else
+        {
+            if (BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows))
+            {
+                ret["Desktop(Mac/Win)"] = true;
+            }
+        }
+        
+        if(BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.iOS, BuildTarget.iOS))
+        {
+            ret["iOS"] = true;
+        }
+       
+        if (BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.Android, BuildTarget.Android))
+        {
+            ret["Android"] = true;
+        }
+        if (BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.WebGL, BuildTarget.WebGL))
+        {
+            ret["WebGL"] = true;
+        }
+
+        return ret;
     }
 
 }

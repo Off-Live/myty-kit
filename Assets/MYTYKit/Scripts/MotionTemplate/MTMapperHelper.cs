@@ -17,13 +17,14 @@ public static class MTMapperHelper
             var childCount = currentGo.transform.childCount;
             if (childCount == 0)
             {
-                if (currentGo.GetComponent<IMotionTemplate>() != null)
+                var mt = currentGo.GetComponent<MotionTemplate>();
+                if (mt != null)
                 {
-                    mapper.SetTemplate(currentGo.name, currentGo);
+                    mapper.SetTemplate(currentGo.name, mt);
                     items.Add(new MTItem()
                     {
                         name = currentGo.name,
-                        template = currentGo
+                        template = mt
                     });
                 }
             }

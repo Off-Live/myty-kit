@@ -8,27 +8,26 @@ using UnityEngine.Serialization;
 public class MTItem
 {
     public string name;
-    public GameObject template;
+    public MotionTemplate template;
 }
 public class MotionTemplateMapper : MonoBehaviour
 {
     [SerializeField] List<MTItem> templates;
 
-    public IMotionTemplate GetTemplate(string name)
+    public MotionTemplate GetTemplate(string name)
     {
         foreach (var item in templates)
         {
             if (item.name == name)
             {
-                return item.template.GetComponent<IMotionTemplate>();
+                return item.template;
             }
         }
         return null;
     }
 
-    public void SetTemplate(string name, GameObject templateObj)
+    public void SetTemplate(string name, MotionTemplate templateObj)
     {
-        if (templateObj.GetComponent<IMotionTemplate>() == null) return;
         foreach (var item in templates)
         {
             if (item.name == name)
