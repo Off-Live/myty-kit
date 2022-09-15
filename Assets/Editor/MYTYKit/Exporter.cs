@@ -12,10 +12,15 @@ using UnityEngine.U2D.Animation;
 
 public class Exporter : EditorWindow
 {
-    [SerializeField]
-    VisualTreeAsset UI;
+    [SerializeField] VisualTreeAsset UI;
     Dictionary<GameObject, GameObject> m_objectMap;
-    readonly string[] m_platforms = {"Desktop(Mac/Win)","iOS","Android","WebGL"};
+
+    BuildTarget[] m_buildPlatform =
+        { BuildTarget.StandaloneOSX, BuildTarget.iOS, BuildTarget.Android, BuildTarget.WebGL };
+
+    readonly string[] m_platforms = { "Standalone(Mac/Win)", "iOS", "Android", "WebGL" };
+    readonly string[] m_bundleSurfix = { "", "_ios", "_android", "_webgl" };
+
     const string ImportSig= "MYTYAvatarImporterV2";
 
     [MenuItem("MYTY Kit/Export AssetBundle", false, 1)]
@@ -25,14 +30,16 @@ public class Exporter : EditorWindow
         wnd.titleContent = new GUIContent("AssetBundle Exporter");
     }
 
-    private void OnFocus()
+    void OnFocus()
     {
         Debug.Log("On Focus");
         var avatarConfigElem = rootVisualElement.Q<ObjectField>("OBJConfig");
-        avatarConfigElem.value = GameObject.FindObjectOfType<AvatarSelector>().gameObject;
+        var avatarSelector = FindObjectOfType<AvatarSelector>();
+        if (avatarSelector == null) return;
+        avatarConfigElem.value = avatarSelector.gameObject;
     }
 
-    private void CreateGUI()
+    void CreateGUI()
     {
         UI.CloneTree(rootVisualElement);
 
@@ -177,47 +184,29 @@ public class Exporter : EditorWindow
         }
         MYTYUtil.BuildAssetPath(MYTYUtil.BundlePath);
 
+        var platformSelection = GetPlatformSelection();
+        for (int i = 0; i < m_platforms.Length; i++)
+        {
+            Debug.Log(m_platforms[i]+" "+platformSelection[i]);
+        }
+
         if (SystemInfo.operatingSystem.StartsWith("Mac"))
         {
-            if (BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.Standalone, BuildTarget.StandaloneOSX))
-            {
-                BuildPipeline.BuildAssetBundles(MYTYUtil.BundlePath, buildMap, BuildAssetBundleOptions.None, BuildTarget.StandaloneOSX);
-            }
-            else
-            {
-                Debug.LogError("macOS support must be installed.");
-            }
+            m_buildPlatform[0] = BuildTarget.StandaloneOSX;
         }
         else
         {
-            if (BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows))
-            {
-                BuildPipeline.BuildAssetBundles(MYTYUtil.BundlePath, buildMap, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);
-            }
-            else
-            {
-                Debug.LogError("Windows support must be installed.");
-            }
+            m_buildPlatform[0] = BuildTarget.StandaloneWindows;
         }
 
-        buildMap[0].assetBundleName = filename + "_ios";
-        if(BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.iOS, BuildTarget.iOS))
+        for (int i = 0; i < platformSelection.Length; i++)
         {
-            BuildPipeline.BuildAssetBundles(MYTYUtil.BundlePath, buildMap, BuildAssetBundleOptions.None, BuildTarget.iOS);
-        }
-        else
-        {
-            Debug.LogWarning("You should install iOS support to build ios bundle");
-        }
-
-        buildMap[0].assetBundleName = filename + "_android";
-        if (BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.Android, BuildTarget.Android))
-        {
-            BuildPipeline.BuildAssetBundles(MYTYUtil.BundlePath, buildMap, BuildAssetBundleOptions.None, BuildTarget.Android);
-        }
-        else
-        {
-            Debug.LogWarning("You should install iOS support to build ios bundle");
+            if (platformSelection[i])
+            {
+                buildMap[0].assetBundleName = filename + m_bundleSurfix[i];
+                BuildPipeline.BuildAssetBundles(MYTYUtil.BundlePath, buildMap, BuildAssetBundleOptions.None,
+                    m_buildPlatform[i]);
+            }
         }
         
         Close();
@@ -339,9 +328,6 @@ public class Exporter : EditorWindow
             BuildCloneObjectMap(rootConGO, rootConCopy);
             GameObject.DestroyImmediate(rootConCopy);
         }
-      
-
-
         return true;
     }
 
@@ -431,7 +417,7 @@ public class Exporter : EditorWindow
     Dictionary<string, bool> GetInfoAboutSupportedPlatform()
     {
         var ret = new Dictionary<string, bool>();
-        ret["Desktop(Mac/Win)"] = false;
+        ret["Standalone(Mac/Win)"] = false;
         ret["iOS"] = false;
         ret["Android"] = false;
         ret["WebGL"] = false;
@@ -440,14 +426,14 @@ public class Exporter : EditorWindow
         {
             if (BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.Standalone, BuildTarget.StandaloneOSX))
             {
-                ret["Desktop(Mac/Win)"] = true;
+                ret["Standalone(Mac/Win)"] = true;
             }
         }
         else
         {
             if (BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows))
             {
-                ret["Desktop(Mac/Win)"] = true;
+                ret["Standalone(Mac/Win)"] = true;
             }
         }
         
@@ -463,6 +449,18 @@ public class Exporter : EditorWindow
         if (BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.WebGL, BuildTarget.WebGL))
         {
             ret["WebGL"] = true;
+        }
+
+        return ret;
+    }
+
+    bool[] GetPlatformSelection()
+    {
+        var ret = new bool[m_platforms.Length];
+        var platformGroup = rootVisualElement.Q<GroupBox>("GRPPlatform");
+        for (int i = 0; i < m_platforms.Length; i++)
+        {
+            ret[i] = (platformGroup[i] as Toggle).value;
         }
 
         return ret;
