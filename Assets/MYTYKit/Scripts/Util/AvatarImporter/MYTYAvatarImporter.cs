@@ -8,8 +8,8 @@ using System.Collections;
 
 public class MYTYAvatarImporter : MonoBehaviour, IMYTYAvatarImporter
 {
-    private AssetBundle m_assetBundle;
-    private Dictionary<GameObject, GameObject> m_goMap;
+    protected AssetBundle assetBundle;
+    protected Dictionary<GameObject, GameObject> goMap;
 
     public static void InitAvatarAsset()
     {
@@ -18,32 +18,44 @@ public class MYTYAvatarImporter : MonoBehaviour, IMYTYAvatarImporter
 
     public IEnumerator LoadMYTYAvatarAsync(GameObject motionTemplateGO, AssetBundle bundle, GameObject root, bool spriteOnly = false)
     {
-        m_assetBundle = bundle;
-        if (m_assetBundle == null)
+        assetBundle = bundle;
+        if (assetBundle == null)
         {
             Debug.Log("Failed to load bundle");
             yield break;
         }
 
-        m_goMap = new();
-
-        var request = m_assetBundle.LoadAssetAsync<MYTYAssetScriptableObject>("mytyassetdata.asset");
-        yield return request;
-        var mytyasset = request.asset as MYTYAssetScriptableObject;
-
+        goMap = new();
         var avatarSelectorGO = new GameObject("AvatarSelector");
         avatarSelectorGO.transform.parent = root.transform;
+        yield return SetupAvatarSelector(root, avatarSelectorGO);
+        var selector = avatarSelectorGO.GetComponent<AvatarSelector>();
+        var request = assetBundle.LoadAssetAsync<DefaultLayoutAsset>("DefaultLayoutAsset.asset");
+        yield return request;
+        var layout = request.asset as DefaultLayoutAsset;
+        SetupLayout(root, selector, layout);
+
+        if (spriteOnly) yield break;
+
+        yield return SetupAvatarAsync(root, avatarSelectorGO, motionTemplateGO);
+
+    }
+
+    protected IEnumerator SetupAvatarSelector(GameObject root, GameObject avatarSelectorGO)
+    {
+        var request = assetBundle.LoadAssetAsync<MYTYAssetScriptableObject>("mytyassetdata.asset");
+        yield return request;
+        var mytyasset = request.asset as MYTYAssetScriptableObject;
         var selector = avatarSelectorGO.AddComponent<AvatarSelector>();
 
         selector.mytyAssetStorage = mytyasset;
         selector.templates = new();
 
-
         foreach (var templateInfo in mytyasset.templateInfos)
         {
             var template = new AvatarTemplate();
             template.PSBPath = templateInfo.template;
-            var instanceReq = m_assetBundle.LoadAssetAsync<GameObject>(templateInfo.instance);
+            var instanceReq = assetBundle.LoadAssetAsync<GameObject>(templateInfo.instance);
             yield return instanceReq;
             var prefabInstance = instanceReq.asset as GameObject;
             var psb = Instantiate(prefabInstance);
@@ -51,7 +63,7 @@ public class MYTYAvatarImporter : MonoBehaviour, IMYTYAvatarImporter
             BuildMap(prefabInstance, psb);
             template.instance = psb;
             psb.transform.parent = root.transform;
-            var splReq = m_assetBundle.LoadAssetAsync<SpriteLibraryAsset>(templateInfo.spriteLibrary);
+            var splReq = assetBundle.LoadAssetAsync<SpriteLibraryAsset>(templateInfo.spriteLibrary);
             yield return splReq;
 
             template.spriteLibrary = splReq.asset as SpriteLibraryAsset;
@@ -70,54 +82,9 @@ public class MYTYAvatarImporter : MonoBehaviour, IMYTYAvatarImporter
 
         selector.id = 0;
         selector.Configure();
-
-        request = m_assetBundle.LoadAssetAsync<DefaultLayoutAsset>("DefaultLayoutAsset.asset");
-        yield return request;
-        var layout = request.asset as DefaultLayoutAsset;
-        SetupLayout(root, selector, layout);
-
-        if (spriteOnly) yield break;
-
-        yield return SetupAvatarAsync(root, avatarSelectorGO, motionTemplateGO);
-
     }
 
-    public GameObject LoadMYTYAvatar(GameObject motionTemplateGO, AssetBundle bundle, string loadedName = "avatar", bool spriteOnly = false)
-    {
-
-        m_assetBundle = bundle;
-        if (m_assetBundle == null)
-        {
-            Debug.Log("Failed to load bundle");
-            return null;
-        }
-
-        m_goMap = new();
-
-        var avatarSelectorGO = LoadAvatarSelector();
-        var retGO = new GameObject(loadedName);
-        var selector = avatarSelectorGO.GetComponent<AvatarSelector>();
-        avatarSelectorGO.transform.parent = retGO.transform;
-        foreach (var template in selector.templates)
-        {
-            var psb = GameObject.Instantiate(template.instance);
-            psb.name = template.instance.name;
-            BuildMap(template.instance, psb);
-            template.instance = psb;
-            if (template.boneRootObj != null) template.boneRootObj = m_goMap[template.boneRootObj];
-            psb.transform.parent = retGO.transform;
-        }
-
-        if (spriteOnly) return retGO;
-        var layout = m_assetBundle.LoadAsset<DefaultLayoutAsset>("DefaultLayoutAsset.asset");
-
-        SetupLayout(retGO, selector, layout);
-        SetupAvatar(retGO, avatarSelectorGO, motionTemplateGO);
-
-        return retGO;
-    }
-
-    private IEnumerator SetupAvatarAsync(GameObject root, GameObject avatarSelectorGO, GameObject motionTemplateGO)
+    IEnumerator SetupAvatarAsync(GameObject root, GameObject avatarSelectorGO, GameObject motionTemplateGO)
     {
         var motionAdaptersGO = new GameObject("MotionAdapter");
         var selector = avatarSelectorGO.GetComponent<AvatarSelector>();
@@ -126,7 +93,7 @@ public class MYTYAvatarImporter : MonoBehaviour, IMYTYAvatarImporter
         foreach (var rootConPrefabPath in selector.mytyAssetStorage.rootControllers)
         {
 
-            var request = m_assetBundle.LoadAssetAsync<GameObject>(rootConPrefabPath);
+            var request = assetBundle.LoadAssetAsync<GameObject>(rootConPrefabPath);
             yield return request;
             var rootConPrefab = request.asset as GameObject;
             var rootConGO = GameObject.Instantiate(rootConPrefab);
@@ -139,7 +106,7 @@ public class MYTYAvatarImporter : MonoBehaviour, IMYTYAvatarImporter
         foreach (var motionAdapterPrefabPath in selector.mytyAssetStorage.motionAdapters)
         {
             //yield return new WaitForSeconds(0.1f);
-            var request = m_assetBundle.LoadAssetAsync<GameObject>(motionAdapterPrefabPath);
+            var request = assetBundle.LoadAssetAsync<GameObject>(motionAdapterPrefabPath);
             yield return request;
             var motionAdapterPrefab = request.asset as GameObject;
             var motionAdapterGO = GameObject.Instantiate(motionAdapterPrefab);
@@ -150,34 +117,8 @@ public class MYTYAvatarImporter : MonoBehaviour, IMYTYAvatarImporter
         }
     }
 
-    private void SetupAvatar(GameObject root, GameObject avatarSelectorGO, GameObject motionTemplateGO)
-    {
-        var motionAdaptersGO = new GameObject("MotionAdapter");
-        var selector = avatarSelectorGO.GetComponent<AvatarSelector>();
-        motionAdaptersGO.transform.parent = root.transform;
 
-        foreach (var rootConPrefabPath in selector.mytyAssetStorage.rootControllers)
-        {
-            var rootConPrefab = m_assetBundle.LoadAsset<GameObject>(rootConPrefabPath);
-            var rootConGO = GameObject.Instantiate(rootConPrefab);
-            rootConGO.name = rootConPrefab.name;
-            rootConGO.transform.parent = root.transform;
-            RestoreController(rootConGO);
-            BuildMap(rootConPrefab, rootConGO);
-        }
-
-        foreach (var motionAdapterPrefabPath in selector.mytyAssetStorage.motionAdapters)
-        {
-            var motionAdapterPrefab = m_assetBundle.LoadAsset<GameObject>(motionAdapterPrefabPath);
-            var motionAdapterGO = GameObject.Instantiate(motionAdapterPrefab);
-            motionAdapterGO.name = motionAdapterPrefab.name;
-            motionAdapterGO.transform.parent = motionAdaptersGO.transform;
-
-            SetupMotionAdapter(root, motionAdapterGO, motionTemplateGO);
-        }
-    }
-
-    private void SetupMotionAdapter(GameObject root, GameObject motionAdapterGO, GameObject motionTemplateGO)
+    void SetupMotionAdapter(GameObject root, GameObject motionAdapterGO, GameObject motionTemplateGO)
     {
         var nativeAdapter = motionAdapterGO.GetComponent<NativeAdapter>();
         if (nativeAdapter == null) return;
@@ -187,7 +128,7 @@ public class MYTYAvatarImporter : MonoBehaviour, IMYTYAvatarImporter
             if (field.FieldType.IsSubclassOf(typeof(MYTYController)) || field.FieldType.IsEquivalentTo(typeof(MYTYController)))
             {
                 var prefab = (field.GetValue(nativeAdapter) as MYTYController).gameObject;
-                var conGO = m_goMap[prefab];
+                var conGO = goMap[prefab];
                 field.SetValue(nativeAdapter, conGO.GetComponent<MYTYController>());
             }
             else if (field.FieldType.IsSubclassOf(typeof(RiggingModel)))
@@ -196,7 +137,7 @@ public class MYTYAvatarImporter : MonoBehaviour, IMYTYAvatarImporter
                 if (motionTemplateGO == null)
                 {
 
-                    if (!m_goMap.ContainsKey(prefab))
+                    if (!goMap.ContainsKey(prefab))
                     {
                         var rootPrefab = prefab;
                         while (rootPrefab.transform.parent != null)
@@ -212,7 +153,7 @@ public class MYTYAvatarImporter : MonoBehaviour, IMYTYAvatarImporter
                 }
                 else
                 {
-                    if (!m_goMap.ContainsKey(prefab))
+                    if (!goMap.ContainsKey(prefab))
                     {
                         var rootPrefab = prefab;
                         while (rootPrefab.transform.parent != null)
@@ -223,50 +164,28 @@ public class MYTYAvatarImporter : MonoBehaviour, IMYTYAvatarImporter
                     }
 
                 }
-                field.SetValue(nativeAdapter, m_goMap[prefab].GetComponent<RiggingModel>());
+                field.SetValue(nativeAdapter, goMap[prefab].GetComponent<RiggingModel>());
             }
 
         }
     }
 
-    private GameObject LoadAvatarSelector()
+
+    protected void BuildMap(GameObject prefabNode, GameObject goNode)
     {
-        var prefabs = m_assetBundle.LoadAllAssets<GameObject>();
-        GameObject selectorGO = null;
-        foreach (var prefab in prefabs)
-        {
-            if (prefab.GetComponent<AvatarSelector>() != null)
-            {
-                selectorGO = GameObject.Instantiate(prefab);
-                selectorGO.name = "AvatarSelector";
-            }
-        }
-
-        if (selectorGO == null)
-        {
-            Debug.Log("no prefab");
-        }
-
-
-        return selectorGO;
-    }
-
-
-    private void BuildMap(GameObject prefabNode, GameObject goNode)
-    {
-        m_goMap[prefabNode] = goNode;
+        goMap[prefabNode] = goNode;
         for (int i = 0; i < prefabNode.transform.childCount; i++)
         {
             BuildMap(prefabNode.transform.GetChild(i).gameObject, goNode.transform.GetChild(i).gameObject);
         }
     }
 
-    private void RestoreController(GameObject node)
+    protected void RestoreController(GameObject node)
     {
         var controller = node.GetComponent<MYTYController>();
         if (controller != null)
         {
-            controller.PostprocessAfterLoad(m_goMap);
+            controller.PostprocessAfterLoad(goMap);
         }
 
         for (int i = 0; i < node.transform.childCount; i++)
@@ -275,7 +194,7 @@ public class MYTYAvatarImporter : MonoBehaviour, IMYTYAvatarImporter
         }
     }
 
-    void SetupLayout(GameObject parent, AvatarSelector selector, DefaultLayoutAsset layoutAsset)
+    protected void SetupLayout(GameObject parent, AvatarSelector selector, DefaultLayoutAsset layoutAsset)
     {
         if (layoutAsset == null) return;
         var cameraGO = new GameObject("RenderCam");
@@ -297,9 +216,9 @@ public class MYTYAvatarImporter : MonoBehaviour, IMYTYAvatarImporter
 
     public string GetKitVersionInfo()
     {
-        if (m_assetBundle == null) return "";
+        if (assetBundle == null) return "";
 
-        var textAsset = m_assetBundle.LoadAsset<TextAsset>("VERSION.txt");
+        var textAsset = assetBundle.LoadAsset<TextAsset>("VERSION.txt");
         if (textAsset == null) return "";
 
         return textAsset.text;
@@ -307,9 +226,9 @@ public class MYTYAvatarImporter : MonoBehaviour, IMYTYAvatarImporter
 
     public string GetEditorVersionInfo()
     {
-        if (m_assetBundle == null) return "";
+        if (assetBundle == null) return "";
 
-        var textAsset = m_assetBundle.LoadAsset<TextAsset>("EditorInfo.txt");
+        var textAsset = assetBundle.LoadAsset<TextAsset>("EditorInfo.txt");
         if (textAsset == null) return "";
 
         return textAsset.text;
