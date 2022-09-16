@@ -10,7 +10,7 @@ public class MYTYAvatarImporterV2 : MYTYAvatarImporter
     AssetBundle m_assetBundle;
     Dictionary<GameObject, GameObject> m_goMap;
 
-    public IEnumerator LoadMYTYAvatarAsync(GameObject motionSourceGo, AssetBundle bundle, GameObject root,
+    public override IEnumerator LoadMYTYAvatarAsync(GameObject motionSourceGo, AssetBundle bundle, GameObject root,
         bool spriteOnly = false)
     {
         assetBundle = bundle;
@@ -66,6 +66,7 @@ public class MYTYAvatarImporterV2 : MYTYAvatarImporter
 
         var motionSource = motionSourceGo.GetComponent<MotionSource>();
         motionSource.motionTemplateMapperList.Add(motionTemplateGO.GetComponent<MotionTemplateMapper>());
+        motionSource.UpdateMotionAndTemplates();
         
         foreach (var motionAdapterPrefabPath in selector.mytyAssetStorage.motionAdapters)
         {

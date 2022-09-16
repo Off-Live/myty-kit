@@ -16,7 +16,7 @@ public class MYTYAvatarImporter : MonoBehaviour, IMYTYAvatarImporter
         AssetBundle.UnloadAllAssetBundles(true);
     }
 
-    public IEnumerator LoadMYTYAvatarAsync(GameObject motionTemplateGO, AssetBundle bundle, GameObject root, bool spriteOnly = false)
+    public virtual IEnumerator LoadMYTYAvatarAsync(GameObject motionTemplateGO, AssetBundle bundle, GameObject root, bool spriteOnly = false)
     {
         assetBundle = bundle;
         if (assetBundle == null)

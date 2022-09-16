@@ -23,7 +23,7 @@ public class MotionSource : MonoBehaviour
     [SerializeField] List<MotionCategory> motionCategories = new();
     [SerializeField] List<MTBridgeItem> templateBridgeMap = new();
     
-    public List<MotionTemplateMapper> motionTemplateMapperList;
+    public List<MotionTemplateMapper> motionTemplateMapperList = new();
 
     void Start()
     {

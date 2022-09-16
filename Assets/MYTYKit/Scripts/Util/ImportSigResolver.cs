@@ -14,7 +14,7 @@
             }
 
             var importerType = Type.GetType(textAsset.text);
-            if (importerType == null || !importerType.IsSubclassOf(typeof(IMYTYAvatarImporter))) return false;
+            if (importerType == null || !typeof(IMYTYAvatarImporter).IsAssignableFrom(importerType) ) return false;
 
             if (go.GetComponent(importerType) == null) go.AddComponent(importerType);
             return true;
