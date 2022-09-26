@@ -100,11 +100,11 @@ public class MotionSource : MonoBehaviour
             foreach (var motionTemplateMapper in motionTemplateMapperList)
             {
                 var template = motionTemplateMapper.GetTemplate(brigdeItem.name);
-                if (template == null) return;
+                if (template == null) continue;
 
                 var bridge = brigdeItem.templateBridge;
-                if (bridge == null) return;
-            
+                if (bridge == null) continue;
+                
                 bridge.AddMotionTemplate(template);
             }
             
