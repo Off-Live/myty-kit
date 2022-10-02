@@ -73,7 +73,7 @@ public class FaceGeometry
         {
             metricLandmarks[i] = invPoseTransformMat.MultiplyPoint3x4(metricLandmarks[i]);
         }
-        //ChangeHandedness(metricLandmarks);
+        ChangeHandedness(metricLandmarks);
 
         return metricLandmarks;
     }

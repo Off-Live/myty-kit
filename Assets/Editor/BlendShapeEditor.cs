@@ -17,10 +17,13 @@ public class BlendShapeEditor : Editor
         var root = new VisualElement();
         var meshProp = new PropertyField();
         var normProp = new PropertyField();
+        var bsProp = new PropertyField();
         meshProp.BindProperty(serializedObject.FindProperty("faceMesh"));
         normProp.BindProperty(serializedObject.FindProperty("isNormalize"));
+        bsProp.BindProperty(serializedObject.FindProperty("blendShapeRenderer"));
         root.Add(meshProp);
         root.Add(normProp);
+        root.Add(bsProp);
         var solver = target as MeFaMoSolver;
 
         foreach (var pair  in solver.blendShape)

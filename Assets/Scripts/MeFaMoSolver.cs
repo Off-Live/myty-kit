@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -18,6 +19,7 @@ public class MeFaMoSolver : MonoBehaviour
     [SerializeField] PointsTemplate faceMesh;
     public Dictionary<FaceBlendShape, float> blendShape = new();
     public bool isNormalize = false;
+    public SkinnedMeshRenderer blendShapeRenderer;
     Action uiUpdater;
 
     Vector3[] m_landmarks = new Vector3[478];
@@ -76,11 +78,22 @@ public class MeFaMoSolver : MonoBehaviour
         
         SolvePose();
         UpdateMesh();
-        CalculateMouthLandmark();
-        CalculateEyeLandmark();
+        CalculateMouthLandmark2();
+        //CalculateEyeLandmark();
         if (uiUpdater != null)
         {
             uiUpdater();
+        }
+
+        foreach (var pair in blendShape)
+        {
+            string bsName = pair.Key + "";
+            bsName = char.ToLower(bsName.First())+bsName.Substring(1);
+            var index = blendShapeRenderer.sharedMesh.GetBlendShapeIndex(bsName);
+            if (index >= 0)
+            {
+                blendShapeRenderer.SetBlendShapeWeight(index,pair.Value*100);
+            }
         }
     }
     
@@ -154,7 +167,110 @@ public class MeFaMoSolver : MonoBehaviour
         var clamped = Mathf.Clamp(value, min, max);
         return (clamped - min) / (max - min);
     }
-    
+
+    void CalculateMouthLandmark2()
+    {
+        var upper_lip = m_landmarks[MeFaMoConfig.upper_lip];
+        var upper_outer_lip = m_landmarks[MeFaMoConfig.upper_outer_lip];
+        var lower_lip = m_landmarks[MeFaMoConfig.lower_lip];
+
+        var mouth_corner_left = m_landmarks[MeFaMoConfig.mouth_corner_left];
+        var mouth_corner_right = m_landmarks[MeFaMoConfig.mouth_corner_right];
+        var lowest_chin = m_landmarks[MeFaMoConfig.lowest_chin];
+        var nose_tip = m_landmarks[MeFaMoConfig.nose_tip];
+        var upper_head = m_landmarks[MeFaMoConfig.upper_head];
+
+        var mouth_width = (mouth_corner_left - mouth_corner_right).magnitude;
+        var mouth_center = (upper_lip + lower_lip) / 2;
+        var mouth_open_dist = upper_lip.y - lower_lip.y;
+        var mouth_center_nose_dist = (mouth_center - nose_tip).magnitude;
+
+        var jaw_nose_dist = (lowest_chin - nose_tip).magnitude;
+        var head_height = (upper_head - lowest_chin).magnitude;
+        var jaw_open_ratio = jaw_nose_dist / head_height;
+        var jaw_open = Remap(FaceBlendShape.JawOpen, jaw_open_ratio);
+        
+        
+        
+        var mouth_open = Remap(FaceBlendShape.MouthClose, mouth_open_dist/mouth_center_nose_dist);
+        blendShape[FaceBlendShape.MouthClose] = 0;
+        blendShape[FaceBlendShape.JawOpen] = mouth_open;
+        
+        var eye_right_center = (m_landmarks[MeFaMoConfig.eye_right[0]] + m_landmarks[MeFaMoConfig.eye_right[1]]) / 2;
+        var eye_left_center = (m_landmarks[MeFaMoConfig.eye_left[0]] + m_landmarks[MeFaMoConfig.eye_left[1]]) / 2;
+        var eye_distance = (eye_right_center - eye_left_center).magnitude;
+        var mouth_left_half = Mathf.Abs(nose_tip.x - mouth_corner_left.x) / eye_distance;
+        var mouth_right_half = Mathf.Abs(nose_tip.x - mouth_corner_right.x) / eye_distance;
+
+        var mouth_width_ratio = mouth_width / eye_distance;
+        var mouth_gradient_left = (mouth_corner_left.y - mouth_center.y) / (mouth_corner_left.x - mouth_center.x);
+        var mouth_gradient_right = - (mouth_corner_right.y - mouth_center.y) / (mouth_corner_right.x - mouth_center.x);
+        
+        var mouth_skew = (mouth_center.x - nose_tip.x)/eye_distance;
+
+        Debug.Log(mouth_skew+"");
+        blendShape[FaceBlendShape.MouthSmileLeft] = 0;
+        blendShape[FaceBlendShape.MouthStretchLeft] = 0;
+        blendShape[FaceBlendShape.MouthSmileRight] = 0;
+        blendShape[FaceBlendShape.MouthStretchRight] = 0;
+        if (mouth_left_half > 0.4f)
+        {
+            var value = Remap(mouth_left_half, 0.4f, 0.5f);
+            if (mouth_gradient_left > 0.0f)
+            {
+                var smile = 0.5f+0.5f*Remap(mouth_gradient_left, 0.0f, 0.2f);
+                var strecth = 0.5f * (1 - Remap(mouth_gradient_left, 0.0f, 0.2f));
+                blendShape[FaceBlendShape.MouthSmileLeft] = smile*value;
+                blendShape[FaceBlendShape.MouthStretchLeft] = strecth*value;
+                
+            }
+            else
+            {
+                var smile = 0.5f*Remap(mouth_gradient_left, -0.3f, 0.0f);
+                var strecth = 0.5f+ 0.5f * (1 - Remap(mouth_gradient_left, -0.3f, 0.0f));
+                blendShape[FaceBlendShape.MouthSmileLeft] = smile*value;
+                blendShape[FaceBlendShape.MouthStretchLeft] = strecth*value;
+            }
+        }
+        ;
+        if (mouth_right_half > 0.4f)
+        {
+            var value = Remap(mouth_right_half, 0.4f, 0.5f);
+            if (mouth_gradient_right > 0.0f)
+            {
+                var smile = 0.5f+0.5f*Remap(mouth_gradient_right, 0.0f, 0.2f);
+                var strecth = 0.5f * (1 - Remap(mouth_gradient_right, 0.0f, 0.2f));
+                blendShape[FaceBlendShape.MouthSmileRight] = smile * value;
+                blendShape[FaceBlendShape.MouthStretchRight] = strecth * value;
+
+            }
+            else
+            {
+                var smile = 0.5f*Remap(mouth_gradient_right, -0.3f, 0.0f);
+                var strecth = 0.5f+ 0.5f * (1 - Remap(mouth_gradient_right, -0.3f, 0.0f));
+                blendShape[FaceBlendShape.MouthSmileRight] = smile*value;
+                blendShape[FaceBlendShape.MouthStretchRight] = strecth*value;
+            }
+        }
+
+        if (mouth_width_ratio < 0.7f)
+        {
+            blendShape[FaceBlendShape.MouthPucker] = 1- Remap(mouth_width_ratio, 0.5f, 0.7f);
+            blendShape[FaceBlendShape.MouthFunnel] = mouth_open;
+        }
+        else
+        {
+            blendShape[FaceBlendShape.MouthPucker] = 0.0f;
+            blendShape[FaceBlendShape.MouthFunnel] = 0.0f;
+        }
+
+        blendShape[FaceBlendShape.MouthLeft] = Remap(mouth_skew, 0, 0.2f);
+        blendShape[FaceBlendShape.MouthRight] = 1.0f - Remap(mouth_skew, -0.2f, 0f);
+
+        blendShape[FaceBlendShape.JawLeft] = blendShape[FaceBlendShape.MouthLeft];
+        blendShape[FaceBlendShape.JawRight] = blendShape[FaceBlendShape.MouthRight];
+
+    }
     void CalculateMouthLandmark()
     {
         var upper_lip = m_landmarks[MeFaMoConfig.upper_lip];
@@ -176,19 +292,20 @@ public class MeFaMoSolver : MonoBehaviour
         var head_height = (upper_head - lowest_chin).magnitude;
         var jaw_open_ratio = jaw_nose_dist / head_height;
         var jaw_open = Remap(FaceBlendShape.JawOpen, jaw_open_ratio);
-        blendShape[FaceBlendShape.JawOpen] = jaw_open;
+        blendShape[FaceBlendShape.JawOpen] = 1.0f;//jaw_open;
         
         var mouth_open = Remap(FaceBlendShape.MouthClose, mouth_open_dist/mouth_center_nose_dist);
-        blendShape[FaceBlendShape.MouthClose] = 1-mouth_open;
+        blendShape[FaceBlendShape.MouthClose] = Remap(1-mouth_open,0,jaw_open);
+        
         //Debug.Log("Jaw, mouth "+jaw_open+" "+(mouth_open_dist)/mouth_center_nose_dist);
-         var smile_left = mouth_center.y - mouth_corner_left.y;
-         var smile_right = mouth_center.y - mouth_corner_right.y;
+         var smile_left = upper_lip.y - mouth_corner_left.y;
+         var smile_right = upper_lip.y - mouth_corner_right.y;
 
         //var smile_left = (mouth_center.y - mouth_corner_left.y) / (mouth_center.x - mouth_corner_left.x);
         //var smile_right = (mouth_center.y - mouth_corner_right.y) / (mouth_center.x - mouth_corner_right.x);
 
-        Debug.Log("smile "+smile_left+" "+smile_right);
-        
+        //Debug.Log("smile "+smile_left+" "+smile_right);
+//        Debug.Log("test Left " + mouth_corner_left);
         var mouth_smile_left = 1 - Remap(FaceBlendShape.MouthSmileLeft, smile_left);
         var mouth_smile_right = 1 - Remap(FaceBlendShape.MouthSmileRight, smile_right);
 
@@ -197,8 +314,8 @@ public class MeFaMoSolver : MonoBehaviour
         blendShape[FaceBlendShape.MouthDimpleLeft] = mouth_smile_left / 2;
         blendShape[FaceBlendShape.MouthDimpleRight] = mouth_smile_right / 2;
 
-        var mouth_frown_left = (mouth_corner_left - m_landmarks[MeFaMoConfig.mouth_frown_left]).x;
-        var mouth_frown_right = (mouth_corner_right - m_landmarks[MeFaMoConfig.mouth_frown_right]).x;
+        var mouth_frown_left = (mouth_corner_left - m_landmarks[MeFaMoConfig.mouth_frown_left]).y;
+        var mouth_frown_right = (mouth_corner_right - m_landmarks[MeFaMoConfig.mouth_frown_right]).y;
 
         blendShape[FaceBlendShape.MouthFrownLeft] = 1 - Remap(FaceBlendShape.MouthFrownLeft, mouth_frown_left);
         blendShape[FaceBlendShape.MouthFrownRight] = 1 - Remap(FaceBlendShape.MouthFrownRight, mouth_frown_right);
