@@ -37,6 +37,8 @@ public class MeFaMoConfig
     public static readonly int upper_nose = 6;
     public static readonly int[] cheek_squint_left = { 359, 342 };
     public static readonly int[] cheek_squint_right = { 130, 113 };
+    public static readonly int left_brow_top = 334;
+    public static readonly int right_brow_top = 105;
     
     public enum FaceBlendShape
     {

@@ -79,7 +79,7 @@ public class MeFaMoSolver : MonoBehaviour
         SolvePose();
         UpdateMesh();
         CalculateMouthLandmark2();
-        //CalculateEyeLandmark();
+        CalculateEyeLandmark2();
         if (uiUpdater != null)
         {
             uiUpdater();
@@ -208,7 +208,7 @@ public class MeFaMoSolver : MonoBehaviour
         
         var mouth_skew = (mouth_center.x - nose_tip.x)/eye_distance;
 
-        Debug.Log(mouth_skew+"");
+        
         blendShape[FaceBlendShape.MouthSmileLeft] = 0;
         blendShape[FaceBlendShape.MouthStretchLeft] = 0;
         blendShape[FaceBlendShape.MouthSmileRight] = 0;
@@ -421,6 +421,35 @@ public class MeFaMoSolver : MonoBehaviour
         return Mathf.Clamp(eye_distance / max_ratio, 0, 2);
     }
 
+    void CalculateEyeLandmark2()
+    {
+        var eye_open_ratio_left = GetEyeOpenRatio(MeFaMoConfig.eye_left);
+        var eye_open_ratio_right = GetEyeOpenRatio(MeFaMoConfig.eye_right);
+        
+        var blink_left = 1 - Remap(eye_open_ratio_left,0.25f,0.80f);
+        var blink_right = 1 - Remap(eye_open_ratio_right,0.25f,0.80f);
+        var left_eye_center = (m_landmarks[MeFaMoConfig.eye_left[0]] + m_landmarks[MeFaMoConfig.eye_left[1]]) / 2;
+        var right_eye_center = (m_landmarks[MeFaMoConfig.eye_right[0]] + m_landmarks[MeFaMoConfig.eye_right[1]]) / 2;
+        blendShape[FaceBlendShape.EyeBlinkLeft] = blink_left;
+        blendShape[FaceBlendShape.EyeBlinkRight] = blink_right;
+        blendShape[FaceBlendShape.EyeSquintLeft] = blendShape[FaceBlendShape.MouthSmileLeft]*0.7f;
+        blendShape[FaceBlendShape.EyeSquintRight] = blendShape[FaceBlendShape.MouthSmileRight]*0.7f;
+
+        var left_brow_dist = m_landmarks[MeFaMoConfig.left_brow_top].y - left_eye_center.y;
+        var right_brow_dist = m_landmarks[MeFaMoConfig.right_brow_top].y - right_eye_center.y;
+
+        Debug.Log(left_brow_dist + " " + right_brow_dist);
+
+        blendShape[FaceBlendShape.BrowOuterUpLeft] = Remap(left_brow_dist, 2.9f, 3.4f);
+        blendShape[FaceBlendShape.BrowOuterUpRight] = Remap(right_brow_dist, 2.9f, 3.4f);
+        blendShape[FaceBlendShape.BrowInnerUp] =
+            (blendShape[FaceBlendShape.BrowOuterUpLeft] + blendShape[FaceBlendShape.BrowOuterUpRight]) / 2;
+        blendShape[FaceBlendShape.BrowDownLeft] = 1- Remap(left_brow_dist, 2.35f, 2.5f);
+        blendShape[FaceBlendShape.BrowDownRight] = 1- Remap(right_brow_dist, 2.35f, 2.5f);
+
+        blendShape[FaceBlendShape.EyeWideLeft] = blendShape[FaceBlendShape.BrowOuterUpLeft];
+        blendShape[FaceBlendShape.EyeWideRight] = blendShape[FaceBlendShape.BrowOuterUpRight];
+    }
     void CalculateEyeLandmark()
     {
         var eye_open_ratio_left = GetEyeOpenRatio(MeFaMoConfig.eye_left);
