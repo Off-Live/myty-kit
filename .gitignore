@@ -87,3 +87,5 @@ Assets/StreamingAssets/VERSION.txt
 .idea/
 Assets/Scene/
 Assets/Scene.meta
+
+Assets/TestAssets*

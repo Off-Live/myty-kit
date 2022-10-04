@@ -1,18 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Rendering;
-using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra;
-
 using FaceBlendShape = MeFaMoConfig.FaceBlendShape;
-internal class NormalsPerVtx
-{
-    public List<Vector3> normals= new ();
-}
+
 public class MeFaMoSolver : MonoBehaviour
 {
 
@@ -25,11 +17,11 @@ public class MeFaMoSolver : MonoBehaviour
     Vector3[] m_landmarks = new Vector3[478];
     Vector2[] m_uv;
     int[] m_triangle;
-    NormalsPerVtx[] m_normalsPerVertices;
     Vector3[] m_normals;
     
     Mesh m_mesh;
     Vector3[] m_vertices = new Vector3[468];
+    List<Vector3[]> m_history = new();
     void Start()
     {
         m_uv = new Vector2[FaceMeshTopology.UV.Length/2];
@@ -47,14 +39,6 @@ public class MeFaMoSolver : MonoBehaviour
             m_triangle[i * 3] = FaceMeshTopology.TriangleIndices[i * 3 +1];
             m_triangle[i * 3 + 1] = FaceMeshTopology.TriangleIndices[i * 3];
             m_triangle[i * 3 + 2] = FaceMeshTopology.TriangleIndices[i * 3 + 2];
-        }
-        
-        m_normalsPerVertices = new NormalsPerVtx[m_vertices.Length];
-
-        for (var i = 0; i < m_vertices.Length; i++)
-        {
-            m_normalsPerVertices[i] = new NormalsPerVtx();
-            
         }
         
         m_normals = new Vector3[m_vertices.Length];
@@ -77,6 +61,7 @@ public class MeFaMoSolver : MonoBehaviour
         //if(isNormalize) NormalizeHeadPose();
         
         SolvePose();
+        SmoothMesh();
         UpdateMesh();
         CalculateMouthLandmark2();
         CalculateEyeLandmark2();
@@ -110,6 +95,38 @@ public class MeFaMoSolver : MonoBehaviour
         var pcf = new PerspectiveCameraFrustum(frameWidth, frameHeight, focalLength);
         var faceGeo = new FaceGeometry(m_landmarks, pcf);
         m_landmarks = faceGeo.GetMetricLandmarks();
+    }
+
+    void SmoothMesh()
+    {
+        var weight = new float[]
+        {
+            1.0f/2,1.0f/4,1.0f/8,1.0f/16,1.0f/32,1.0f/32
+        };
+        m_history.Add(m_landmarks);
+        if (m_history.Count < weight.Length) return;
+        if (m_history.Count > weight.Length)
+        {
+            m_history.RemoveAt(0);
+        }
+
+        var newLandmarks = new Vector3[468];
+
+        
+        for (var i = 0; i < 468; i++)
+        {
+            Vector3 tmp = Vector3.zero;
+            for (var j = 0; j < weight.Length; j++)
+            {
+                tmp += m_history[j][i] * weight[j];
+            }
+
+            newLandmarks[i] = tmp;
+
+        }
+
+        m_landmarks = newLandmarks;
+
     }
     void NormalizeHeadPose()
     {
@@ -438,14 +455,13 @@ public class MeFaMoSolver : MonoBehaviour
         var left_brow_dist = m_landmarks[MeFaMoConfig.left_brow_top].y - left_eye_center.y;
         var right_brow_dist = m_landmarks[MeFaMoConfig.right_brow_top].y - right_eye_center.y;
 
-        Debug.Log(left_brow_dist + " " + right_brow_dist);
-
-        blendShape[FaceBlendShape.BrowOuterUpLeft] = Remap(left_brow_dist, 2.9f, 3.4f);
-        blendShape[FaceBlendShape.BrowOuterUpRight] = Remap(right_brow_dist, 2.9f, 3.4f);
+        
+        blendShape[FaceBlendShape.BrowOuterUpLeft] = Remap(left_brow_dist, 2.8f, 3.2f);
+        blendShape[FaceBlendShape.BrowOuterUpRight] = Remap(right_brow_dist, 2.8f, 3.2f);
         blendShape[FaceBlendShape.BrowInnerUp] =
             (blendShape[FaceBlendShape.BrowOuterUpLeft] + blendShape[FaceBlendShape.BrowOuterUpRight]) / 2;
-        blendShape[FaceBlendShape.BrowDownLeft] = 1- Remap(left_brow_dist, 2.35f, 2.5f);
-        blendShape[FaceBlendShape.BrowDownRight] = 1- Remap(right_brow_dist, 2.35f, 2.5f);
+        blendShape[FaceBlendShape.BrowDownLeft] = (1- Remap(left_brow_dist, 2.2f, 2.4f))*0.4f;
+        blendShape[FaceBlendShape.BrowDownRight] = (1- Remap(right_brow_dist, 2.2f, 2.4f))*0.4f;
 
         blendShape[FaceBlendShape.EyeWideLeft] = blendShape[FaceBlendShape.BrowOuterUpLeft];
         blendShape[FaceBlendShape.EyeWideRight] = blendShape[FaceBlendShape.BrowOuterUpRight];
