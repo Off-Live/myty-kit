@@ -38,12 +38,14 @@ public class RiggedSprite2DNearstControllerEditorWindow : EditorWindow
         var removeAllBtn = rootVisualElement.Q<Button>("BTNRemoveAll");
         var makePivotBtn = rootVisualElement.Q<Button>("BTNPivot");
         var removePivotBtn = rootVisualElement.Q<Button>("BTNPivotRemove");
+        var copyPosBtn = rootVisualElement.Q<Button>("BTNCopyPos");
         
         addBtn.clicked += OnAdd;
         removeBtn.clicked += OnRemove;
         removeAllBtn.clicked += OnRemoveAll;
         makePivotBtn.clicked += OnMakePivot;
         removePivotBtn.clicked += OnRemovePivot;
+        copyPosBtn.clicked += OnCopyPos;
         
         conVE.objectType = typeof(RiggedSprite2DNearstController);
         listView.makeItem = () =>
@@ -68,7 +70,7 @@ public class RiggedSprite2DNearstControllerEditorWindow : EditorWindow
         rootVisualElement.Q<Vector2Field>("VEC2BL").RegisterValueChangedCallback((ChangeEvent<Vector2> e) => SetPanelCoord());
         rootVisualElement.Q<Vector2Field>("VEC2TR").RegisterValueChangedCallback((ChangeEvent<Vector2> e) => SetPanelCoord());
         rootVisualElement.Q<Vector2Field>("VEC2Value").RegisterValueChangedCallback((ChangeEvent<Vector2> e) => UpdateIndicator());
-        
+        UpdatePanelConfig();
         if (selectedGOs.Length == 0) return;
         
         InitWithController(selectedGOs[0]);
@@ -109,8 +111,9 @@ public class RiggedSprite2DNearstControllerEditorWindow : EditorWindow
 
         SetPanelCoord();
         
-        anchorToggle.SetValueWithoutNotify(!CheckPivot());
+        anchorToggle.SetValueWithoutNotify(!IsPivotEmpty());
         anchorToggle.RegisterValueChangedCallback(OnAnchorToggled);
+        UpdatePanelConfig();
         pivotPanel.RegisterCallback<GeometryChangedEvent>( evt => SyncPivotPosition());
         pointPanel.RegisterCallback<GeometryChangedEvent>(evt => UpdateIndicator());
         UpdatePivotList();
@@ -126,7 +129,7 @@ public class RiggedSprite2DNearstControllerEditorWindow : EditorWindow
         UpdateIndicator();
     }
 
-    bool CheckPivot()
+    bool IsPivotEmpty()
     {
         Debug.Assert(m_conSO!=null);
         if (m_conSO.FindProperty("orgRig").arraySize > 0) return false;
@@ -148,6 +151,8 @@ public class RiggedSprite2DNearstControllerEditorWindow : EditorWindow
 
     void OnAnchorToggled(ChangeEvent<bool> e)
     {
+        if (m_conSO == null) return;
+        UpdatePanelConfig();
         if (e.newValue)
         {
             RegisterAnchor();
@@ -160,15 +165,25 @@ public class RiggedSprite2DNearstControllerEditorWindow : EditorWindow
 
     void RegisterAnchor()
     {
-        if (!CheckPivot())
+        var anchorToggle = rootVisualElement.Q<Toggle>("TGLAnchor");
+        if (!IsPivotEmpty())
         {
             EditorUtility.DisplayDialog("MYTY Kit", "Reset all pivots first.", "Ok");
             return;
         }
+        
         var targetsProp = m_conSO.FindProperty("rigTarget");
+
+        if (targetsProp.arraySize == 0)
+        {
+            EditorUtility.DisplayDialog("MYTY Kit", "At least one rigging target should be added", "Ok");
+            anchorToggle.value = false;
+            return;
+        }
+        
         var originalProp = m_conSO.FindProperty("orgRig");
         originalProp.arraySize = targetsProp.arraySize;
-
+        
         for (int i = 0; i < originalProp.arraySize; i++)
         {
             var go = targetsProp.GetArrayElementAtIndex(i).objectReferenceValue as GameObject;
@@ -184,10 +199,26 @@ public class RiggedSprite2DNearstControllerEditorWindow : EditorWindow
 
     void ClearAnchor()
     {
+        var targetsProp = m_conSO.FindProperty("rigTarget");
+
+        if (targetsProp.arraySize == 0)
+        {
+            return;
+        }
+        var controller = m_conSO.targetObject as RiggedSprite2DNearstController;
+
+        for (var i = 0; i < controller.rigTarget.Count; i++)
+        {
+            controller.rigTarget[i].transform.localPosition = controller.orgRig[i].position;
+            controller.rigTarget[i].transform.localScale = controller.orgRig[i].scale;
+            controller.rigTarget[i].transform.localRotation = controller.orgRig[i].rotation;
+        }
+        
         var originalProp = m_conSO.FindProperty("orgRig");
         var pivotsProp = m_conSO.FindProperty("pivots");
         originalProp.arraySize = 0;
         pivotsProp.arraySize = 0;
+        
         m_conSO.ApplyModifiedProperties();
         UpdatePivotList();
 
@@ -199,7 +230,7 @@ public class RiggedSprite2DNearstControllerEditorWindow : EditorWindow
         var offset = targetsProp.arraySize;
         var isRecursive = rootVisualElement.Q<Toggle>("CHKRecursive").value;
 
-        if (!CheckPivot())
+        if (!IsPivotEmpty())
         {
             EditorUtility.DisplayDialog("MYTY Kit", "Reset all pivots first.", "Ok");
             return;
@@ -247,7 +278,7 @@ public class RiggedSprite2DNearstControllerEditorWindow : EditorWindow
         var willRemove = listView.selectedIndices.ToList();
         var newList = new List<GameObject>();
         if (willRemove.Count == 0) return;
-        if (!CheckPivot())
+        if (!IsPivotEmpty())
         {
             EditorUtility.DisplayDialog("MYTY Kit", "Reset all pivots first.", "Ok");
             return;
@@ -274,7 +305,7 @@ public class RiggedSprite2DNearstControllerEditorWindow : EditorWindow
 
     void OnRemoveAll()
     {
-        if (!CheckPivot())
+        if (!IsPivotEmpty())
         {
             EditorUtility.DisplayDialog("MYTY Kit", "Reset all pivots first.", "Ok");
             return;
@@ -330,9 +361,14 @@ public class RiggedSprite2DNearstControllerEditorWindow : EditorWindow
         m_conSO.ApplyModifiedProperties();
     }
 
+    void OnCopyPos()
+    {
+        rootVisualElement.Q<Vector2Field>("VEC2PivotPos").value =
+            rootVisualElement.Q<Vector2Field>("VEC2Value").value;
+    }
     void OnMakePivot()
     {
-        if (CheckPivot())
+        if (IsPivotEmpty())
         {
             EditorUtility.DisplayDialog("MYTY Kit", "No anchored pivots", "Ok");
             return;
@@ -429,6 +465,7 @@ public class RiggedSprite2DNearstControllerEditorWindow : EditorWindow
 
     void UpdateController()
     {
+        if (IsPivotEmpty()) return;
         var controller = m_conSO.targetObject as RiggedSprite2DNearstController;
 
         for (var i = 0; i < controller.rigTarget.Count; i++)
@@ -442,6 +479,15 @@ public class RiggedSprite2DNearstControllerEditorWindow : EditorWindow
         controller.ApplyDiff();
     }
 
+    void UpdatePanelConfig()
+    {
+        var anchorToggle = rootVisualElement.Q<Toggle>("TGLAnchor");
+        var beforePanel = rootVisualElement.Q<VisualElement>("VEBeforeAnchor");
+        var afterPanel = rootVisualElement.Q<VisualElement>("VEAfterAnchor");
+
+        beforePanel.style.display = anchorToggle.value ? DisplayStyle.None : DisplayStyle.Flex;
+        afterPanel.style.display = anchorToggle.value ? DisplayStyle.Flex : DisplayStyle.None;
+    }
     Vector2 CalcPanelPos(Vector2 value, Vector2 panelDim)
     {
         var tr = m_conSO.FindProperty("topRight").vector2Value;
