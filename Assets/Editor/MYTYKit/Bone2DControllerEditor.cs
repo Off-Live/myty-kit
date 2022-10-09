@@ -18,8 +18,6 @@ public class Bone2DControllerEditor : Editor
 
         targetList.makeItem = () =>
         {
-            var objItem = new ObjectField();
-
             return new ObjectField();
         };
 

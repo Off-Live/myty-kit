@@ -1,17 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms;
-using MathNet.Numerics.LinearAlgebra;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.UIElements;
-using UnityEngine.PlayerLoop;
 using UnityEngine.UIElements;
-using UnityEngine.U2D.Animation;
-using Button = UnityEngine.UIElements.Button;
-using Label = UnityEngine.UIElements.Label;
-using ListView = UnityEngine.UIElements.ListView;
-using SelectionMode = UnityEditor.SelectionMode;
 
 public class RiggedSprite2DNearstControllerEditorWindow : EditorWindow
 {
@@ -50,8 +42,6 @@ public class RiggedSprite2DNearstControllerEditorWindow : EditorWindow
         conVE.objectType = typeof(RiggedSprite2DNearstController);
         listView.makeItem = () =>
         {
-            var objItem = new ObjectField();
-        
             return new ObjectField();
         };
         

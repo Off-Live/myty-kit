@@ -1,0 +1,35 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/MYTYKit/UI/Bone2DCon.uss?fileID=7433441132597879392&amp;guid=61da35d4500e948e697bd5d8bbd0fb7a&amp;type=3#Bone2DCon" />
+    <ui:VisualElement name="VETemplateSelection" style="display: flex;">
+        <ui:VisualElement>
+            <uie:ObjectField label="AvatarSelector" name="OBJAvatarSelector" />
+        </ui:VisualElement>
+        <ui:VisualElement style="margin-top: 20px;">
+            <ui:Label text="Template List" display-tooltip-when-elided="true" />
+            <ui:ListView focusable="true" show-border="true" name="LSTTemplate" fixed-item-height="20" style="border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; min-height: 100px; margin-left: 1px; margin-right: 1px;" />
+        </ui:VisualElement>
+        <ui:VisualElement style="flex-direction: row; justify-content: flex-end;">
+            <ui:Button text="Set AR for The Selection" display-tooltip-when-elided="true" name="BTNSetup" />
+            <ui:Button text="Done" display-tooltip-when-elided="true" name="BTNDone" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="VEARFaceSetup" style="display: none;">
+        <ui:VisualElement>
+            <uie:ObjectField label="Selected Template" name="OBJTemplate" class="noEditableObjField" />
+            <uie:ObjectField label="AR Face Asset" name="OBJAsset" class="noEditableObjField" />
+            <uie:ObjectField label="Head Bone" name="OBJBone" />
+            <uie:ObjectField label="Render Cam for Face" name="OBJRenderCam" />
+        </ui:VisualElement>
+        <ui:VisualElement style="margin-top: 20px; margin-bottom: 20px;">
+            <ui:Label text="Included Traits" display-tooltip-when-elided="true" style="margin-left: 3px;" />
+            <ui:ListView focusable="true" selection-type="Multiple" show-border="true" name="LSTTraits" fixed-item-height="20" style="min-height: 300px; border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; margin-left: 1px; margin-right: 1px; max-height: 300px;" />
+            <ui:VisualElement style="flex-direction: row-reverse; margin-right: 2px;">
+                <ui:Button text="-" display-tooltip-when-elided="true" name="BTNRemove" style="width: 20px; height: 20px;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement style="flex-direction: row; justify-content: flex-end;">
+            <ui:Button text="Save" display-tooltip-when-elided="true" name="BTNSave" />
+            <ui:Button text="Discard" display-tooltip-when-elided="true" name="BTNDiscard" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

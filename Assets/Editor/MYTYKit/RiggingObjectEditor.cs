@@ -12,17 +12,5 @@ public class RiggingObjectEditor : Editor
 
         var pc = (RiggingObject)target;
 
-        //if (pc.processor != null)
-        //{
-        //    var rect = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none);
-        //    int selectedIndex = EditorGUI.Popup(rect, "Model", pc.GetLastSelected(), pc.processor.GetModelList());
-        //    if (selectedIndex >= 0)
-        //    {
-        //        var model = serializedObject.FindProperty("_selectedModel");
-        //        model.stringValue = pc.processor.GetModelList()[selectedIndex];
-        //        pc.SetLastSelected(selectedIndex);
-        //        serializedObject.ApplyModifiedProperties();
-        //    }
-        //}
     }
 }
