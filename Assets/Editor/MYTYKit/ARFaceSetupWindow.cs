@@ -18,8 +18,12 @@ class MarkingTree
 public class ARFaceSetupWindow : EditorWindow
 {
     public VisualTreeAsset UITemplate;
+    public Texture placeholder;
 
+    Image m_preview;
+    
     [MenuItem("MYTY Kit/AR Face Mode Setup", false, 1)]
+    
     public static void ShowGUI()
     {
         var wnd = CreateInstance<ARFaceSetupWindow>();
@@ -39,6 +43,7 @@ public class ARFaceSetupWindow : EditorWindow
     void CreateGUI()
     {
         UITemplate.CloneTree(rootVisualElement);
+        CreateRenderPreview();
         var selectorProp = rootVisualElement.Q<ObjectField>("OBJAvatarSelector");
         var setupBtn = rootVisualElement.Q<Button>("BTNSetup");
         var doneBtn = rootVisualElement.Q<Button>("BTNDone");
@@ -49,8 +54,7 @@ public class ARFaceSetupWindow : EditorWindow
         var removeBtn = rootVisualElement.Q<Button>("BTNRemove");
         var saveBtn = rootVisualElement.Q<Button>("BTNSave");
         var discardBtn = rootVisualElement.Q<Button>("BTNDiscard");
-        var traitListView = rootVisualElement.Q<ListView>("LSTTraits");
-
+        
         selectorProp.objectType = typeof(AvatarSelector);
         boneProp.objectType = typeof(GameObject);
         camProp.objectType = typeof(Camera);
@@ -66,9 +70,20 @@ public class ARFaceSetupWindow : EditorWindow
         
         selectorProp.RegisterValueChangedCallback(evt => OnAvatarSelectionChanged(evt.newValue as AvatarSelector));
         boneProp.RegisterValueChangedCallback(evt => OnBoneChanged(evt.newValue as GameObject));
+        camProp.RegisterValueChangedCallback(evt => OnRenderCameraChanged(evt.newValue as Camera));
 
         var selector = FindObjectOfType<AvatarSelector>();
         selectorProp.value = selector;
+    }
+
+    void CreateRenderPreview()
+    {
+        var previewVE = rootVisualElement.Q<VisualElement>("VERenderPreview");
+        m_preview = new Image();
+        previewVE.Add(m_preview);
+        m_preview.style.width = 80;
+        m_preview.style.height = 80;
+        m_preview.image = placeholder;
     }
 
     void ChangeMode(bool isSetupMode)
@@ -123,6 +138,7 @@ public class ARFaceSetupWindow : EditorWindow
         var listView = rootVisualElement.Q<ListView>("LSTTemplate");
         var selectorProp = rootVisualElement.Q<ObjectField>("OBJAvatarSelector");
         var templateProp = rootVisualElement.Q<ObjectField>("OBJTemplate");
+        var renderCamProp = rootVisualElement.Q<ObjectField>("OBJRenderCam");
         var assetProp = rootVisualElement.Q<ObjectField>("OBJAsset");
         var traitListView = rootVisualElement.Q<ListView>("LSTTraits");
         var index = listView.selectedIndex;
@@ -146,10 +162,12 @@ public class ARFaceSetupWindow : EditorWindow
         
         templateProp.value = selector.templates[index].instance;
         assetProp.value = asset;
+        
         traitListView.itemsSource = null;
         if (asset.items[index].isValid)
         {
             traitListView.itemsSource = asset.items[index].traits;
+            renderCamProp.value = asset.items[index].renderCam;
         }
         traitListView.Rebuild();
         
@@ -194,6 +212,12 @@ public class ARFaceSetupWindow : EditorWindow
         traitListView.Rebuild();
 
     }
+
+    void OnRenderCameraChanged(Camera newCamera)
+    {
+        if (newCamera == null) m_preview.image = placeholder;
+        else m_preview.image = newCamera.targetTexture;
+    }
     void OnRemove()
     {
         var traitListView = rootVisualElement.Q<ListView>("LSTTraits");
@@ -223,9 +247,24 @@ public class ARFaceSetupWindow : EditorWindow
         var index = listView.selectedIndex;
         var asset = assetProp.value as ARFaceAsset;
         var traits = traitListView.itemsSource as List<string>;
+
+        var renderCam = renderCamProp.value as Camera;
+        var camName = "ARFaceCam" + index + ".prefab";
+        GameObject savedCamFab = null;
+        if (renderCam != null)
+        {
+            savedCamFab = PrefabUtility.SaveAsPrefabAsset(renderCam.gameObject, MYTYUtil.PrefabPath + "/" + camName);
+        }
+        
         asset.items[index].isValid = true;
-        asset.items[index].renderCam = renderCamProp.value as Camera;
+        if (savedCamFab != null)
+        {
+            asset.items[index].renderCam = savedCamFab.GetComponent<Camera>();
+        }
+        else asset.items[index].renderCam = null;
+
         asset.items[index].traits = traits;
+        
         EditorUtility.SetDirty(asset);
         AssetDatabase.SaveAssets();
         

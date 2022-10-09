@@ -6,6 +6,7 @@ MonoImporter:
   defaultReferences:
   - m_ViewDataDictionary: {instanceID: 0}
   - UITemplate: {fileID: 9197481963319205126, guid: ee65eea07cca9402a9d2ffc54b4e49db, type: 3}
+  - placeholder: {fileID: 10309, guid: 0000000000000000f000000000000000, type: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

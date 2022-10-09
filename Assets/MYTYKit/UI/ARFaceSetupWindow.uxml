@@ -14,11 +14,14 @@
         </ui:VisualElement>
     </ui:VisualElement>
     <ui:VisualElement name="VEARFaceSetup" style="display: none;">
-        <ui:VisualElement>
-            <uie:ObjectField label="Selected Template" name="OBJTemplate" class="noEditableObjField" />
-            <uie:ObjectField label="AR Face Asset" name="OBJAsset" class="noEditableObjField" />
-            <uie:ObjectField label="Head Bone" name="OBJBone" />
-            <uie:ObjectField label="Render Cam for Face" name="OBJRenderCam" />
+        <ui:VisualElement style="flex-direction: row; justify-content: space-between;">
+            <ui:VisualElement style="width: 400px;">
+                <uie:ObjectField label="Selected Template" name="OBJTemplate" class="noEditableObjField" />
+                <uie:ObjectField label="AR Face Asset" name="OBJAsset" class="noEditableObjField" />
+                <uie:ObjectField label="Head Bone" name="OBJBone" />
+                <uie:ObjectField label="Render Cam for Face" name="OBJRenderCam" />
+            </ui:VisualElement>
+            <ui:VisualElement name="VERenderPreview" style="height: 80px; width: 80px;" />
         </ui:VisualElement>
         <ui:VisualElement style="margin-top: 20px; margin-bottom: 20px;">
             <ui:Label text="Included Traits" display-tooltip-when-elided="true" style="margin-left: 3px;" />
