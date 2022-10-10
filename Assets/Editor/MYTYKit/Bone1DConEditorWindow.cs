@@ -38,8 +38,6 @@ public class Bone1DConEditorWindow : EditorWindow
         conVE.objectType = typeof(Bone1DController);
         listView.makeItem = () =>
         {
-            var objItem = new ObjectField();
-
             return new ObjectField();
         };
 

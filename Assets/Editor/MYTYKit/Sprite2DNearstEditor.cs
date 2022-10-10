@@ -19,8 +19,6 @@ public class Sprite2DRNearstEditor : Editor
 
         targetList.makeItem = () =>
         {
-            var objItem = new ObjectField();
-
             return new ObjectField();
         };
 

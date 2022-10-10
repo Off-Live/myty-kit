@@ -39,8 +39,6 @@ public class Bone2DControllerEditorWindow : EditorWindow
         fcObjField.objectType = typeof(Bone2DController);
         listView.makeItem = () =>
         {
-            var objItem = new ObjectField();
-
             return new ObjectField();
         };
 

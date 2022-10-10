@@ -39,8 +39,6 @@ public class Sprite1DRangeConEditorWindowMSR : EditorWindow
         conVE.objectType = typeof(Sprite1DRangeControllerMSR);
         listView.makeItem = () =>
         {
-            var objItem = new ObjectField();
-
             return new ObjectField();
         };
 

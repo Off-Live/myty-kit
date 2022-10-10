@@ -41,9 +41,7 @@ public class Sprite2DNearstConEditorWindow : EditorWindow
         conVE.objectType = typeof(Sprite2DNearstController);
         listView.makeItem = () =>
         {
-            var objItem = new ObjectField();
-
-            return new ObjectField();
+           return new ObjectField();
         };
 
         listView.bindItem = (e, i) =>

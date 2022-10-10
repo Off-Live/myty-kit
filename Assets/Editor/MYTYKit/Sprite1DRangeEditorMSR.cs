@@ -19,8 +19,6 @@ public class Sprite1DRangeEditorMSr : Editor
         
         targetList.makeItem = () =>
         {
-            var objItem = new ObjectField();
-
             return new ObjectField();
         };
 
