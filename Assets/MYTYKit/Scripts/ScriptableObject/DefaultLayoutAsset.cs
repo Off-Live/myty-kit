@@ -2,16 +2,19 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[Serializable]
-public class TransformProperty
+namespace MYTYKit
 {
-    public Vector3 position;
-    public Vector3 scale;
-    public Quaternion rotation;
-}
+    [Serializable]
+    public class TransformProperty
+    {
+        public Vector3 position;
+        public Vector3 scale;
+        public Quaternion rotation;
+    }
 
-public class DefaultLayoutAsset : ScriptableObject
-{
-    public Camera camera;
-    public List<TransformProperty> templateTransforms;
+    public class DefaultLayoutAsset : ScriptableObject
+    {
+        public Camera camera;
+        public List<TransformProperty> templateTransforms;
+    }
 }

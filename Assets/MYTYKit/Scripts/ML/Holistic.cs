@@ -8,6 +8,7 @@ using Mediapipe;
 using Mediapipe.Unity;
 using Debug = UnityEngine.Debug;
 
+using MYTYKit;
 public class Holistic : MonoBehaviour
 {
 

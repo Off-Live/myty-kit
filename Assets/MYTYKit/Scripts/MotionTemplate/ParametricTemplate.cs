@@ -1,64 +1,66 @@
-
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
-[Serializable]
-public class ParameterItem
+namespace MYTYKit.MotionTemplates
 {
-    public string name;
-    public float value; 
-}
-public class ParametricTemplate : MotionTemplate
-{
-    public List<ParameterItem> parameterItems = new();
-
-    public bool Contains(string key)
+    [Serializable]
+    public class ParameterItem
     {
-        return FindIndex(key) >= 0;
+        public string name;
+        public float value;
     }
 
-    public void SetValue(string key, float value)
+    public class ParametricTemplate : MotionTemplate
     {
-        var index = FindIndex(key);
-        if (index < 0)
+        public List<ParameterItem> parameterItems = new();
+
+        public bool Contains(string key)
         {
-            var item = new ParameterItem()
+            return FindIndex(key) >= 0;
+        }
+
+        public void SetValue(string key, float value)
+        {
+            var index = FindIndex(key);
+            if (index < 0)
             {
-                name = key,
-                value = value
-            };
-            parameterItems.Add(item);
-        }
-        else
-        {
-            parameterItems[index].value = value;
-        }
-    }
-
-    public float GetValue(string key)
-    {
-        var index = FindIndex(key);
-        if (index < 0)
-        {
-            return 0.0f;
-        }
-        else
-        {
-            return parameterItems[index].value;
-        }
-    }
-
-    int FindIndex(string key)
-    {
-        for (int i = 0; i < parameterItems.Count; i++)
-        {
-            if (parameterItems[i].name == key)
+                var item = new ParameterItem()
+                {
+                    name = key,
+                    value = value
+                };
+                parameterItems.Add(item);
+            }
+            else
             {
-                return i;
+                parameterItems[index].value = value;
             }
         }
 
-        return -1;
+        public float GetValue(string key)
+        {
+            var index = FindIndex(key);
+            if (index < 0)
+            {
+                return 0.0f;
+            }
+            else
+            {
+                return parameterItems[index].value;
+            }
+        }
+
+        int FindIndex(string key)
+        {
+            for (int i = 0; i < parameterItems.Count; i++)
+            {
+                if (parameterItems[i].name == key)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
     }
 }

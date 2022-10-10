@@ -1,16 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(RiggingObject))]
-public class RiggingObjectEditor : Editor
+namespace MYTYKit
 {
-    public override void OnInspectorGUI()
+    [CustomEditor(typeof(RiggingObject))]
+    public class RiggingObjectEditor : UnityEditor.Editor
     {
-        base.OnInspectorGUI();
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
 
-        var pc = (RiggingObject)target;
+            var pc = (RiggingObject)target;
 
+        }
     }
 }

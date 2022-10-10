@@ -1,6 +1,7 @@
+using MYTYKit.ThirdParty.KalidoKit;
 using UnityEngine;
 
-namespace MYTYKit.MotionTemplate.Mediapipe.Model
+namespace MYTYKit.MotionTemplates.Mediapipe.Model
 {
     public class MPFace : MPBaseModel
     {

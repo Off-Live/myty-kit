@@ -1,58 +1,62 @@
-
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public static class MTMapperHelper
+namespace MYTYKit.MotionTemplates
 {
-    public static void SetupWithDescendants(this MotionTemplateMapper mapper)
+    public static class MTMapperHelper
     {
-        mapper.Clear();
-        Stack<GameObject> history = new();
-        history.Push(mapper.gameObject);
-        List<MTItem> items = new();
-        while (history.Count > 0)
+        public static void SetupWithDescendants(this MotionTemplateMapper mapper)
         {
-            var currentGo = history.Pop();
-            var childCount = currentGo.transform.childCount;
-            if (childCount == 0)
+            mapper.Clear();
+            Stack<GameObject> history = new();
+            history.Push(mapper.gameObject);
+            List<MTItem> items = new();
+            while (history.Count > 0)
             {
-                var mt = currentGo.GetComponent<MotionTemplate>();
-                if (mt != null)
+                var currentGo = history.Pop();
+                var childCount = currentGo.transform.childCount;
+                if (childCount == 0)
                 {
-                    mapper.SetTemplate(currentGo.name, mt);
-                    items.Add(new MTItem()
+                    var mt = currentGo.GetComponent<MotionTemplate>();
+                    if (mt != null)
                     {
-                        name = currentGo.name,
-                        template = mt
-                    });
+                        mapper.SetTemplate(currentGo.name, mt);
+                        items.Add(new MTItem()
+                        {
+                            name = currentGo.name,
+                            template = mt
+                        });
+                    }
                 }
-            }
-            else
-            {
-                for (int i = 0; i < childCount; i++)
+                else
                 {
-                    history.Push(currentGo.transform.GetChild(i).gameObject);
+                    for (int i = 0; i < childCount; i++)
+                    {
+                        history.Push(currentGo.transform.GetChild(i).gameObject);
+                    }
                 }
             }
-        }
-        
-        
-#if UNITY_EDITOR
-        if (!Application.isEditor) return;
 
-        var so = new SerializedObject(mapper);
-        var prop = so.FindProperty("templates");
-        prop.arraySize = items.Count;
-        
-        for (var i = 0; i < prop.arraySize; i++)
-        {
-            var itemProp = prop.GetArrayElementAtIndex(i).FindPropertyRelative("template").objectReferenceValue = items[i].template;
-            prop.GetArrayElementAtIndex(i).FindPropertyRelative("name").stringValue = items[i].name;
-            
-        }
-        so.ApplyModifiedProperties();
+
+#if UNITY_EDITOR
+            if (!Application.isEditor) return;
+
+            var so = new SerializedObject(mapper);
+            var prop = so.FindProperty("templates");
+            prop.arraySize = items.Count;
+
+            for (var i = 0; i < prop.arraySize; i++)
+            {
+                var itemProp = prop.GetArrayElementAtIndex(i).FindPropertyRelative("template").objectReferenceValue =
+                    items[i].template;
+                prop.GetArrayElementAtIndex(i).FindPropertyRelative("name").stringValue = items[i].name;
+
+            }
+
+            so.ApplyModifiedProperties();
 #endif
 
+        }
     }
 }

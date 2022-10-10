@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MYTYKit.MotionTemplate.Mediapipe.Model
+namespace MYTYKit.MotionTemplates.Mediapipe.Model
 {
     public class MPRightLowerLeg : MPJointModel
     {

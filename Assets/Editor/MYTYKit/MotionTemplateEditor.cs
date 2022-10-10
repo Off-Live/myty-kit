@@ -1,27 +1,31 @@
 using UnityEditor;
 using UnityEditor.UIElements;
-using UnityEngine;
 using UnityEngine.UIElements;
 
-[CustomEditor(typeof(MotionTemplateMapper))]
-public class MotionTemplateEditor:Editor
+using MYTYKit.MotionTemplates;
+
+namespace MYTYKit
 {
-    public override VisualElement CreateInspectorGUI()
+    [CustomEditor(typeof(MotionTemplateMapper))]
+    public class MotionTemplateEditor:UnityEditor.Editor
     {
-        var root = new VisualElement();
-        var templateField = new PropertyField();
-        var button = new Button();
-        templateField.BindProperty(serializedObject.FindProperty("templates"));
-        
-        button.text = "Autobuild";
-        button.clicked += () =>
+        public override VisualElement CreateInspectorGUI()
         {
-            var motionTemplate = target as MotionTemplateMapper;
-            motionTemplate.SetupWithDescendants();
-        };
+            var root = new VisualElement();
+            var templateField = new PropertyField();
+            var button = new Button();
+            templateField.BindProperty(serializedObject.FindProperty("templates"));
         
-        root.Add(templateField);
-        root.Add(button);
-        return root;
+            button.text = "Autobuild";
+            button.clicked += () =>
+            {
+                var motionTemplate = target as MotionTemplateMapper;
+                motionTemplate.SetupWithDescendants();
+            };
+        
+            root.Add(templateField);
+            root.Add(button);
+            return root;
+        }
     }
 }

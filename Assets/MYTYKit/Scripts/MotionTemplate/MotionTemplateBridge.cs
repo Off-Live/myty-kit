@@ -1,21 +1,23 @@
-
-
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class MotionTemplateBridge : MonoBehaviour
+namespace MYTYKit.MotionTemplates
 {
-    protected List<MotionTemplate> templateList = new();
-    public void AddMotionTemplate(MotionTemplate template)
+    public abstract class MotionTemplateBridge : MonoBehaviour
     {
-        templateList.Add(template);
-    }
+        protected List<MotionTemplate> templateList = new();
 
-    public void ClearMotionTemplate()
-    {
-        templateList.Clear();
-    }
+        public void AddMotionTemplate(MotionTemplate template)
+        {
+            templateList.Add(template);
+        }
 
-    public abstract void UpdateTemplate();
-    
+        public void ClearMotionTemplate()
+        {
+            templateList.Clear();
+        }
+
+        public abstract void UpdateTemplate();
+
+    }
 }

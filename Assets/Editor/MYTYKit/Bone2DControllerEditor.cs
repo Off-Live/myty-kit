@@ -3,48 +3,49 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.UIElements;
 using System.Collections.Generic;
+using MYTYKit.Controllers;
 
-[CustomEditor(typeof(Bone2DController))]
-public class Bone2DControllerEditor : Editor
+namespace MYTYKit
 {
-    public override VisualElement CreateInspectorGUI()
+    [CustomEditor(typeof(Bone2DController))]
+    public class Bone2DControllerEditor : UnityEditor.Editor
     {
-        var rootElem = new VisualElement();
-        var targetList = new ListView();
-        var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/MYTYKit/UI/Bone2DCon.uss");
-
-        targetList.virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight;
-        targetList.styleSheets.Add(styleSheet);
-
-        targetList.makeItem = () =>
+        public override VisualElement CreateInspectorGUI()
         {
-            return new ObjectField();
-        };
+            var rootElem = new VisualElement();
+            var targetList = new ListView();
+            var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/MYTYKit/UI/Bone2DCon.uss");
 
-        targetList.bindItem = (e, i) =>
-        {
-            (e as ObjectField).value = targetList.itemsSource[i] as GameObject;
-            (e as ObjectField).AddToClassList("noEditableObjField");
-            (e as ObjectField).AddToClassList("itemSize");
+            targetList.virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight;
+            targetList.styleSheets.Add(styleSheet);
 
-        };
+            targetList.makeItem = () => { return new ObjectField(); };
 
-        var listSource = new List<GameObject>();
-        var rigTargetProps = serializedObject.FindProperty("rigTarget");
-        for (int i = 0; i < rigTargetProps.arraySize; i++)
-        {
-            if (rigTargetProps.GetArrayElementAtIndex(i).objectReferenceValue == null)
+            targetList.bindItem = (e, i) =>
             {
-                listSource.Add(null);
+                (e as ObjectField).value = targetList.itemsSource[i] as GameObject;
+                (e as ObjectField).AddToClassList("noEditableObjField");
+                (e as ObjectField).AddToClassList("itemSize");
+
+            };
+
+            var listSource = new List<GameObject>();
+            var rigTargetProps = serializedObject.FindProperty("rigTarget");
+            for (int i = 0; i < rigTargetProps.arraySize; i++)
+            {
+                if (rigTargetProps.GetArrayElementAtIndex(i).objectReferenceValue == null)
+                {
+                    listSource.Add(null);
+                }
+                else listSource.Add(rigTargetProps.GetArrayElementAtIndex(i).objectReferenceValue as GameObject);
             }
-            else listSource.Add(rigTargetProps.GetArrayElementAtIndex(i).objectReferenceValue as GameObject);
+
+            targetList.itemsSource = listSource;
+
+            rootElem.Add(new Label("Rigged Bones : "));
+            rootElem.Add(targetList);
+
+            return rootElem;
         }
-
-        targetList.itemsSource = listSource;
-
-        rootElem.Add(new Label("Rigged Bones : "));
-        rootElem.Add(targetList);
-
-        return rootElem;
     }
 }

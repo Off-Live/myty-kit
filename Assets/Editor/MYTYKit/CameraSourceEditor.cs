@@ -5,50 +5,55 @@ using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-[CustomEditor(typeof(CameraSource))]
-public class CameraSourceEditor : Editor
+namespace MYTYKit
 {
-    public VisualTreeAsset UITemplate;
-
-    public override VisualElement CreateInspectorGUI()
+    [CustomEditor(typeof(CameraSource))]
+    public class CameraSourceEditor : UnityEditor.Editor
     {
-        var ui = new VisualElement();
-        UITemplate.CloneTree(ui);
-        var deviceCMB = ui.Q<DropdownField>();
+        public VisualTreeAsset UITemplate;
 
-        ui.Q<PropertyField>("PRPRenderer").BindProperty(serializedObject.FindProperty("previewRenderer"));
-
-        var deviceNames = new List<string>();
-        var camNameProp = serializedObject.FindProperty("camDeviceName");
-
-        foreach (var device in WebCamTexture.devices)
+        public override VisualElement CreateInspectorGUI()
         {
-            if (device.name.StartsWith("MYTY") || device.name.StartsWith("Off"))
+            var ui = new VisualElement();
+            UITemplate.CloneTree(ui);
+            var deviceCMB = ui.Q<DropdownField>();
+
+            ui.Q<PropertyField>("PRPRenderer").BindProperty(serializedObject.FindProperty("previewRenderer"));
+
+            var deviceNames = new List<string>();
+            var camNameProp = serializedObject.FindProperty("camDeviceName");
+
+            foreach (var device in WebCamTexture.devices)
             {
-                continue;
+                if (device.name.StartsWith("MYTY") || device.name.StartsWith("Off"))
+                {
+                    continue;
+                }
+
+                deviceNames.Add(device.name);
             }
-            deviceNames.Add(device.name);
-        }
-        deviceCMB.choices = deviceNames;
-        if (camNameProp.stringValue.Length == 0)
-        {
-            deviceCMB.index = 0;
-        }
-        else
-        {
-            var idx = deviceNames.FindIndex(name => name == camNameProp.stringValue);
 
-            Debug.Log("device index : " + idx);
-            if (idx < 0) idx = -1;
-            deviceCMB.index = idx;
+            deviceCMB.choices = deviceNames;
+            if (camNameProp.stringValue.Length == 0)
+            {
+                deviceCMB.index = 0;
+            }
+            else
+            {
+                var idx = deviceNames.FindIndex(name => name == camNameProp.stringValue);
+
+                Debug.Log("device index : " + idx);
+                if (idx < 0) idx = -1;
+                deviceCMB.index = idx;
+            }
+
+            deviceCMB.RegisterValueChangedCallback((ChangeEvent<string> e) =>
+            {
+                camNameProp.stringValue = e.newValue;
+                serializedObject.ApplyModifiedProperties();
+            });
+
+            return ui;
         }
-
-        deviceCMB.RegisterValueChangedCallback((ChangeEvent<string> e) =>
-        {
-            camNameProp.stringValue = e.newValue;
-            serializedObject.ApplyModifiedProperties();
-        });
-
-        return ui;
     }
 }

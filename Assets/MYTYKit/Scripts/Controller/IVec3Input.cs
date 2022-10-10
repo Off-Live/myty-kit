@@ -1,6 +1,10 @@
 
 using UnityEngine;
-public interface IVec3Input
+
+namespace MYTYKit.Controllers
 {
-    public void SetInput(Vector3 val);
+    public interface IVec3Input
+    {
+        public void SetInput(Vector3 val);
+    }
 }
