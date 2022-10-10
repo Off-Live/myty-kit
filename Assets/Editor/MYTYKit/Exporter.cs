@@ -26,8 +26,10 @@ public class Exporter : EditorWindow
     [MenuItem("MYTY Kit/Export AssetBundle", false, 1)]
     public static void ShowGUI()
     {
-        var wnd = GetWindow<Exporter>();
+        var wnd = CreateInstance<Exporter>();
         wnd.titleContent = new GUIContent("AssetBundle Exporter");
+        wnd.ShowUtility();
+        
     }
 
     void OnFocus()
@@ -50,7 +52,7 @@ public class Exporter : EditorWindow
         var maListView = rootVisualElement.Q<ListView>("LSTMotionAdapter");
         var platformGroup = rootVisualElement.Q<GroupBox>("GRPPlatform");
         var supportedPlatform = GetInfoAboutSupportedPlatform();
-
+        SetupARUI();
         
         for (int i = 0; i < m_platforms.Length; i++)
         {
@@ -111,15 +113,25 @@ public class Exporter : EditorWindow
 
     }
 
-    private void SavePrefab(GameObject go, string path, out string savedPath, bool connect = false)
+    void SetupARUI()
     {
-        string localPath = AssetDatabase.GenerateUniqueAssetPath(path);
-        if (connect)
+        var arToggle = rootVisualElement.Q<Toggle>("CHKIncludeAR");
+        var asset = AssetDatabase.LoadAssetAtPath<ARFaceAsset>(MYTYUtil.AssetPath + "/ARFaceData.asset");
+        if (asset != null)
         {
-            PrefabUtility.SaveAsPrefabAssetAndConnect(go, localPath, InteractionMode.UserAction);
+            var flag = true;
+            foreach (var item in asset.items)
+            {
+                flag &= item.isValid;
+            }
+            arToggle.value = flag;
+            arToggle.SetEnabled(flag);
         }
-        else PrefabUtility.SaveAsPrefabAsset(go, localPath);
-        savedPath = localPath;
+        else
+        {
+            arToggle.value = false;
+            arToggle.SetEnabled(false);
+        }
     }
 
     void Export()
@@ -163,6 +175,7 @@ public class Exporter : EditorWindow
         PrepareVersionInfo(assetName);
         PrepareEditorInfo(assetName);
         PrepareImportSig(assetName);
+        PrepareARData(assetName);
         
         EditorUtility.SetDirty(mytyAsset);
         AssetDatabase.SaveAssets();
@@ -414,6 +427,21 @@ public class Exporter : EditorWindow
         file.Close();
         assetName.Add(filepath);
     }
+
+    void PrepareARData(List<string> assetName)
+    {
+        var filepath = MYTYUtil.AssetPath + "/ARFaceData.asset";
+        var arToggle = rootVisualElement.Q<Toggle>("CHKIncludeAR");
+        var arOnlyToggle = rootVisualElement.Q<Toggle>("CHKAROnly");
+        
+        if (!arToggle.value) return;
+        var asset = AssetDatabase.LoadAssetAtPath<ARFaceAsset>(filepath);
+        asset.AROnly = arOnlyToggle.value;
+        EditorUtility.SetDirty(asset);
+        AssetDatabase.SaveAssets();
+        assetName.Add(filepath);
+    }
+    
     Dictionary<string, bool> GetInfoAboutSupportedPlatform()
     {
         var ret = new Dictionary<string, bool>();

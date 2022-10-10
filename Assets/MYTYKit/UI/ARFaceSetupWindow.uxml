@@ -2,7 +2,7 @@
     <Style src="project://database/Assets/MYTYKit/UI/Bone2DCon.uss?fileID=7433441132597879392&amp;guid=61da35d4500e948e697bd5d8bbd0fb7a&amp;type=3#Bone2DCon" />
     <ui:VisualElement name="VETemplateSelection" style="display: flex;">
         <ui:VisualElement>
-            <uie:ObjectField label="AvatarSelector" name="OBJAvatarSelector" />
+            <uie:ObjectField label="AvatarSelector" name="OBJAvatarSelector" class="noEditableObjField" />
         </ui:VisualElement>
         <ui:VisualElement style="margin-top: 20px;">
             <ui:Label text="Template List" display-tooltip-when-elided="true" />

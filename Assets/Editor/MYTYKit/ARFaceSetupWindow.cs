@@ -139,6 +139,7 @@ public class ARFaceSetupWindow : EditorWindow
         var selectorProp = rootVisualElement.Q<ObjectField>("OBJAvatarSelector");
         var templateProp = rootVisualElement.Q<ObjectField>("OBJTemplate");
         var renderCamProp = rootVisualElement.Q<ObjectField>("OBJRenderCam");
+        var boneProp = rootVisualElement.Q<ObjectField>("OBJBone");
         var assetProp = rootVisualElement.Q<ObjectField>("OBJAsset");
         var traitListView = rootVisualElement.Q<ListView>("LSTTraits");
         var index = listView.selectedIndex;
@@ -169,8 +170,12 @@ public class ARFaceSetupWindow : EditorWindow
             traitListView.itemsSource = asset.items[index].traits;
             renderCamProp.value = asset.items[index].renderCam;
         }
+        else
+        {
+            renderCamProp.value = null;
+        }
         traitListView.Rebuild();
-        
+        boneProp.SetValueWithoutNotify( null);
         ChangeMode(true);
     }
 
@@ -187,7 +192,7 @@ public class ARFaceSetupWindow : EditorWindow
         var template = templateProp.value as GameObject;
         traitListView.itemsSource = null;
         traitListView.Rebuild();
-        
+        if (bone == null) return;
         if (!IsChildOfTemplate(template, bone))
         {
             EditorUtility.DisplayDialog("MYTY Kit", "The selected bone is from the template", "Ok");
@@ -253,7 +258,7 @@ public class ARFaceSetupWindow : EditorWindow
         GameObject savedCamFab = null;
         if (renderCam != null)
         {
-            savedCamFab = PrefabUtility.SaveAsPrefabAsset(renderCam.gameObject, MYTYUtil.PrefabPath + "/" + camName);
+            savedCamFab = PrefabUtility.SaveAsPrefabAsset(renderCam.gameObject, MYTYUtil.AssetPath + "/" + camName);
         }
         
         asset.items[index].isValid = true;

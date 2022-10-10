@@ -12,5 +12,6 @@ public class ARFaceItem
 
 public class ARFaceAsset : ScriptableObject
 {
+    public bool AROnly = false;
     public ARFaceItem[] items;
 }
