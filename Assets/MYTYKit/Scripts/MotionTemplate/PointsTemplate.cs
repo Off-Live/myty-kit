@@ -1,6 +1,9 @@
 using UnityEngine;
 
-public class PointsTemplate : MotionTemplate
+namespace MYTYKit.MotionTemplates
 {
-    public Vector3[] points;
+    public class PointsTemplate : MotionTemplate
+    {
+        public Vector3[] points;
+    }
 }

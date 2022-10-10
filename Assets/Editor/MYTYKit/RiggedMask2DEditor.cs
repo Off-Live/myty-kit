@@ -1,20 +1,22 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
-[CustomEditor(typeof(RiggedMask2D))]
-public class RiggedMask2DEditor : Editor
+using MYTYKit.Components;
+
+namespace MYTYKit
 {
-    // Start is called before the first frame update
-    public override void OnInspectorGUI()
+    [CustomEditor(typeof(RiggedMask2D))]
+    public class RiggedMask2DEditor : UnityEditor.Editor
     {
-
-        DrawDefaultInspector();
-        RiggedMask2D mask = (RiggedMask2D)target;
-        if (GUILayout.Button("Fit to source sprite"))
+        public override void OnInspectorGUI()
         {
-            mask.Fit();
+
+            DrawDefaultInspector();
+            RiggedMask2D mask = (RiggedMask2D)target;
+            if (GUILayout.Button("Fit to source sprite"))
+            {
+                mask.Fit();
+            }
         }
     }
 }

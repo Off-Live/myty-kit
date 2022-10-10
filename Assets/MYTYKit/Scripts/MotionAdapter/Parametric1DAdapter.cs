@@ -1,34 +1,37 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
-using System;
+using MYTYKit.Controllers;
 using UnityEngine;
 
-public class Parametric1DAdapter : NativeAdapter
+using MYTYKit.MotionTemplates;
+
+namespace MYTYKit.MotionAdapters
 {
-    public ParametricTemplate template;
-    public string paramName;
-    public MYTYController con;
-
-    public float stabilizeTime = 0.1f;
-    float m_elapsed = 0;
-    void Update()
+    public class Parametric1DAdapter : NativeAdapter
     {
-        var input = con as IFloatInput;
-        if (input == null) return;
+        public ParametricTemplate template;
+        public string paramName;
+        public MYTYController con;
 
-        m_elapsed += Time.deltaTime;
-        if (m_elapsed < stabilizeTime)
+        public float stabilizeTime = 0.1f;
+        float m_elapsed = 0;
+
+        void Update()
         {
-            input.SetInput(GetStabilizedFloat());
-            return;
-        }
+            var input = con as IFloatInput;
+            if (input == null) return;
 
-        m_elapsed = 0;
-        
-        float val = template.GetValue(paramName);
-        Stabilize(val);
-        input.SetInput(GetStabilizedFloat());
-        
+            m_elapsed += Time.deltaTime;
+            if (m_elapsed < stabilizeTime)
+            {
+                input.SetInput(GetStabilizedFloat());
+                return;
+            }
+
+            m_elapsed = 0;
+
+            float val = template.GetValue(paramName);
+            Stabilize(val);
+            input.SetInput(GetStabilizedFloat());
+
+        }
     }
 }

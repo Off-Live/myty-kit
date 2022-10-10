@@ -1,187 +1,195 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class NativeAdapter : MonoBehaviour
-{
-    public int stabilizeWindow = 8;
-    public int smoothWindow = 4;
-
-
-    private Vector3[] m_vec3FilterArray;
-    private Vector3[] m_vec3StabilizeArray;
-    private Vector3 m_vec3LastValue;
-
-    private Vector2[] m_vec2FilterArray;
-    private Vector2[] m_vec2StabilizeArray;
-    private Vector2 m_vec2LastValue;
-
-    private float[] m_floatFilterArray;
-    private float[] m_floatStabilizeArray;
-    private float m_floatLastValue;
-    
-
-    private bool m_first = true;
-    
-    public virtual void Start()
+namespace MYTYKit.MotionAdapters{
+    public class NativeAdapter : MonoBehaviour
     {
-        m_vec3FilterArray = new Vector3[smoothWindow];
-        m_vec3StabilizeArray = new Vector3[stabilizeWindow];
+        public int stabilizeWindow = 8;
+        public int smoothWindow = 4;
 
 
-        m_vec2FilterArray = new Vector2[smoothWindow];
-        m_vec2StabilizeArray = new Vector2[stabilizeWindow];
-        
-        m_floatFilterArray = new float[smoothWindow];
-        m_floatStabilizeArray = new float[stabilizeWindow];
-    }
+        private Vector3[] m_vec3FilterArray;
+        private Vector3[] m_vec3StabilizeArray;
+        private Vector3 m_vec3LastValue;
 
-    private Vector3 SmoothFilter(Vector3 newVal)
-    {
-        for (int i = 0; i < smoothWindow - 1; i++)
+        private Vector2[] m_vec2FilterArray;
+        private Vector2[] m_vec2StabilizeArray;
+        private Vector2 m_vec2LastValue;
+
+        private float[] m_floatFilterArray;
+        private float[] m_floatStabilizeArray;
+        private float m_floatLastValue;
+
+
+        private bool m_first = true;
+
+        public virtual void Start()
         {
-            m_vec3FilterArray[i] = m_vec3FilterArray[i + 1];
-        }
-        m_vec3FilterArray[smoothWindow - 1] = newVal;
+            m_vec3FilterArray = new Vector3[smoothWindow];
+            m_vec3StabilizeArray = new Vector3[stabilizeWindow];
 
-        Vector3 sum = Vector3.zero;
-        for (int i = 0; i < smoothWindow; i++)
-        {
-            sum += m_vec3FilterArray[i];
+
+            m_vec2FilterArray = new Vector2[smoothWindow];
+            m_vec2StabilizeArray = new Vector2[stabilizeWindow];
+
+            m_floatFilterArray = new float[smoothWindow];
+            m_floatStabilizeArray = new float[stabilizeWindow];
         }
 
-        return sum / smoothWindow;
-    }
-
-    protected void Stabilize(Vector3 newVal)
-    {
-        if (m_first)
+        private Vector3 SmoothFilter(Vector3 newVal)
         {
-            m_vec3LastValue = newVal;
+            for (int i = 0; i < smoothWindow - 1; i++)
+            {
+                m_vec3FilterArray[i] = m_vec3FilterArray[i + 1];
+            }
+
+            m_vec3FilterArray[smoothWindow - 1] = newVal;
+
+            Vector3 sum = Vector3.zero;
             for (int i = 0; i < smoothWindow; i++)
             {
-                m_vec3FilterArray[i] = newVal;
+                sum += m_vec3FilterArray[i];
             }
-            m_first = false;
+
+            return sum / smoothWindow;
         }
 
-        newVal = SmoothFilter(newVal);
-        for (int i = 1; i <= stabilizeWindow; i++)
+        protected void Stabilize(Vector3 newVal)
         {
-            m_vec3StabilizeArray[i - 1] = m_vec3LastValue + (newVal - m_vec3LastValue) / stabilizeWindow * i;
+            if (m_first)
+            {
+                m_vec3LastValue = newVal;
+                for (int i = 0; i < smoothWindow; i++)
+                {
+                    m_vec3FilterArray[i] = newVal;
+                }
+
+                m_first = false;
+            }
+
+            newVal = SmoothFilter(newVal);
+            for (int i = 1; i <= stabilizeWindow; i++)
+            {
+                m_vec3StabilizeArray[i - 1] = m_vec3LastValue + (newVal - m_vec3LastValue) / stabilizeWindow * i;
+            }
+
         }
 
-    }
-
-    protected Vector3 GetStabilizedVec3()
-    {
-        var ret = m_vec3StabilizeArray[0];
-        for (int i = 0; i < stabilizeWindow - 1; i++)
+        protected Vector3 GetStabilizedVec3()
         {
-            m_vec3StabilizeArray[i] = m_vec3StabilizeArray[i + 1];
-        }
-        m_vec3LastValue = ret;
-        return ret;
-    }
+            var ret = m_vec3StabilizeArray[0];
+            for (int i = 0; i < stabilizeWindow - 1; i++)
+            {
+                m_vec3StabilizeArray[i] = m_vec3StabilizeArray[i + 1];
+            }
 
-
-
-    private Vector2 SmoothFilter(Vector2 newVal)
-    {
-        for (int i = 0; i < smoothWindow - 1; i++)
-        {
-            m_vec2FilterArray[i] = m_vec2FilterArray[i + 1];
-        }
-        m_vec2FilterArray[smoothWindow - 1] = newVal;
-
-        Vector2 sum = Vector2.zero;
-        for (int i = 0; i < smoothWindow; i++)
-        {
-            sum += m_vec2FilterArray[i];
+            m_vec3LastValue = ret;
+            return ret;
         }
 
-        return sum / smoothWindow;
-    }
 
-    protected void Stabilize(Vector2 newVal)
-    {
-        if (m_first)
+
+        private Vector2 SmoothFilter(Vector2 newVal)
         {
-            m_vec2LastValue = newVal;
+            for (int i = 0; i < smoothWindow - 1; i++)
+            {
+                m_vec2FilterArray[i] = m_vec2FilterArray[i + 1];
+            }
+
+            m_vec2FilterArray[smoothWindow - 1] = newVal;
+
+            Vector2 sum = Vector2.zero;
             for (int i = 0; i < smoothWindow; i++)
             {
-                m_vec2FilterArray[i] = newVal;
+                sum += m_vec2FilterArray[i];
             }
-            m_first = false;
+
+            return sum / smoothWindow;
         }
 
-        newVal = SmoothFilter(newVal);
-        for (int i = 1; i <= stabilizeWindow; i++)
+        protected void Stabilize(Vector2 newVal)
         {
-            m_vec2StabilizeArray[i - 1] = m_vec2LastValue + (newVal - m_vec2LastValue) / stabilizeWindow * i;
-        }
-        
-    }
+            if (m_first)
+            {
+                m_vec2LastValue = newVal;
+                for (int i = 0; i < smoothWindow; i++)
+                {
+                    m_vec2FilterArray[i] = newVal;
+                }
 
-    protected Vector2 GetStabilizedVec2()
-    {
-        var ret = m_vec2StabilizeArray[0];
-        for (int i = 0; i < stabilizeWindow - 1; i++)
-        {
-            m_vec2StabilizeArray[i] = m_vec2StabilizeArray[i + 1];
-        }
-        m_vec2LastValue = ret;
-        return ret;
-    }
+                m_first = false;
+            }
 
-    private float SmoothFilter(float newVal)
-    {
-        for (int i = 0; i < smoothWindow - 1; i++)
-        {
-            m_floatFilterArray[i] = m_floatFilterArray[i + 1];
-        }
-        m_floatFilterArray[smoothWindow - 1] = newVal;
+            newVal = SmoothFilter(newVal);
+            for (int i = 1; i <= stabilizeWindow; i++)
+            {
+                m_vec2StabilizeArray[i - 1] = m_vec2LastValue + (newVal - m_vec2LastValue) / stabilizeWindow * i;
+            }
 
-        float sum = 0;
-        for (int i = 0; i < smoothWindow; i++)
-        {
-            sum += m_floatFilterArray[i];
         }
 
-        return sum / smoothWindow;
-    }
-
-    protected void Stabilize(float newVal)
-    {
-        if (m_first)
+        protected Vector2 GetStabilizedVec2()
         {
-            m_floatLastValue = newVal;
+            var ret = m_vec2StabilizeArray[0];
+            for (int i = 0; i < stabilizeWindow - 1; i++)
+            {
+                m_vec2StabilizeArray[i] = m_vec2StabilizeArray[i + 1];
+            }
+
+            m_vec2LastValue = ret;
+            return ret;
+        }
+
+        private float SmoothFilter(float newVal)
+        {
+            for (int i = 0; i < smoothWindow - 1; i++)
+            {
+                m_floatFilterArray[i] = m_floatFilterArray[i + 1];
+            }
+
+            m_floatFilterArray[smoothWindow - 1] = newVal;
+
+            float sum = 0;
             for (int i = 0; i < smoothWindow; i++)
             {
-                m_floatFilterArray[i] = newVal;
+                sum += m_floatFilterArray[i];
             }
-            m_first = false;
+
+            return sum / smoothWindow;
         }
 
-        newVal = SmoothFilter(newVal);
-        for (int i = 1; i <= stabilizeWindow; i++)
+        protected void Stabilize(float newVal)
         {
-            m_floatStabilizeArray[i - 1] = m_floatLastValue + (newVal - m_floatLastValue) / stabilizeWindow * i;
-        }
-       
-    }
+            if (m_first)
+            {
+                m_floatLastValue = newVal;
+                for (int i = 0; i < smoothWindow; i++)
+                {
+                    m_floatFilterArray[i] = newVal;
+                }
 
-    protected float GetStabilizedFloat()
-    {
-        var ret = m_floatStabilizeArray[0];
-        for (int i = 0; i < stabilizeWindow - 1; i++)
+                m_first = false;
+            }
+
+            newVal = SmoothFilter(newVal);
+            for (int i = 1; i <= stabilizeWindow; i++)
+            {
+                m_floatStabilizeArray[i - 1] = m_floatLastValue + (newVal - m_floatLastValue) / stabilizeWindow * i;
+            }
+
+        }
+
+        protected float GetStabilizedFloat()
         {
-            m_floatStabilizeArray[i] = m_floatStabilizeArray[i + 1];
+            var ret = m_floatStabilizeArray[0];
+            for (int i = 0; i < stabilizeWindow - 1; i++)
+            {
+                m_floatStabilizeArray[i] = m_floatStabilizeArray[i + 1];
+            }
+
+            m_floatLastValue = ret;
+            return ret;
         }
-        m_floatLastValue = ret;
-        return ret;
+
     }
-
-
 
 }

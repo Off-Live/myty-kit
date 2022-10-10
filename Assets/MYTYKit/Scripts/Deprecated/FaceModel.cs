@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using MYTYKit.ThirdParty.KalidoKit;
 using UnityEngine;
 
 public class FaceModel : RiggingModel

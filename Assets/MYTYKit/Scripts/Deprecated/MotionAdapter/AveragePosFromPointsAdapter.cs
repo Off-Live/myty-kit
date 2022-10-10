@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using MYTYKit.Controllers;
 using UnityEngine;
-
+using MYTYKit.MotionAdapters;
 public class AveragePosFromPointsAdapter : NativeAdapter
 {
     public RawPointsModel pointsModel;

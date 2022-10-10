@@ -6,10 +6,10 @@ using UnityEngine;
 using UnityEngine.Events;
 using Mediapipe;
 using Mediapipe.Unity;
-using MYTYKit.MotionTemplate.Mediapipe.Model;
+using MYTYKit.MotionTemplates.Mediapipe.Model;
 using Debug = UnityEngine.Debug;
 
-namespace MYTYKit.MotionTemplate.Mediapipe
+namespace MYTYKit.MotionTemplates.Mediapipe
 {
     public class HolisticSource : MonoBehaviour
     {

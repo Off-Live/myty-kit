@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 
-
-[Serializable]
-public class LayerEffectEntry
+namespace MYTYKit
 {
-    public string name;
-    public Material material;
-}
+    [Serializable]
+    public class LayerEffectEntry
+    {
+        public string name;
+        public Material material;
+    }
 
 
-[CreateAssetMenu(fileName = "LayerEffectList", menuName = "ScriptableObjects/LayerEffectList", order = 1)]
-public class LayerEffectList : ScriptableObject
-{
-    public List<LayerEffectEntry> layerEffects;
+    [CreateAssetMenu(fileName = "LayerEffectList", menuName = "ScriptableObjects/LayerEffectList", order = 1)]
+    public class LayerEffectList : ScriptableObject
+    {
+        public List<LayerEffectEntry> layerEffects;
+    }
 }

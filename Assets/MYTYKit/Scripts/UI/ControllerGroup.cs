@@ -1,8 +1,11 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ControllerGroup : MonoBehaviour
+using MYTYKit.Controllers;
+namespace MYTYKit
 {
-    public List<RootController> rootControllers;
+    public class ControllerGroup : MonoBehaviour
+    {
+        public List<RootController> rootControllers;
+    }
 }

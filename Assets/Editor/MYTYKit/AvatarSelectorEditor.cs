@@ -5,44 +5,42 @@ using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-[CustomEditor(typeof(AvatarSelector))]
-public class AvatarSelectorEditor : Editor
+using MYTYKit.Components;
+namespace MYTYKit
 {
-    public override VisualElement CreateInspectorGUI()
+    [CustomEditor(typeof(AvatarSelector))]
+    public class AvatarSelectorEditor : UnityEditor.Editor
     {
-        var root = new VisualElement();
-        var idField = new IntegerField();
-        var configureBtn = new Button();
-        var templateField = new PropertyField();
-        var searchObj = new ObjectField();
-        var findBtn = new Button();
-
-        idField.label = "Avatar ID";
-        idField.BindProperty(serializedObject.FindProperty("id"));
-        idField.isDelayed = true;
-
-        configureBtn.text = "Configure";
-        configureBtn.clicked += () =>
+        public override VisualElement CreateInspectorGUI()
         {
-            (target as AvatarSelector).Configure();
-        };
+            var root = new VisualElement();
+            var idField = new IntegerField();
+            var configureBtn = new Button();
+            var templateField = new PropertyField();
+            var searchObj = new ObjectField();
+            var findBtn = new Button();
 
-        searchObj.label = "Find with";
-        searchObj.objectType = typeof(GameObject);
+            idField.label = "Avatar ID";
+            idField.BindProperty(serializedObject.FindProperty("id"));
+            idField.isDelayed = true;
 
-        findBtn.text = "Find next";
-        findBtn.clicked += () =>
-        {
-            (target as AvatarSelector).FindWithTraitObj(searchObj.value as GameObject);
-        };
+            configureBtn.text = "Configure";
+            configureBtn.clicked += () => { (target as AvatarSelector).Configure(); };
 
-        templateField.BindProperty(serializedObject.FindProperty("templates"));
-        root.Add(templateField);
-        root.Add(idField);
-        root.Add(configureBtn);
-        root.Add(searchObj);
-        root.Add(findBtn);
-        return root;
+            searchObj.label = "Find with";
+            searchObj.objectType = typeof(GameObject);
+
+            findBtn.text = "Find next";
+            findBtn.clicked += () => { (target as AvatarSelector).FindWithTraitObj(searchObj.value as GameObject); };
+
+            templateField.BindProperty(serializedObject.FindProperty("templates"));
+            root.Add(templateField);
+            root.Add(idField);
+            root.Add(configureBtn);
+            root.Add(searchObj);
+            root.Add(findBtn);
+            return root;
+        }
+
     }
-   
 }

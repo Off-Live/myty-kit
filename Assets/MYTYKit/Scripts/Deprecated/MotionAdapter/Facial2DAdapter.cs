@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using MYTYKit.Controllers;
 using UnityEngine;
-
+using MYTYKit.MotionAdapters;
 public class Facial2DAdapter : NativeAdapter
 {
     public FaceModel face;

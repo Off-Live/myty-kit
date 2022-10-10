@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Reflection;
+using MYTYKit.Controllers;
 using UnityEngine;
-
+using MYTYKit.MotionAdapters;
 public class JointVec3ToVec2Adapter : NativeAdapter
 {
     public JointModel joint;

@@ -1,26 +1,26 @@
-using UnityEditor;
-using UnityEngine;
-
-public static class MotionSourceHelper
+namespace MYTYKit.MotionTemplates
 {
-    public static void SetupMotionCategory(this MotionSource motionSource)
+    public static class MotionSourceHelper
     {
-        motionSource.Clear();
-        var transform = motionSource.transform;
-        var childCount = transform.childCount;
-        for (int i = 0; i < childCount; i++)
+        public static void SetupMotionCategory(this MotionSource motionSource)
         {
-            var child = transform.GetChild(i).gameObject;
-            var categoryName = child.name;
-            
-            for (int j = 0; j < child.transform.childCount; j++)
+            motionSource.Clear();
+            var transform = motionSource.transform;
+            var childCount = transform.childCount;
+            for (int i = 0; i < childCount; i++)
             {
-                var bridge = child.transform.GetChild(j).GetComponent<MotionTemplateBridge>();
-                if (bridge == null) continue;
-                motionSource.AddMotionTemplateBridge(categoryName,bridge);
-            }
-        }
-        
-    }
+                var child = transform.GetChild(i).gameObject;
+                var categoryName = child.name;
 
+                for (int j = 0; j < child.transform.childCount; j++)
+                {
+                    var bridge = child.transform.GetChild(j).GetComponent<MotionTemplateBridge>();
+                    if (bridge == null) continue;
+                    motionSource.AddMotionTemplateBridge(categoryName, bridge);
+                }
+            }
+
+        }
+
+    }
 }

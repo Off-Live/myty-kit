@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace MYTYKit.MotionTemplate.Mediapipe.Model
+namespace MYTYKit.MotionTemplates.Mediapipe.Model
 {
     public class MPPoints : MPBaseModel
     {

@@ -1,11 +1,9 @@
-
-using System;
 using UnityEngine;
 
-public class MotionTemplate : MonoBehaviour
+namespace MYTYKit.MotionTemplates
 {
-    void Start()
-    { 
-        
+    public class MotionTemplate : MonoBehaviour
+    {
+       
     }
 }
