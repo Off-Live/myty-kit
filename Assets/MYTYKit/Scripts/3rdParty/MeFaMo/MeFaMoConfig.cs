@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace MYTYKit.ThirdParty.MeFaMo
 {
-    public class MeFaMoConfig
+    public static class MeFaMoConfig
     {
         public static readonly int[] eye_right = { 33, 133, 160, 159, 158, 144, 145, 153 };
         public static readonly int[] eye_left = { 263, 362, 387, 386, 385, 373, 374, 380 };
