@@ -653,7 +653,7 @@ MonoBehaviour:
   configText: {fileID: 4900000, guid: 7d3c713906341c5419504bff27c359bb, type: 3}
   configWithoutHandText: {fileID: 4900000, guid: f4401718886fc457a88a1ae992951fb3, type: 3}
   imageSource: {fileID: 9212716866843020333}
-  inputFlipped: 0
+  inputFlipped: 1
   trackingHands: 0
   detectedEvent:
     m_PersistentCalls:
