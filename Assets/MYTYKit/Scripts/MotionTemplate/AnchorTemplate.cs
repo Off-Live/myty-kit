@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace MYTYKit.MotionTemplates
@@ -7,7 +8,11 @@ namespace MYTYKit.MotionTemplates
         public Vector3 up;
         public Vector3 lookAt;
         public Vector3 position;
-        public Vector3 scale;
+        public Vector3 scale = Vector3.one;
 
+        void Start()
+        {
+            scale = Vector3.one;
+        }
     }
 }

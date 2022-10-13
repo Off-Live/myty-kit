@@ -23,7 +23,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
 
         public void SetPoint(int index, Vector3 point)
         {
-            rawPoints[index] = point;
+            rawPoints[index] = new Vector3(-point.x, -point.y, point.z);
         }
     }
 }

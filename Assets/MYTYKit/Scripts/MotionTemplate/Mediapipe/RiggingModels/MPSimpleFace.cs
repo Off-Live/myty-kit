@@ -19,6 +19,10 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
         public float mouthX;
         public float mouthY;
 
+        void Start()
+        {
+        }
+
         void LateUpdate()
         {
             if (m_solver == null) return;
@@ -52,6 +56,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
                              m_solver.blendShape[FaceBlendShape.BrowOuterUpRight]*(1.0f-eyebrowNeutral);
             
             UpdateTemplate();
+            
             m_solver = null;
 
         }

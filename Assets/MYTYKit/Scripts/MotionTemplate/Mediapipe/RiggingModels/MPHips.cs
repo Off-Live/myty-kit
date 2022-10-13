@@ -14,6 +14,8 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
             hipLr.Normalize();
             lookAt = Vector3.Cross(hipLr, up);
             up = Vector3.Cross(lookAt, hipLr);
+            lookAt.z = -lookAt.z;
+            up.z = up.z;
             UpdateTemplate();
         }
     }

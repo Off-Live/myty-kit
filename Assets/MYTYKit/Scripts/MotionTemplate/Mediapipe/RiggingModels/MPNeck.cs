@@ -18,6 +18,8 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
             up.Normalize();
             shoulderLR.Normalize();
             lookAt = Vector3.Cross(shoulderLR, up);
+            lookAt.z = -lookAt.z;
+            up.z = up.z;
             UpdateTemplate();
 
         }

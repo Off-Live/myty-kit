@@ -22,14 +22,14 @@ namespace MYTYKit.ThirdParty.KalidoKit
  * Landmark points labeled for eye, brow, and pupils
  */
 
-        private static int[] LEFT_EYE = { 33, 133, 160, 159, 158, 144, 145, 153 };
-        private static int[] RIGHT_EYE = { 263, 362, 387, 386, 385, 373, 374, 380 };
+        private static int[] RIGHT_EYE = { 33, 133, 160, 159, 158, 144, 145, 153 };
+        private static int[] LEFT_EYE = { 263, 362, 387, 386, 385, 373, 374, 380 };
 
-        private static int[] LEFT_EYEBROW = { 35, 244, 63, 105, 66, 229, 230, 231 };
-        private static int[] RIGHT_EYEBROW = { 265, 464, 293, 334, 296, 449, 450, 451 };
+        private static int[] RIGHT_EYEBROW = { 35, 244, 63, 105, 66, 229, 230, 231 };
+        private static int[] LEFT_EYEBROW = { 265, 464, 293, 334, 296, 449, 450, 451 };
 
-        private static int[] LEFT_PUPIL = { 468, 469, 470, 471, 472 };
-        private static int[] RIGHT_PUPIL = { 473, 474, 475, 476, 477 };
+        private static int[] RIGHT_PUPIL = { 468, 469, 470, 471, 472 };
+        private static int[] LEFT_PUPIL = { 473, 474, 475, 476, 477 };
 
         private static int[] END_POINTS = {234,454, 10,152 };
 

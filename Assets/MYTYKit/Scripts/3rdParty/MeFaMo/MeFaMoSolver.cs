@@ -10,7 +10,7 @@ namespace MYTYKit.ThirdParty.MeFaMo
         public Vector2 leftPupil = Vector2.zero;
         public Vector2 rightPupil = Vector2.zero;
         
-        Vector3[] m_landmarks;
+        public Vector3[] m_landmarks;
         List<Vector3[]> m_history = new();
         
         public void Solve(Vector3[] landmarks, int frameWidth = 640, int frameHeight = 480)
