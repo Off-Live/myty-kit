@@ -1,3 +1,4 @@
+using MYTYKit.Controllers;
 using UnityEditor;
 using UnityEngine;
 using MYTYKit.MotionTemplates;
@@ -44,9 +45,23 @@ namespace MYTYKit
         void MigrateAdapter()
         {
             this.MigrateJointV3ToV2Adapter();
+            this.MigrateJointV3ToV1Adapter();
             this.MigrateFacial1DAdapter();
             this.MigrateFacial2DAdapter();
             this.MigrateFacial2DCompound();
+            this.MigrateAveragePosAdapter();
+            this.MigrateWeightedSum1DAdapter();
+            this.MigrateWeightedSum2DAdapter();
+            FixBone2DController();
+        }
+        void FixBone2DController()
+        {
+            var bond2dcons = FindObjectsOfType<Bone2DController>();
+
+            foreach (var con in bond2dcons)
+            {
+                con.FlipY();
+            }
         }
     }
 }

@@ -1,6 +1,6 @@
-
 using MYTYKit.MotionAdapters;
 using MYTYKit.MotionTemplates;
+using UnityEditor;
 using UnityEngine;
 
 namespace MYTYKit
@@ -43,6 +43,7 @@ namespace MYTYKit
                 toAdapter.max1st = fromAdapter.max1st;
                 toAdapter.min2nd = fromAdapter.min2nd;
                 toAdapter.max2nd = fromAdapter.max2nd;
+                EditorUtility.SetDirty(toAdapter);
                 
                 Object.DestroyImmediate(fromAdapter);
             }

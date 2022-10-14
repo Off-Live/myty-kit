@@ -1,5 +1,6 @@
 using MYTYKit.MotionAdapters;
 using MYTYKit.MotionTemplates;
+using UnityEditor;
 using UnityEngine;
 namespace MYTYKit
 {
@@ -21,7 +22,7 @@ namespace MYTYKit
                 toAdapter.paramName = fromAdapter.fieldName;
                 toAdapter.con = fromAdapter.con;
                 toAdapter.stabilizeTime = fromAdapter.stabilizeTime;
-                
+                EditorUtility.SetDirty(toAdapter);
                 Object.DestroyImmediate(fromAdapter);
             }
         }
