@@ -14,7 +14,7 @@ namespace MYTYKit
         {
             var wnd = CreateInstance<Migration>();
             wnd.titleContent = new GUIContent("Migrate project to v1.0");
-            wnd.minSize = wnd.maxSize = new Vector2(450, 180);
+            wnd.minSize = wnd.maxSize = new Vector2(300, 30);
             wnd.ShowUtility();
             
         }
@@ -23,12 +23,17 @@ namespace MYTYKit
         {
             var btn = new Button();
             var motionBtn = new Button();
-            btn.text = "Adapter";
-            motionBtn.text = "MotionPack";
-            btn.clicked += MigrateAdapter;
-            motionBtn.clicked += PrepareNewMotionSystem;
+            var mediapipBtn = new Button();
+            btn.text = "Migrate!";
+            btn.clicked += () =>
+            {
+                PrepareNewMotionSystem();
+                MigrateAdapter();
+                RemoveMediapipe();
+                EditorUtility.DisplayDialog("MYTY Kit", "Migration Done!", "Ok");
+                Close();
+            };
             rootVisualElement.Add(btn);
-            rootVisualElement.Add(motionBtn);
         }
 
         void PrepareNewMotionSystem()
@@ -54,6 +59,18 @@ namespace MYTYKit
             this.MigrateWeightedSum2DAdapter();
             FixBone2DController();
         }
+
+        void RemoveMediapipe()
+        {
+            var jointChild = FindObjectOfType<JointModel>();
+            if (jointChild == null)
+            {
+                Debug.LogWarning("Cannot find the legacy mediapipe prefab");
+                return;
+            }
+            DestroyImmediate(PrefabUtility.GetNearestPrefabInstanceRoot(jointChild));
+        }
+        
         void FixBone2DController()
         {
             var bond2dcons = FindObjectsOfType<Bone2DController>();
