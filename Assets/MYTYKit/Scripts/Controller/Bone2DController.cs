@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace MYTYKit.Controllers
@@ -106,6 +107,80 @@ namespace MYTYKit.Controllers
         public void SetInput(Vector2 val)
         {
             controlPosition = val;
+        }
+
+        public void FlipY()
+        {
+            if (Application.isPlaying) return;
+#if UNITY_EDITOR
+            var so = new SerializedObject(this);
+            var yminProp = so.FindProperty("yminRig");
+            var ymaxProp = so.FindProperty("ymaxRig");
+
+            for (int i = 0; i < yminProp.arraySize; i++)
+            {
+                var tmp = new RiggingEntity()
+                {
+                    position = yminProp.GetArrayElementAtIndex(i).FindPropertyRelative("position").vector3Value,
+                    rotation = yminProp.GetArrayElementAtIndex(i).FindPropertyRelative("rotation").quaternionValue,
+                    scale = yminProp.GetArrayElementAtIndex(i).FindPropertyRelative("scale").vector3Value
+                };
+
+                yminProp.GetArrayElementAtIndex(i).FindPropertyRelative("position").vector3Value =
+                    ymaxProp.GetArrayElementAtIndex(i).FindPropertyRelative("position").vector3Value;
+                yminProp.GetArrayElementAtIndex(i).FindPropertyRelative("rotation").quaternionValue =
+                    ymaxProp.GetArrayElementAtIndex(i).FindPropertyRelative("rotation").quaternionValue;
+                yminProp.GetArrayElementAtIndex(i).FindPropertyRelative("scale").vector3Value =
+                    ymaxProp.GetArrayElementAtIndex(i).FindPropertyRelative("scale").vector3Value;
+
+                ymaxProp.GetArrayElementAtIndex(i).FindPropertyRelative("position").vector3Value =
+                    tmp.position;
+                ymaxProp.GetArrayElementAtIndex(i).FindPropertyRelative("rotation").quaternionValue =
+                    tmp.rotation;
+                ymaxProp.GetArrayElementAtIndex(i).FindPropertyRelative("scale").vector3Value =
+                    tmp.scale;
+            }
+
+            so.ApplyModifiedProperties();
+#endif
+        }
+
+        public void FlipX()
+        {
+            if (Application.isPlaying) return;
+#if UNITY_EDITOR
+            var so = new SerializedObject(this);
+            var xminProp = so.FindProperty("xminRig");
+            var xmaxProp = so.FindProperty("xmaxRig");
+
+            for (int i = 0; i < xminProp.arraySize; i++)
+            {
+                var tmp = new RiggingEntity()
+                {
+                    position = xminProp.GetArrayElementAtIndex(i).FindPropertyRelative("position").vector3Value,
+                    rotation = xminProp.GetArrayElementAtIndex(i).FindPropertyRelative("rotation").quaternionValue,
+                    scale = xminProp.GetArrayElementAtIndex(i).FindPropertyRelative("scale").vector3Value
+                };
+
+                xminProp.GetArrayElementAtIndex(i).FindPropertyRelative("position").vector3Value =
+                    xmaxProp.GetArrayElementAtIndex(i).FindPropertyRelative("position").vector3Value;
+                xminProp.GetArrayElementAtIndex(i).FindPropertyRelative("rotation").quaternionValue =
+                    xmaxProp.GetArrayElementAtIndex(i).FindPropertyRelative("rotation").quaternionValue;
+                xminProp.GetArrayElementAtIndex(i).FindPropertyRelative("scale").vector3Value =
+                    xmaxProp.GetArrayElementAtIndex(i).FindPropertyRelative("scale").vector3Value;
+
+                xmaxProp.GetArrayElementAtIndex(i).FindPropertyRelative("position").vector3Value =
+                    tmp.position;
+                xmaxProp.GetArrayElementAtIndex(i).FindPropertyRelative("rotation").quaternionValue =
+                    tmp.rotation;
+                xmaxProp.GetArrayElementAtIndex(i).FindPropertyRelative("scale").vector3Value =
+                    tmp.scale;
+            }
+
+            so.ApplyModifiedProperties();
+#endif
+
+
         }
     }
 }

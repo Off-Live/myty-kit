@@ -58,14 +58,8 @@ namespace MYTYKit
 
             posController.RegisterValueChangedCallback((ChangeEvent<Vector2> e) =>
             {
-                if (m_conSO == null) return;
-                var xScaleVE = rootVisualElement.Q<FloatField>("FLTXScale");
-                var yScaleVE = rootVisualElement.Q<FloatField>("FLTYScale");
-                var target = (Bone2DController)m_conSO.targetObject;
-                controller.transform.position = e.newValue * new Vector2(panel.localBound.width / 2 / xScaleVE.value,
-                    panel.localBound.height / 2 / yScaleVE.value);
-                target.InterpolateGUI();
-
+                UpdateIndicator();
+                
             });
 
             panel.RegisterCallback<MouseDownEvent>(OnMousePress, TrickleDown.TrickleDown);
@@ -98,18 +92,18 @@ namespace MYTYKit
             });
             rootVisualElement.Q<Toggle>("BTNRegUp").RegisterCallback((MouseUpEvent e) =>
             {
-                if (HandleRigToggle(e, "yminRig"))
-                {
-                    var yScaleVE = rootVisualElement.Q<FloatField>("FLTYScale");
-                    SetControlPos(new Vector2(0, -yScaleVE.value));
-                }
-            });
-            rootVisualElement.Q<Toggle>("BTNRegDown").RegisterCallback((MouseUpEvent e) =>
-            {
                 if (HandleRigToggle(e, "ymaxRig"))
                 {
                     var yScaleVE = rootVisualElement.Q<FloatField>("FLTYScale");
                     SetControlPos(new Vector2(0, yScaleVE.value));
+                }
+            });
+            rootVisualElement.Q<Toggle>("BTNRegDown").RegisterCallback((MouseUpEvent e) =>
+            {
+                if (HandleRigToggle(e, "yminRig"))
+                {
+                    var yScaleVE = rootVisualElement.Q<FloatField>("FLTYScale");
+                    SetControlPos(new Vector2(0, -yScaleVE.value));
                 }
             });
 
@@ -178,8 +172,8 @@ namespace MYTYKit
             SyncRiggingHelper("orgRig", "OriginMarker", "BTNRegOrigin");
             SyncRiggingHelper("xminRig", "LeftMarker", "BTNRegLeft");
             SyncRiggingHelper("xmaxRig", "RightMarker", "BTNRegRight");
-            SyncRiggingHelper("yminRig", "UpMarker", "BTNRegUp");
-            SyncRiggingHelper("ymaxRig", "DownMarker", "BTNRegDown");
+            SyncRiggingHelper("ymaxRig", "UpMarker", "BTNRegUp");
+            SyncRiggingHelper("yminRig", "DownMarker", "BTNRegDown");
         }
 
         private void SyncRiggingHelper(string property, string element, string btnElem)
@@ -317,10 +311,8 @@ namespace MYTYKit
         {
             if (m_conSO != null && m_conSO.targetObject != null)
             {
-                var target = (Bone2DController)m_conSO.targetObject;
-                m_conSO.FindProperty("controlPosition").vector2Value = pos;
-                m_conSO.ApplyModifiedProperties();
-                target.InterpolateGUI();
+                var posController = rootVisualElement.Q<Vector2Field>("ControllerPos");
+                posController.value = pos;
             }
         }
 
@@ -336,6 +328,34 @@ namespace MYTYKit
             }
 
 
+        }
+
+        void UpdateIndicator()
+        {
+            var controlPosition = m_conSO.FindProperty("controlPosition").vector2Value;
+            var pointPanel = rootVisualElement.Q<VisualElement>("Panel");
+            var pointerVE = rootVisualElement.Q<VisualElement>("Controller");
+            var panelDim = new Vector2(pointPanel.localBound.width, pointPanel.localBound.height);
+            var panelPos = CalcPanelPos(controlPosition, panelDim);
+
+            pointerVE.style.left = panelPos.x-10;
+            pointerVE.style.bottom = panelPos.y-10;
+
+            if (m_conSO == null) return;
+            
+            var target = (Bone2DController)m_conSO.targetObject;
+            target.InterpolateGUI();
+        }
+        
+        Vector2 CalcPanelPos(Vector2 value, Vector2 panelDim)
+        {
+            var xScale = m_conSO.FindProperty("xScale").floatValue;
+            var yScale = m_conSO.FindProperty("yScale").floatValue;
+            var tr = new Vector2(xScale, yScale);
+            var bl = new Vector2(-xScale, -yScale);
+
+            var norm = (value - bl) / (tr-bl);
+            return panelDim * norm;
         }
 
 
@@ -358,16 +378,8 @@ namespace MYTYKit
 
         private void OnMousePress(MouseDownEvent e)
         {
-            var xScaleVE = rootVisualElement.Q<FloatField>("FLTXScale");
-            var yScaleVE = rootVisualElement.Q<FloatField>("FLTYScale");
-            var controller = rootVisualElement.Q("Controller");
-            var panel = controller.parent;
             m_isPressed = true;
-            m_lastPos = e.localMousePosition;
-            var posController = rootVisualElement.Q<Vector2Field>("ControllerPos");
-            posController.value = new Vector2((m_lastPos.x / panel.localBound.width * 2 - 1) * xScaleVE.value,
-                (m_lastPos.y / panel.localBound.height * 2 - 1) * yScaleVE.value);
-
+            HandleMousePos(e.localMousePosition);
 
         }
 
@@ -375,36 +387,36 @@ namespace MYTYKit
         {
             if (m_isPressed)
             {
-                var diff = e.localMousePosition - m_lastPos;
-                m_lastPos = e.localMousePosition;
-
-                var xScaleVE = rootVisualElement.Q<FloatField>("FLTXScale");
-                var yScaleVE = rootVisualElement.Q<FloatField>("FLTYScale");
-                var controller = rootVisualElement.Q("Controller");
-                var panel = controller.parent;
-                var pos = controller.transform.position += new Vector3(diff.x, diff.y, 0);
-
-                if (pos.x < -panel.localBound.width / 2) pos.Set(-panel.localBound.width / 2, pos.y, pos.z);
-                else if (pos.x > panel.localBound.width / 2) pos.Set(panel.localBound.width / 2, pos.y, pos.z);
-
-                if (pos.y < -panel.localBound.height / 2) pos.Set(pos.x, -panel.localBound.height / 2, pos.z);
-                else if (pos.y > panel.localBound.height / 2) pos.Set(pos.x, panel.localBound.height / 2, pos.z);
-
-                controller.transform.position = pos;
-
-                var posController = rootVisualElement.Q<Vector2Field>("ControllerPos");
-                posController.value = new Vector2(pos.x / panel.localBound.width * 2 * xScaleVE.value,
-                    pos.y / panel.localBound.height * 2 * yScaleVE.value);
-
-
+                HandleMousePos(e.localMousePosition);
             }
+        }
+        
+        void HandleMousePos(Vector2 mousePos)
+        {
+            if (m_conSO == null) return;
+            var cpProp = m_conSO.FindProperty("controlPosition");
+            var xScale = m_conSO.FindProperty("xScale").floatValue;
+            var yScale = m_conSO.FindProperty("yScale").floatValue;
+            var pointPanel = rootVisualElement.Q<VisualElement>("Panel");
+            var panelDim = new Vector2(pointPanel.localBound.width, pointPanel.localBound.height);
+
+            var tr = new Vector2(xScale, yScale);
+            var bl = new Vector2(-xScale, -yScale);
+            mousePos.y = panelDim.y - mousePos.y;
+        
+            var result = (mousePos / panelDim) * (tr - bl) + bl;
+
+            result = new Vector2(
+                Mathf.Round(result.x * 1000) / 1000,
+                Mathf.Round(result.y * 1000) / 1000);
+            cpProp.vector2Value = result;
+        
+            m_conSO.ApplyModifiedProperties();
         }
 
         private void OnDestroy()
         {
             ResetPos();
-
-            Debug.Log("destroy");
         }
 
     }

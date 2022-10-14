@@ -42,8 +42,27 @@ namespace MYTYKit
 
             targetList.itemsSource = listSource;
 
+            var flipXBtn = new Button();
+            var flipYBtn = new Button();
+
+            flipXBtn.text = "Filp X pivots";
+            flipYBtn.text = "Flip Y pivots";
+
+            flipXBtn.clicked += () =>
+            {
+                var con = target as Bone2DController;
+                con.FlipX();
+            };
+            flipYBtn.clicked += () =>
+            {
+                var con = target as Bone2DController;
+                con.FlipY();
+            };
+            
             rootElem.Add(new Label("Rigged Bones : "));
             rootElem.Add(targetList);
+            rootElem.Add(flipXBtn);
+            rootElem.Add(flipYBtn);
 
             return rootElem;
         }

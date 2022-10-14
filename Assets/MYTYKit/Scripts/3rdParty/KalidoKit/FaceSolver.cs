@@ -22,14 +22,14 @@ namespace MYTYKit.ThirdParty.KalidoKit
  * Landmark points labeled for eye, brow, and pupils
  */
 
-        private static int[] LEFT_EYE = { 33, 133, 160, 159, 158, 144, 145, 153 };
-        private static int[] RIGHT_EYE = { 263, 362, 387, 386, 385, 373, 374, 380 };
+        private static int[] RIGHT_EYE = { 33, 133, 160, 159, 158, 144, 145, 153 };
+        private static int[] LEFT_EYE = { 263, 362, 387, 386, 385, 373, 374, 380 };
 
-        private static int[] LEFT_EYEBROW = { 35, 244, 63, 105, 66, 229, 230, 231 };
-        private static int[] RIGHT_EYEBROW = { 265, 464, 293, 334, 296, 449, 450, 451 };
+        private static int[] RIGHT_EYEBROW = { 35, 244, 63, 105, 66, 229, 230, 231 };
+        private static int[] LEFT_EYEBROW = { 265, 464, 293, 334, 296, 449, 450, 451 };
 
-        private static int[] LEFT_PUPIL = { 468, 469, 470, 471, 472 };
-        private static int[] RIGHT_PUPIL = { 473, 474, 475, 476, 477 };
+        private static int[] RIGHT_PUPIL = { 468, 469, 470, 471, 472 };
+        private static int[] LEFT_PUPIL = { 473, 474, 475, 476, 477 };
 
         private static int[] END_POINTS = {234,454, 10,152 };
 
@@ -107,21 +107,27 @@ namespace MYTYKit.ThirdParty.KalidoKit
             }
             Vector3 eyeOuterCorner = faceLM[eyeIndices[0]];
             Vector3 eyeInnerCorner = faceLM[eyeIndices[1]];
-
+            Vector3 eyeMidUpper = faceLM[eyeIndices[3]];
+            Vector3 eyeMidLower = faceLM[eyeIndices[6]];
+            
             float eyeWidth = (eyeOuterCorner - eyeInnerCorner).magnitude;
             Vector3 midPoint = (eyeOuterCorner + eyeInnerCorner)*0.5f;
             Vector3 pupil = faceLM[pupilIndices[0]];
 
             Vector3 pos = pupil - midPoint;
             Vector3 principalAxis = (eyeOuterCorner - eyeInnerCorner).normalized;
+            Vector3 verticalAxis = (eyeMidUpper - eyeMidLower).normalized;
+            Vector3 lookAt = Vector3.Cross(verticalAxis, principalAxis).normalized;
+            verticalAxis = - Vector3.Cross(principalAxis,lookAt).normalized;// the capture raw landmarks is invertied in y-axis
+            
 
             Vector3 xComp = Vector3.Dot(pos, principalAxis) * principalAxis;
-            Vector3 yComp = pos - xComp;
+            Vector3 yComp = Vector3.Dot(pos, verticalAxis) * verticalAxis;
 
-            float ySign = Vector3.Dot(yComp, Vector3.up) / Mathf.Abs(Vector3.Dot(yComp, Vector3.up));
+            //float ySign = Vector3.Dot(yComp, Vector3.up) / Mathf.Abs(Vector3.Dot(yComp, Vector3.up));
             float xSign = left ? -1.0f : 1.0f;
-
-            return new Vector2(Vector3.Dot(xComp,principalAxis)/eyeWidth*xSign, yComp.magnitude/eyeWidth*ySign);
+            
+            return new Vector2(Vector3.Dot(xComp,principalAxis)/eyeWidth*xSign *2.0f, Vector3.Dot(yComp,verticalAxis)/eyeWidth*2.0f);
 
         }
 

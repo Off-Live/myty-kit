@@ -344,7 +344,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4789164740470994041}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.244729, y: 8.049555, z: -9.943961}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -367,100 +367,100 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   templates:
-  - name: FaceParameters
-    template: {fileID: 4789164740891155870}
+  - name: SimpleFaceParam
+    template: {fileID: 4789164740891155868}
   - name: BodyPoints
-    template: {fileID: 4789164740251904930}
+    template: {fileID: 4789164740251904928}
   - name: FacePoints
-    template: {fileID: 4789164740584855418}
+    template: {fileID: 4789164740584855416}
   - name: RightLittleDistal
-    template: {fileID: 4789164741067474484}
+    template: {fileID: 4789164741067474482}
   - name: RightLittleIntermediate
-    template: {fileID: 4789164741694887341}
+    template: {fileID: 4789164741694887339}
   - name: RightLittleProximal
-    template: {fileID: 4789164741894891557}
+    template: {fileID: 4789164741894891555}
   - name: RightRingDistal
-    template: {fileID: 4789164741216387774}
+    template: {fileID: 4789164741216387772}
   - name: RightRingIntermediate
-    template: {fileID: 4789164742217679432}
+    template: {fileID: 4789164742217679430}
   - name: RightRingProximal
-    template: {fileID: 4789164742147647946}
+    template: {fileID: 4789164742147647944}
   - name: RightMiddleDistal
-    template: {fileID: 4789164741933037562}
+    template: {fileID: 4789164741933037560}
   - name: RightMiddleIntermediate
-    template: {fileID: 4789164740820853317}
+    template: {fileID: 4789164740820853315}
   - name: RightMiddleProximal
-    template: {fileID: 4789164741243370213}
+    template: {fileID: 4789164741243370211}
   - name: RightIndexDistal
-    template: {fileID: 4789164741307163846}
+    template: {fileID: 4789164741307163844}
   - name: RightIndexIntermediate
-    template: {fileID: 4789164741858292625}
+    template: {fileID: 4789164741858292655}
   - name: RightIndexProximal
-    template: {fileID: 4789164741739838771}
+    template: {fileID: 4789164741739838769}
   - name: RightThumbDistal
-    template: {fileID: 4789164740330581575}
+    template: {fileID: 4789164740330581573}
   - name: RightThumbIntermediate
-    template: {fileID: 4789164742138774806}
+    template: {fileID: 4789164742138774804}
   - name: RightThumbProximal
-    template: {fileID: 4789164741766700216}
+    template: {fileID: 4789164741766700214}
   - name: LeftLittleDistal
-    template: {fileID: 4789164740287391015}
+    template: {fileID: 4789164740287391013}
   - name: LeftLittleIntermediate
-    template: {fileID: 4789164741171642420}
+    template: {fileID: 4789164741171642418}
   - name: LeftLittleProximal
-    template: {fileID: 4789164741141077279}
+    template: {fileID: 4789164741141077277}
   - name: LeftRingDistal
-    template: {fileID: 4789164741948050452}
+    template: {fileID: 4789164741948050450}
   - name: LeftRingIntermediate
-    template: {fileID: 4789164741798918718}
+    template: {fileID: 4789164741798918716}
   - name: LeftRingProximal
-    template: {fileID: 4789164742220489625}
+    template: {fileID: 4789164742220489623}
   - name: LeftMiddleDistal
-    template: {fileID: 4789164740885222331}
+    template: {fileID: 4789164740885222329}
   - name: LeftMiddleIntermediate
-    template: {fileID: 4789164741750538606}
+    template: {fileID: 4789164741750538604}
   - name: LeftMiddleProximal
-    template: {fileID: 4789164741284036869}
+    template: {fileID: 4789164741284036867}
   - name: LeftIndexDistal
-    template: {fileID: 4789164740145198610}
+    template: {fileID: 4789164740145198608}
   - name: LeftIndexIntermediate
-    template: {fileID: 4789164741218009603}
+    template: {fileID: 4789164741218009601}
   - name: LeftIndexProximal
-    template: {fileID: 4789164741976933820}
+    template: {fileID: 4789164741976933818}
   - name: LeftThumbDistal
-    template: {fileID: 4789164742042635551}
+    template: {fileID: 4789164742042635549}
   - name: LeftThumbIntermediate
-    template: {fileID: 4789164741057364775}
+    template: {fileID: 4789164741057364773}
   - name: LeftThumbProximal
-    template: {fileID: 4789164741263738379}
+    template: {fileID: 4789164741263738377}
   - name: RightLowerLeg
-    template: {fileID: 4789164740458187904}
+    template: {fileID: 4789164740458187934}
   - name: RightUpperLeg
-    template: {fileID: 4789164742058596578}
+    template: {fileID: 4789164742058596576}
   - name: LeftLowerLeg
-    template: {fileID: 4789164741199006164}
+    template: {fileID: 4789164741199006162}
   - name: LeftUpperLeg
-    template: {fileID: 4789164742102514184}
+    template: {fileID: 4789164742102514182}
   - name: RightWrist
-    template: {fileID: 4789164741927494267}
+    template: {fileID: 4789164741927494265}
   - name: RightLowerArm
-    template: {fileID: 4789164742056174200}
+    template: {fileID: 4789164742056174198}
   - name: RightUpperArm
-    template: {fileID: 4789164742167121315}
+    template: {fileID: 4789164742167121313}
   - name: LeftWrist
-    template: {fileID: 4789164741973530851}
+    template: {fileID: 4789164741973530849}
   - name: LeftLowerArm
-    template: {fileID: 4789164741934595747}
+    template: {fileID: 4789164741934595745}
   - name: LeftUpperArm
-    template: {fileID: 4789164740304224199}
+    template: {fileID: 4789164740304224197}
   - name: Hips
-    template: {fileID: 4789164741613849760}
+    template: {fileID: 4789164741613849790}
   - name: Chest
-    template: {fileID: 4789164741555884112}
+    template: {fileID: 4789164741555884142}
   - name: Neck
-    template: {fileID: 4789164740974393145}
+    template: {fileID: 4789164740974393143}
   - name: Head
-    template: {fileID: 4789164741201447150}
+    template: {fileID: 4789164741201447148}
 --- !u!1 &4789164740584855418
 GameObject:
   m_ObjectHideFlags: 0
@@ -646,7 +646,7 @@ GameObject:
   - component: {fileID: 4789164740891155869}
   - component: {fileID: 4789164740891155868}
   m_Layer: 0
-  m_Name: FaceParameters
+  m_Name: SimpleFaceParam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

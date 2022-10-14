@@ -6,11 +6,11 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
 {
     public class MPLeftUpperArm : MPJointModel
     {
-        Vector3 m_lastUp;
+        Vector3 m_lastLookAt;
 
         void Start()
         {
-            m_lastUp = Vector3.up;
+            m_lastLookAt = Vector3.up;
         }
 
 
@@ -24,17 +24,17 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
             upperArm.Normalize();
             lowerArm.Normalize();
 
-            up = Vector3.Cross(upperArm, lowerArm);
-            if (up.sqrMagnitude < 1.0e-6)
+            lookAt = -Vector3.Cross(upperArm, lowerArm);
+            if (lookAt.sqrMagnitude < 1.0e-6)
             {
-                up = m_lastUp;
+                lookAt = m_lastLookAt;
             }
-
-            up.Normalize();
-            lookAt = Vector3.Cross(upperArm, up);
+            
             lookAt.Normalize();
-
-            m_lastUp = up;
+            up = upperArm.normalized;
+            m_lastLookAt = lookAt;
+            lookAt.z = -lookAt.z;
+            up.z = -up.z;
             UpdateTemplate();
         }
     }

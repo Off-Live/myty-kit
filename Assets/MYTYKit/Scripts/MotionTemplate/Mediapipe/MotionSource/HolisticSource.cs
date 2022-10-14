@@ -1,12 +1,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
+using MathNet.Numerics.LinearAlgebra;
 using UnityEngine;
 using UnityEngine.Events;
 using Mediapipe;
 using Mediapipe.Unity;
 using MYTYKit.MotionTemplates.Mediapipe.Model;
+using MYTYKit.ThirdParty.MeFaMo;
 using Debug = UnityEngine.Debug;
 
 namespace MYTYKit.MotionTemplates.Mediapipe
@@ -29,8 +32,6 @@ namespace MYTYKit.MotionTemplates.Mediapipe
 
         public bool inputFlipped = true;
         public bool trackingHands = false;
-
-        public Vector3 landmarkScale = new Vector3(10, -10, 10);
 
         public UnityEvent<bool> detectedEvent;
         public UnityEvent<int> fpsEmitter;
@@ -59,6 +60,10 @@ namespace MYTYKit.MotionTemplates.Mediapipe
         Texture2D m_sourceTexture;
 
         [SerializeField] int m_targetFps = 10;
+        
+        
+        MeFaMoSolver m_solver;
+        Vector3[] m_solverBuffer;
 
         HolisticSource()
         {
@@ -68,6 +73,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe
 
         void Start()
         {
+            m_solver = new MeFaMoSolver();
             OnRestartGraph(trackingHands);
         }
 
@@ -337,6 +343,8 @@ namespace MYTYKit.MotionTemplates.Mediapipe
             {
                 ProcessNormalized(model as MPBaseModel, faceLM.Landmark);
             }
+
+            ProcessSolverBridge("FaceSolver",faceLM.Landmark);
         }
 
         private void ProcessLH(NormalizedLandmarkList leftHand)
@@ -380,11 +388,40 @@ namespace MYTYKit.MotionTemplates.Mediapipe
             foreach (var elem in landmarkList)
             {
                 model.SetPoint(index,
-                    new Vector3(elem.X * landmarkScale.x, elem.Y * landmarkScale.y, elem.Z * landmarkScale.z));
+                    new Vector3(elem.X , elem.Y , elem.Z ));
                 index++;
             }
 
         }
+
+        public void ProcessSolverBridge(string categoryName, IList<NormalizedLandmark> landmarkList)
+        {
+            if (landmarkList == null) return;
+            if (landmarkList.Count < 468) return;
+            if (m_solverBuffer == null || m_solverBuffer.Length != landmarkList.Count)
+            {
+                m_solverBuffer = new Vector3[landmarkList.Count];
+            }
+
+            for (var i = 0; i < landmarkList.Count; i++)
+            {
+                var elem = landmarkList[i];
+                m_solverBuffer[i] = new Vector3(elem.X, elem.Y, elem.Z);
+            }
+
+            var solverRig = motionSource.GetBridgesInCategory(categoryName);
+            m_solver.Solve(m_solverBuffer);
+
+            foreach (var model in solverRig)
+            {
+                var solverModel = model as MPSolverModel;
+                solverModel.SetSolver(m_solver);
+            }
+
+
+        }
+        
+        
 
 
     }
