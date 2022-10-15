@@ -10,7 +10,7 @@ namespace MYTYKit.MotionAdapters.Interpolation
     
         protected override void PrepareMethod()
         {
-            
+            if (GetIntervalCount() < 2) return;
             var n = m_points.Count - 1;
             var matC = Matrix<float>.Build.DenseDiagonal(n, 4);
             for (var i = 0; i < n-1; i++)

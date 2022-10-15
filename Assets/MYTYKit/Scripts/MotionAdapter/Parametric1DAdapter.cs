@@ -13,7 +13,7 @@ namespace MYTYKit.MotionAdapters
 
         void Start()
         {
-            
+            ListenToMotionTemplate();
         }
         public void TemplateUpdated()
         {

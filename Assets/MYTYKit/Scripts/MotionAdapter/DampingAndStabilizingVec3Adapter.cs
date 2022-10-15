@@ -22,7 +22,7 @@ namespace MYTYKit.MotionAdapters
         public int damplingFactor = 1;
         public int dampingWindow = 6;
 
-        public InterpolationMethod stabilizeMethod;
+        public InterpolationMethod stabilizeMethod = InterpolationMethod.BezierInterpolation;
 
         readonly int m_stabilizeWindowSize = 4;
         
@@ -108,6 +108,8 @@ namespace MYTYKit.MotionAdapters
             
             
             if (isDamping) return m_dampedValue;
+            
+            if(m_history==null || m_history.Count==0) return Vector3.zero;
             return m_history.Last().value;
         }
 

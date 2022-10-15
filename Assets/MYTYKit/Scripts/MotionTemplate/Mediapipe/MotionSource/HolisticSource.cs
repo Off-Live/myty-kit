@@ -391,6 +391,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe
                     new Vector3(elem.X , elem.Y , elem.Z ));
                 index++;
             }
+            model.Flush();
 
         }
 
@@ -416,7 +417,9 @@ namespace MYTYKit.MotionTemplates.Mediapipe
             {
                 var solverModel = model as MPSolverModel;
                 solverModel.SetSolver(m_solver);
+                solverModel.Flush();
             }
+            
 
 
         }
