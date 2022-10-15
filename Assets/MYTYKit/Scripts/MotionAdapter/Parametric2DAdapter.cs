@@ -12,11 +12,21 @@ namespace MYTYKit.MotionAdapters
         public string yParamName;
         public MYTYController con;
 
+        void Start()
+        {
+            ListenToMotionTemplate();
+        }
         public void TemplateUpdated()
         {
             Vector2 val = new Vector2(template.GetValue(xParamName), template.GetValue(yParamName));
             AddToHistory(val);
         }
+
+        public void ListenToMotionTemplate()
+        {
+            template.SetUpdateCallback(TemplateUpdated);
+        }
+
         void Update()
         {
             var input = con as IVec2Input;

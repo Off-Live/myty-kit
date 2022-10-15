@@ -18,7 +18,14 @@ namespace MYTYKit.MotionAdapters
 
         private float m_elapsed = 0;
 
-
+        void Start()
+        {
+            ListenToMotionTemplate();
+        }
+        public void ListenToMotionTemplate()
+        {
+            pointsModel.SetUpdateCallback(TemplateUpdated);
+        }
         public void TemplateUpdated()
         {
             var inputVal = Vector3.zero;

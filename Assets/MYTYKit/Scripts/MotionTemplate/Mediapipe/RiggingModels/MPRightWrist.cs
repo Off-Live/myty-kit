@@ -8,7 +8,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
     {
 
 
-        private void LateUpdate()
+        protected override void Process()
         {
             if (rawPoints == null) return;
             var pinkey = rawPoints[0] - rawPoints[17];
@@ -17,7 +17,6 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
             up = -Vector3.Cross(pinkey, lookAt);
             lookAt.Normalize();
             up.Normalize();
-            UpdateTemplate();
         }
 
     }

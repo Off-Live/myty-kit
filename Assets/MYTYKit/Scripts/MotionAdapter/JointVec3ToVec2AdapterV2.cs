@@ -39,6 +39,15 @@ namespace MYTYKit.MotionAdapters
         public float min2nd = -1.0f;
         public float max2nd = 1.0f;
 
+        void Start()
+        {
+            
+        }
+
+        public void ListenToMotionTemplate()
+        {
+            joint.SetUpdateCallback(TemplateUpdated);
+        }
         public void TemplateUpdated()
         {
             Vector3 vec3 = Vector3.zero;

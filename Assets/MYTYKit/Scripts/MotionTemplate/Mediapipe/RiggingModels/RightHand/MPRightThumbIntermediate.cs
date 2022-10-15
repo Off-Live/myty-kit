@@ -4,7 +4,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
 {
     public class MPRightThumbIntermediate : MPJointModel
     {
-        void LateUpdate()
+        protected override void Process()
         {
             if (rawPoints == null) return;
 
@@ -20,7 +20,6 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
 
             up = intermediate;
             lookAt = Vector3.Cross(thumbPlane, proximal);
-            UpdateTemplate();
         }
     }
 }

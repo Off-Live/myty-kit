@@ -22,6 +22,15 @@ namespace MYTYKit.MotionAdapters
         public bool negate = false;
         public MYTYController controller;
 
+        void Start()
+        {
+            ListenToMotionTemplate();
+        }
+
+        public void ListenToMotionTemplate()
+        {
+            joint.SetUpdateCallback(TemplateUpdated);
+        }
         public void TemplateUpdated()
         {
             Vector3 vec3 = Vector3.zero;

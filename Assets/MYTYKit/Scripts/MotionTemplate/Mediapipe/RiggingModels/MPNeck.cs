@@ -6,9 +6,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
 {
     public class MPNeck : MPJointModel
     {
-       
-
-        private void LateUpdate()
+        protected override void Process()
         {
             if (rawPoints == null) return;
             var shoulderLR = rawPoints[11] - rawPoints[12];
@@ -20,8 +18,6 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
             lookAt = Vector3.Cross(shoulderLR, up);
             lookAt.z = -lookAt.z;
             up.z = up.z;
-            UpdateTemplate();
-
         }
     }
 }

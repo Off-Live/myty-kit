@@ -6,7 +6,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
 {
     public class MPLeftMiddleDistal : MPJointModel
     {
-        void LateUpdate()
+        protected override void Process()
         {
             if (rawPoints == null) return;
 
@@ -24,7 +24,6 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
             axis.Normalize();
             up = distal;
             lookAt = Vector3.Cross(axis, distal);
-            UpdateTemplate();
         }
     }
 }

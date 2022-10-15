@@ -13,8 +13,9 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
         public float value;
     }
     public class MPBlendshape : MPSolverModel
-    {   [SerializeField] List<BSItem> blendShape = new();
-        void LateUpdate()
+    {   
+        [SerializeField] List<BSItem> blendShape = new();
+        protected override void Process()
         {
             if (m_solver == null) return;
             blendShape.Clear();
@@ -32,30 +33,19 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
                     });
                 }
             }
-            UpdateTemplate();
             m_solver = null;
 
         }
-       
-        public override void UpdateTemplate()
+
+        protected override void UpdateTemplate()
         {
             if (templateList.Count == 0) return;
 
             foreach (var motionTemplate in templateList)
             {
                 var template = (ParametricTemplate)motionTemplate;
-               
-                // template.SetValue("leftEye",leftEye);
-                // template.SetValue("rightEye",rightEye);
-                // template.SetValue("leftEyeBrow", leftEyeBrow);
-                // template.SetValue("rightEyeBrow", rightEyeBrow);
-                // template.SetValue("leftPupilX", leftPupil.x);
-                // template.SetValue("leftPupilY", leftPupil.y);
-                // template.SetValue("rightPupilX", rightPupil.x);
-                // template.SetValue("rightPupilY", rightPupil.y);
-                // template.SetValue("mouthX", mouthX);
-                // template.SetValue("mouthY", mouthY);
-                //
+                
+                template.NotifyUpdate();
             }
             
         }

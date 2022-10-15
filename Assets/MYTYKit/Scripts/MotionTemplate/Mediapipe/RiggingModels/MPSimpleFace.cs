@@ -19,11 +19,9 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
         public float mouthX;
         public float mouthY;
 
-        void Start()
-        {
-        }
+       
 
-        void LateUpdate()
+        protected override void Process()
         {
             if (m_solver == null) return;
             leftPupil = m_solver.leftPupil;
@@ -54,14 +52,10 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
                           m_solver.blendShape[FaceBlendShape.BrowOuterUpLeft]*(1.0f-eyebrowNeutral);
             rightEyeBrow = (1.0f- m_solver.blendShape[FaceBlendShape.BrowDownRight]/0.4f) * eyebrowNeutral +
                              m_solver.blendShape[FaceBlendShape.BrowOuterUpRight]*(1.0f-eyebrowNeutral);
-            
-            UpdateTemplate();
-            
             m_solver = null;
-
         }
-       
-        public override void UpdateTemplate()
+
+        protected override void UpdateTemplate()
         {
             if (templateList.Count == 0) return;
 
@@ -79,6 +73,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
                 template.SetValue("rightPupilY", rightPupil.y);
                 template.SetValue("mouthX", mouthX);
                 template.SetValue("mouthY", mouthY);
+                template.NotifyUpdate();
                 
             }
             

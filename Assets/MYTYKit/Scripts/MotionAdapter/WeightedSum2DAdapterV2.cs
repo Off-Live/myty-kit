@@ -14,6 +14,10 @@ namespace MYTYKit.MotionAdapters
         public List<float> weights;
         public MYTYController controller;
 
+        void Start()
+        {
+            ListenToMotionTemplate();
+        }
         public void TemplateUpdated()
         {
             var weightedSum = Vector2.zero;
@@ -24,6 +28,12 @@ namespace MYTYKit.MotionAdapters
             }
             AddToHistory(weightedSum);
         }
+
+        public void ListenToMotionTemplate()
+        {
+            template.SetUpdateCallback(TemplateUpdated);
+        }
+
         void Update()
         {
             if (xParamNames.Count != yParamNames.Count) return;

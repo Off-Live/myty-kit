@@ -2,13 +2,9 @@ using UnityEngine;
 
 namespace MYTYKit.MotionTemplates.Mediapipe.Model
 {
-    public class MPBaseModel : MotionTemplateBridge
+    public abstract class MPBaseModel : MotionTemplateBridge
     {
         protected Vector3[] rawPoints;
-        public override void UpdateTemplate()
-        {
-            
-        }
         
         public int GetNumPoints()
         {

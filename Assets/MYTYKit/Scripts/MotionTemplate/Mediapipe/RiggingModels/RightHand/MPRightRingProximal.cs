@@ -6,7 +6,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
 {
     public class MPRightRingProximal : MPJointModel
     {
-        void LateUpdate()
+        protected override void Process()
         {
             if (rawPoints == null) return;
 
@@ -22,7 +22,6 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
             axis.Normalize();
             up = proximal;
             lookAt = Vector3.Cross(axis, proximal);
-            UpdateTemplate();
         }
     }
 }

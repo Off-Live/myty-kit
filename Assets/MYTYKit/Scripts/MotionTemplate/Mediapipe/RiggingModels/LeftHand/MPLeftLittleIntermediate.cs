@@ -4,7 +4,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
 {
     public class MPLeftLittleIntermediate : MPJointModel
     {
-        void LateUpdate()
+        protected override void Process()
         {
             if (rawPoints == null) return;
 
@@ -22,7 +22,6 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
             axis.Normalize();
             up = intermediate;
             lookAt = Vector3.Cross(axis, intermediate);
-            UpdateTemplate();
         }
     }
 }
