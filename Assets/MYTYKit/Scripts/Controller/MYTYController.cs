@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEditor;
 using System;
 using System.Collections.Generic;
+using MYTYKit.Components;
+using UnityEngine.U2D.Animation;
 
 namespace MYTYKit.Controllers
 {
@@ -16,12 +18,6 @@ namespace MYTYKit.Controllers
 
     public abstract class MYTYController : MonoBehaviour
     {
-
-        //    public abstract string SerializeForExport();
-        //    public abstract void BuildFromJson(string json, object data);
-        //#if UNITY_EDITOR
-        //    public abstract void SetupSO(SerializedObject so);
-        //#endif
         public abstract void PrepareToSave();
         public abstract void PostprocessAfterLoad(Dictionary<GameObject, GameObject> objMap);
     }
@@ -129,6 +125,75 @@ namespace MYTYKit.Controllers
 
             return diffList;
 
+        }
+    }
+
+    public abstract class SpriteController : MYTYController
+    {
+        public List<SpriteResolver> spriteObjects;
+        
+        public override void PrepareToSave()
+        {
+#if UNITY_EDITOR
+            for (int i = 0; i < spriteObjects.Count; i++)
+            {
+                spriteObjects[i] = PrefabUtility.GetCorrespondingObjectFromSource(spriteObjects[i]);
+            }
+#endif
+        }
+
+        public override void PostprocessAfterLoad(Dictionary<GameObject, GameObject> objMap)
+        {
+            for (int i = 0; i < spriteObjects.Count; i++)
+            {
+                spriteObjects[i] = objMap[spriteObjects[i].gameObject].GetComponent<SpriteResolver>();
+            }
+#if UNITY_EDITOR
+            if (Application.isEditor)
+            {
+                var so = new SerializedObject(this);
+                for (int i = 0; i < spriteObjects.Count; i++)
+                {
+                    so.FindProperty("spriteObjects").GetArrayElementAtIndex(i).objectReferenceValue = spriteObjects[i];
+                }
+
+                so.ApplyModifiedProperties();
+            }
+#endif
+        }
+    }
+
+    public abstract class MSRSpriteController : MYTYController
+    {
+        public List<MYTYSpriteResolver> spriteObjects;
+        public override void PrepareToSave()
+        {
+#if UNITY_EDITOR
+            for (int i = 0; i < spriteObjects.Count; i++)
+            {
+                spriteObjects[i] = PrefabUtility.GetCorrespondingObjectFromSource(spriteObjects[i]);
+            }
+#endif
+        }
+
+        public override void PostprocessAfterLoad(Dictionary<GameObject, GameObject> objMap)
+        {
+            for (int i = 0; i < spriteObjects.Count; i++)
+            {
+                spriteObjects[i] = objMap[spriteObjects[i].gameObject].GetComponent<MYTYSpriteResolver>();
+            }
+#if UNITY_EDITOR
+            if (Application.isEditor)
+            {
+                var so = new SerializedObject(this);
+                for (int i = 0; i < spriteObjects.Count; i++)
+                {
+                    so.FindProperty("spriteObjects").GetArrayElementAtIndex(i).objectReferenceValue = spriteObjects[i];
+                }
+
+                so.ApplyModifiedProperties();
+            }
+#endif
         }
     }
 }

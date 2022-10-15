@@ -14,13 +14,12 @@ namespace MYTYKit.Controllers
         public float max;
     }
 
-    public class Sprite1DRangeController : MYTYController, IFloatInput
+    public class Sprite1DRangeController : SpriteController, IFloatInput
     {
         public float min = 0;
         public float max = 1;
         public float value = 0;
 
-        public List<SpriteResolver> spriteObjects;
         public List<Interval> intervals;
 
         [SerializeField] private string currentLabel;
@@ -61,35 +60,6 @@ namespace MYTYKit.Controllers
             }
         }
 
-        public override void PrepareToSave()
-        {
-#if UNITY_EDITOR
-            for (int i = 0; i < spriteObjects.Count; i++)
-            {
-                spriteObjects[i] = PrefabUtility.GetCorrespondingObjectFromSource(spriteObjects[i]);
-            }
-#endif
-        }
-
-        public override void PostprocessAfterLoad(Dictionary<GameObject, GameObject> objMap)
-        {
-            for (int i = 0; i < spriteObjects.Count; i++)
-            {
-                spriteObjects[i] = objMap[spriteObjects[i].gameObject].GetComponent<SpriteResolver>();
-            }
-#if UNITY_EDITOR
-            if (Application.isEditor)
-            {
-                var so = new SerializedObject(this);
-                for (int i = 0; i < spriteObjects.Count; i++)
-                {
-                    so.FindProperty("spriteObjects").GetArrayElementAtIndex(i).objectReferenceValue = spriteObjects[i];
-                }
-
-                so.ApplyModifiedProperties();
-            }
-#endif
-        }
 
         void IFloatInput.SetInput(float val)
         {
