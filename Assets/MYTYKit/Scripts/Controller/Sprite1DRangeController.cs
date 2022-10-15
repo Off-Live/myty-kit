@@ -26,13 +26,6 @@ namespace MYTYKit.Controllers
         [SerializeField] private string currentLabel;
 
 
-        // Start is called before the first frame update
-        void Start()
-        {
-
-        }
-
-        // Update is called once per frame
         void Update()
         {
             if (spriteObjects == null || intervals == null) return;

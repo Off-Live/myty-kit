@@ -16,11 +16,8 @@ namespace MYTYKit.Controllers
         public List<RiggingEntity> yminRig;
         public List<RiggingEntity> ymaxRig;
 
-        private List<RiggingEntity> diffBuffer;
+        List<RiggingEntity> diffBuffer;
 
-
-
-   
         void Update()
         {
             var interpList = CalcInterpolate();

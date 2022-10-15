@@ -5,6 +5,7 @@ using System.Collections;
 
 using MYTYKit.Components;
 using MYTYKit.MotionAdapters;
+using MYTYKit.Controllers;
 
 namespace MYTYKit.AvatarImporter
 {

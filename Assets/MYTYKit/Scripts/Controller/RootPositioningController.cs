@@ -31,7 +31,6 @@ namespace MYTYKit.Controllers
 #endif
         }
 
-        // Start is called before the first frame update
         void Start()
         {
             if (targetObject == null) return;

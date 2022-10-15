@@ -6,7 +6,7 @@ namespace MYTYKit.Controllers
     public class RootController : MonoBehaviour
     {
 
-        private List<BoneController> _bones = new();
+        List<BoneController> _bones = new();
 
         // Start is called before the first frame update
         void Start()
@@ -14,13 +14,9 @@ namespace MYTYKit.Controllers
             FindControllers<BoneController>(_bones, gameObject);
         }
 
-        // Update is called once per frame
-        void Update()
-        {
+       
 
-        }
-
-        private void LateUpdate()
+        void LateUpdate()
         {
             foreach (var con in _bones)
             {

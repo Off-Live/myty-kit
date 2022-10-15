@@ -21,9 +21,6 @@ namespace MYTYKit.Controllers
             diffBuffer = CalcDiff(orgRig, interpList);
 
         }
-
-
-
         public override void ApplyDiff()
         {
             if (diffBuffer == null|| diffBuffer.Count==0) return;
