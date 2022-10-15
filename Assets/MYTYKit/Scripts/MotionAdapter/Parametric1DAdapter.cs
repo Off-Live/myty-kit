@@ -5,33 +5,22 @@ using MYTYKit.MotionTemplates;
 
 namespace MYTYKit.MotionAdapters
 {
-    public class Parametric1DAdapter : NativeAdapter
+    public class Parametric1DAdapter : DampingAndStabilizingVec3Adapter, ITemplateObserver
     {
         public ParametricTemplate template;
         public string paramName;
         public MYTYController con;
 
-        public float stabilizeTime = 0.1f;
-        float m_elapsed = 0;
-
+        public void TemplateUpdated()
+        {
+            AddToHistory(new Vector3(template.GetValue(paramName),0,0));
+        }
+        
         void Update()
         {
             var input = con as IFloatInput;
             if (input == null) return;
-
-            m_elapsed += Time.deltaTime;
-            if (m_elapsed < stabilizeTime)
-            {
-                input.SetInput(GetStabilizedFloat());
-                return;
-            }
-
-            m_elapsed = 0;
-
-            float val = template.GetValue(paramName);
-            Stabilize(val);
-            input.SetInput(GetStabilizedFloat());
-
+            input.SetInput(GetResult().x);
         }
     }
 }

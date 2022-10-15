@@ -24,9 +24,8 @@ namespace MYTYKit.MotionAdapters
 
         private IFloatInput m_input;
 
-        public override void Start()
+        public void Start()
         {
-            base.Start();
             m_input = controller as IFloatInput;
             if (m_input == null) return;
             m_input.SetInput(m_curValue);

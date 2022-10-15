@@ -14,32 +14,18 @@ namespace MYTYKit.MotionAdapters
         Z
     }
 
-    public class JointVec3ToVec1AdapterV2 : NativeAdapter
+    public class JointVec3ToVec1AdapterV2 : DampingAndStabilizingVec3Adapter, ITemplateObserver
     {
         public AnchorTemplate joint;
         public JointVector from;
         public ComponentIndex component;
         public bool negate = false;
         public MYTYController controller;
-        public float stabilizeTime = 0.1f;
-        private float m_elapsed = 0;
 
-        private void Update()
+        public void TemplateUpdated()
         {
-            if (joint == null) return;
-            var input = controller as IFloatInput;
-            if (input == null) return;
             Vector3 vec3 = Vector3.zero;
             var scale = negate ? -1 : 1;
-
-            m_elapsed += Time.deltaTime;
-            if (m_elapsed < stabilizeTime)
-            {
-                input.SetInput(GetStabilizedFloat());
-                return;
-            }
-
-            m_elapsed = 0;
 
             switch (from)
             {
@@ -66,8 +52,15 @@ namespace MYTYKit.MotionAdapters
                     break;
             }
 
-            Stabilize(val);
-            input.SetInput(GetStabilizedFloat());
+            AddToHistory(new Vector3(val,0,0));
+        }
+        void Update()
+        {
+            if (joint == null) return;
+            var input = controller as IFloatInput;
+            if (input == null) return;
+
+            input.SetInput(GetResult().x);
         }
     }
 }

@@ -17,8 +17,6 @@ namespace MYTYKit
                 var fromAdapter = go.GetComponent<AveragePosFromPointsAdapter>();
                 var toAdapter = go.AddComponent<AveragePosFromPointsAdapterV2>();
 
-                toAdapter.stabilizeWindow = fromAdapter.stabilizeWindow;
-                toAdapter.smoothWindow = fromAdapter.smoothWindow;
                 if (fromAdapter.pointsModel != null)
                 {   var pointsName = fromAdapter.pointsModel.name;
                     switch (pointsName)
@@ -36,7 +34,7 @@ namespace MYTYKit
 
                 toAdapter.targetPoints = fromAdapter.targetPoints;
                 toAdapter.controller = fromAdapter.controller;
-                toAdapter.stabilizeTime = fromAdapter.stabilizeTime;
+                
                 EditorUtility.SetDirty(toAdapter);
                 
                 Object.DestroyImmediate(fromAdapter);

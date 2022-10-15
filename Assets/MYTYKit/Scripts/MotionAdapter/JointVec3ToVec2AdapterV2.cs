@@ -22,16 +22,14 @@ namespace MYTYKit.MotionAdapters
     }
 
 
-    public class JointVec3ToVec2AdapterV2 : NativeAdapter
+    public class JointVec3ToVec2AdapterV2 : DampingAndStabilizingVec3Adapter, ITemplateObserver
     {
         public AnchorTemplate joint;
         public JointVector from;
         public ProjectionPlane plane;
         public bool flip = false;
         public MYTYController controller;
-
-        public float stabilizeTime = 0.1f;
-
+        
         public bool negate1st = false;
         public bool negate2nd = false;
 
@@ -41,26 +39,9 @@ namespace MYTYKit.MotionAdapters
         public float min2nd = -1.0f;
         public float max2nd = 1.0f;
 
-
-
-        private float m_elapsed = 0;
-
-
-        private void Update()
+        public void TemplateUpdated()
         {
-            if (joint == null) return;
-            var input = controller as IVec2Input;
-            if (input == null) return;
             Vector3 vec3 = Vector3.zero;
-
-            m_elapsed += Time.deltaTime;
-            if (m_elapsed < stabilizeTime)
-            {
-                input.SetInput(GetStabilizedVec2());
-                return;
-            }
-
-            m_elapsed = 0;
 
             var scale1st = negate1st ? -1 : 1;
             var scale2nd = negate2nd ? -1 : 1;
@@ -95,10 +76,15 @@ namespace MYTYKit.MotionAdapters
 
             var x = Mathf.Clamp(inputVal.x * scale1st, min1st, max1st);
             var y = Mathf.Clamp(inputVal.y * scale2nd, min2nd, max2nd);
-
-            inputVal = new Vector2(x, y);
-            Stabilize(inputVal);
-            input.SetInput(GetStabilizedVec2());
+            
+            AddToHistory(new Vector3(x,y));
+        }
+        void Update()
+        {
+            if (joint == null) return;
+            var input = controller as IVec2Input;
+            if (input == null) return;
+            input.SetInput(GetResult());
         }
     }
 }

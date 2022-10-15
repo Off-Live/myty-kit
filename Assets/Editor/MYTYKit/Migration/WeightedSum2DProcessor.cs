@@ -17,16 +17,12 @@ namespace MYTYKit
                 var fromAdapter = go.GetComponent<WeightedSum2DAdapter>();
                 var toAdapter = go.AddComponent<WeightedSum1DAdapterV2>();
 
-                toAdapter.stabilizeWindow = fromAdapter.stabilizeWindow;
-                toAdapter.smoothWindow = fromAdapter.smoothWindow;
-                
                 toAdapter.template = mtMapper.GetTemplate("SimpleFaceParam") as ParametricTemplate;
                 toAdapter.controller = fromAdapter.controller;
                 toAdapter.weights = fromAdapter.weights;
                 toAdapter.paramNames = fromAdapter.fields;
                 
                 toAdapter.controller = fromAdapter.controller;
-                toAdapter.stabilizeTime = fromAdapter.stabilizeTime;
                 EditorUtility.SetDirty(toAdapter);
                 
                 Object.DestroyImmediate(fromAdapter);

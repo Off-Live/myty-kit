@@ -16,9 +16,6 @@ namespace MYTYKit
                 var go = target.gameObject;
                 var fromAdapter = go.GetComponent<WeightedSum1DAdapter>();
                 var toAdapter = go.AddComponent<WeightedSum1DAdapterV2>();
-
-                toAdapter.stabilizeWindow = fromAdapter.stabilizeWindow;
-                toAdapter.smoothWindow = fromAdapter.smoothWindow;
                 
                 toAdapter.template = mtMapper.GetTemplate("SimpleFaceParam") as ParametricTemplate;
                 toAdapter.controller = fromAdapter.controller;
@@ -26,7 +23,6 @@ namespace MYTYKit
                 toAdapter.paramNames = fromAdapter.fields;
                 
                 toAdapter.controller = fromAdapter.controller;
-                toAdapter.stabilizeTime = fromAdapter.stabilizeTime;
                 EditorUtility.SetDirty(toAdapter);
                 
                 Object.DestroyImmediate(fromAdapter);

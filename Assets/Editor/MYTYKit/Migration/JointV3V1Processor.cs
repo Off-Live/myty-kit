@@ -16,9 +16,7 @@ namespace MYTYKit
                 var go = target.gameObject;
                 var fromAdapter = go.GetComponent<JointVec3ToVec1Adapter>();
                 var toAdapter = go.AddComponent<JointVec3ToVec1AdapterV2>();
-
-                toAdapter.stabilizeWindow = fromAdapter.stabilizeWindow;
-                toAdapter.smoothWindow = fromAdapter.smoothWindow;
+                
                 if(fromAdapter.joint != null) toAdapter.joint = mtMapper.GetTemplate(fromAdapter.joint.name) as AnchorTemplate;
                 toAdapter.from = fromAdapter.from;
                 toAdapter.component = fromAdapter.component;
@@ -28,7 +26,7 @@ namespace MYTYKit
                     toAdapter.negate = !fromAdapter.negate;
                 }
                 toAdapter.controller = fromAdapter.controller;
-                toAdapter.stabilizeTime = fromAdapter.stabilizeTime;
+                
                 EditorUtility.SetDirty(toAdapter);
                 
                 Object.DestroyImmediate(fromAdapter);

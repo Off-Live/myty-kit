@@ -5,13 +5,13 @@ using UnityEngine;
 
 namespace MYTYKit.MotionAdapters
 {
-    public class Joint3DAdapter : NativeAdapter
+    public class Joint3DAdapter : NativeAdapter , ITemplateObserver
 
     {
         public AnchorTemplate anchor;
         public ByPassController target;
 
-        void Update()
+        public void TemplateUpdated()
         {
             if (anchor == null || target == null) return;
             target.position = anchor.position;

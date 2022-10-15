@@ -6,12 +6,10 @@ using MYTYKit.MotionTemplates;
 
 namespace MYTYKit.MotionAdapters
 {
-    public class AveragePosFromPointsAdapterV2 : NativeAdapter
+    public class AveragePosFromPointsAdapterV2 : DampingAndStabilizingVec3Adapter, ITemplateObserver
     {
         public PointsTemplate pointsModel;
         public MYTYController controller;
-
-        public float stabilizeTime = 0.1f;
 
         public List<int> targetPoints;
 
@@ -21,22 +19,8 @@ namespace MYTYKit.MotionAdapters
         private float m_elapsed = 0;
 
 
-        // Update is called once per frame
-        void Update()
+        public void TemplateUpdated()
         {
-            if (pointsModel == null) return;
-            var input = controller as IVec3Input;
-            if (input == null) return;
-
-            m_elapsed += Time.deltaTime;
-            if (m_elapsed < stabilizeTime)
-            {
-                input.SetInput(GetStabilizedVec3());
-                return;
-            }
-
-            m_elapsed = 0;
-
             var inputVal = Vector3.zero;
 
             if (targetPoints != null && targetPoints.Count > 0)
@@ -66,8 +50,15 @@ namespace MYTYKit.MotionAdapters
 
             inputVal -= anchor;
             inputVal = Vector3.Scale(inputVal, scale);
-            Stabilize(inputVal);
-            input.SetInput(GetStabilizedVec3());
+            AddToHistory(inputVal);
+        }
+        // Update is called once per frame
+        void Update()
+        {
+            if (pointsModel == null) return;
+            var input = controller as IVec3Input;
+            if (input == null) return;
+            input.SetInput(GetResult());
         }
     }
 }

@@ -16,14 +16,12 @@ namespace MYTYKit
                 var go = target.gameObject;
                 var fromAdapter = go.GetComponent<Facial2DAdapter>();
                 var toAdapter = go.AddComponent<Parametric2DAdapter>();
-
-                toAdapter.stabilizeWindow = fromAdapter.stabilizeWindow;
-                toAdapter.smoothWindow = fromAdapter.smoothWindow;
+                
                 toAdapter.template = mtMapper.GetTemplate("SimpleFaceParam") as ParametricTemplate;
                 toAdapter.xParamName = fromAdapter.fieldName+"X";
                 toAdapter.yParamName = fromAdapter.fieldName+"Y";
                 toAdapter.con = fromAdapter.con;
-                toAdapter.stabilizeTime = fromAdapter.stabilizeTime;
+                
                 EditorUtility.SetDirty(toAdapter);
                 Object.DestroyImmediate(fromAdapter);
             }

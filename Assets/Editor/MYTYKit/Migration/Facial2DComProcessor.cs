@@ -17,13 +17,11 @@ namespace MYTYKit
                 var fromAdapter = go.GetComponent<Facial2DCompound>();
                 var toAdapter = go.AddComponent<Parametric2DAdapter>();
 
-                toAdapter.stabilizeWindow = fromAdapter.stabilizeWindow;
-                toAdapter.smoothWindow = fromAdapter.smoothWindow;
                 toAdapter.template = mtMapper.GetTemplate("SimpleFaceParam") as ParametricTemplate;
                 toAdapter.xParamName = fromAdapter.xFieldName;
                 toAdapter.yParamName = fromAdapter.yFieldName;
                 toAdapter.con = fromAdapter.con;
-                toAdapter.stabilizeTime = fromAdapter.stabilizeTime;
+                
                 EditorUtility.SetDirty(toAdapter);
                 Object.DestroyImmediate(fromAdapter);
             }
