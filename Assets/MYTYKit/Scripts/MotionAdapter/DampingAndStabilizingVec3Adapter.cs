@@ -19,7 +19,7 @@ namespace MYTYKit.MotionAdapters
         public bool isStabilizing = true;
         public bool isUseDampedInputToStabilizer = false;
         
-        public int damplingFactor = 1;
+        public float damplingFactor = 2;
         public int dampingWindow = 6;
 
         public InterpolationMethod stabilizeMethod = InterpolationMethod.BezierInterpolation;
@@ -102,6 +102,7 @@ namespace MYTYKit.MotionAdapters
                 if (intervalIndex >= 0)
                 {
                     var t = CalcStabilizeParam(intervalIndex, curTime);
+                    t = Mathf.Clamp01(t);
                     return interpolator.Interpolate(intervalIndex, t);
                 }
             }
