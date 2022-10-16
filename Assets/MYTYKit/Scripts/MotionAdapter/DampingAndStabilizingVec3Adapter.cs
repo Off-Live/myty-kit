@@ -7,7 +7,6 @@ using UnityEngine;
 namespace MYTYKit.MotionAdapters
 {
     
-    
     public abstract class DampingAndStabilizingVec3Adapter : NativeAdapter
     {
         class HistoryItem
@@ -26,14 +25,14 @@ namespace MYTYKit.MotionAdapters
 
         readonly int m_stabilizeWindowSize = 4;
         
-        List<HistoryItem> m_history=new ();
-        List<HistoryItem> m_stabilizeHistory = new();
+        List<HistoryItem>[] m_history;
+        List<HistoryItem>[] m_stabilizeHistory;
         
-        Vector3 m_dampedValue = Vector3.zero;
+        Vector3[] m_dampedValue;
 
         float m_startTimestamp = 0.0f;
 
-        void Start()
+        protected virtual void Start()
         {
             m_startTimestamp = Time.realtimeSinceStartup;
         }
@@ -43,55 +42,68 @@ namespace MYTYKit.MotionAdapters
             return Time.realtimeSinceStartup - m_startTimestamp;
         }
 
-        protected void AddToHistory(Vector3 newValue)
+        protected void SetNumInterpolationSlot(int count)
+        {
+            m_history = new List<HistoryItem>[count];
+            m_stabilizeHistory = new List<HistoryItem>[count];
+            m_dampedValue = new Vector3[count];
+
+            for (var i = 0; i < count; i++)
+            {
+                m_history[i] = new();
+                m_stabilizeHistory[i] = new();
+                m_dampedValue[i] = Vector3.zero;
+            }
+        }
+        protected void AddToHistory(Vector3 newValue, int slotIdx = 0)
         {
             var timestamp = GetTimestamp();
-            m_history.Add(new HistoryItem()
+            m_history[slotIdx].Add(new HistoryItem()
             {
                 value = newValue,
                 timestamp = timestamp
             });
-            if(m_history.Count>dampingWindow) m_history.RemoveAt(0);
+            if(m_history[slotIdx].Count>dampingWindow) m_history[slotIdx].RemoveAt(0);
             if (isDamping)
             {
                 float curFactor = 1.0f/damplingFactor;
-                m_dampedValue = Vector3.zero;
+                m_dampedValue[slotIdx] = Vector3.zero;
                 float totalWeight = 0.0f;
-                for (var i = m_history.Count - 1; i >= 0; i--)
+                for (var i = m_history[slotIdx].Count - 1; i >= 0; i--)
                 {
-                    m_dampedValue+=m_history[i].value * curFactor;
+                    m_dampedValue[slotIdx]+=m_history[slotIdx][i].value * curFactor;
                     totalWeight += curFactor;
                     curFactor /= damplingFactor;
                 }
-                m_dampedValue /= totalWeight;
+                m_dampedValue[slotIdx] /= totalWeight;
             }
 
             if (isUseDampedInputToStabilizer)
             {
-                m_stabilizeHistory.Add(new HistoryItem()
+                m_stabilizeHistory[slotIdx].Add(new HistoryItem()
                 {
-                    value = m_dampedValue,
+                    value = m_dampedValue[slotIdx],
                     timestamp = timestamp
                 });
             }
             else
             {
-                m_stabilizeHistory.Add(new HistoryItem()
+                m_stabilizeHistory[slotIdx].Add(new HistoryItem()
                 {
                     value = newValue,
                     timestamp = timestamp
                 });
             }
-            if(m_stabilizeHistory.Count>m_stabilizeWindowSize) m_stabilizeHistory.RemoveAt(0);
+            if(m_stabilizeHistory[slotIdx].Count>m_stabilizeWindowSize) m_stabilizeHistory[slotIdx].RemoveAt(0);
         }
 
-        protected Vector3 GetResult()
+        protected Vector3 GetResult(int slotIdx = 0)
         {
             var curTime = GetTimestamp();
             if (isStabilizing)
             {
                 var pointList = new List<Vector3>();
-                foreach (var item in m_stabilizeHistory)
+                foreach (var item in m_stabilizeHistory[slotIdx])
                 {
                     pointList.Add(item.value);
                 }
@@ -101,25 +113,25 @@ namespace MYTYKit.MotionAdapters
                 var intervalIndex = interpolator.GetInterestedIntervalIndex();
                 if (intervalIndex >= 0)
                 {
-                    var t = CalcStabilizeParam(intervalIndex, curTime);
+                    var t = CalcStabilizeParam(intervalIndex, curTime, slotIdx);
                     t = Mathf.Clamp01(t);
                     return interpolator.Interpolate(intervalIndex, t);
                 }
             }
             
             
-            if (isDamping) return m_dampedValue;
+            if (isDamping) return m_dampedValue[slotIdx];
             
-            if(m_history==null || m_history.Count==0) return Vector3.zero;
-            return m_history.Last().value;
+            if(m_history[slotIdx]==null || m_history[slotIdx].Count==0) return Vector3.zero;
+            return m_history[slotIdx].Last().value;
         }
 
-        float CalcStabilizeParam(int intervalIndex, float timestamp)
+        float CalcStabilizeParam(int intervalIndex, float timestamp , int slotIdx)
         {
-            var n = m_stabilizeHistory.Count;
-            var lastTime = m_stabilizeHistory[n - 1].timestamp;
+            var n = m_stabilizeHistory[slotIdx].Count;
+            var lastTime = m_stabilizeHistory[slotIdx][n - 1].timestamp;
             var timeDelta = timestamp - lastTime;
-            var gap = m_stabilizeHistory[intervalIndex+1].timestamp- m_stabilizeHistory[intervalIndex].timestamp;
+            var gap = m_stabilizeHistory[slotIdx][intervalIndex+1].timestamp- m_stabilizeHistory[slotIdx][intervalIndex].timestamp;
             return timeDelta / gap;
         }
 

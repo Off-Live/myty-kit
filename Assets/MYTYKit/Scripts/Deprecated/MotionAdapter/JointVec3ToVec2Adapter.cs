@@ -5,6 +5,14 @@ using System.Reflection;
 using MYTYKit.Controllers;
 using UnityEngine;
 using MYTYKit.MotionAdapters;
+
+[Serializable]
+public enum ProjectionPlane
+{
+    XY, 
+    YZ, 
+    XZ
+}
 public class JointVec3ToVec2Adapter : NativeAdapter
 {
     public int stabilizeWindow = 8;
