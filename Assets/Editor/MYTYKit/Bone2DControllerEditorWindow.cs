@@ -122,6 +122,7 @@ namespace MYTYKit
             var targetsProp = m_conSO.FindProperty("rigTarget");
             var posController = rootVisualElement.Q<Vector2Field>("ControllerPos");
             var controlPosProp = m_conSO.FindProperty("controlPosition");
+            var pointPanel = rootVisualElement.Q<VisualElement>("Panel");
 
             var xScaleVE = rootVisualElement.Q<FloatField>("FLTXScale");
             var yScaleVE = rootVisualElement.Q<FloatField>("FLTYScale");
@@ -141,8 +142,7 @@ namespace MYTYKit
 
             rootVisualElement.Q<ListView>("TargetList").itemsSource = targetObjs;
             rootVisualElement.Q<ListView>("TargetList").Rebuild();
-
-
+            pointPanel.RegisterCallback<GeometryChangedEvent>(evt => UpdateIndicator());
             SyncRiggingStatus();
 
         }

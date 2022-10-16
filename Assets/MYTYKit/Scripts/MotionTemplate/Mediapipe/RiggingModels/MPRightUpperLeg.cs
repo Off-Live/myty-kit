@@ -11,7 +11,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
         {
             m_lastLA = Vector3.forward;
         }
-        void LateUpdate()
+        protected override void Process()
         {
             if (rawPoints == null) return;
             var upperLeg = rawPoints[24] - rawPoints[26];
@@ -31,8 +31,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
                 lookAt.Normalize();
                 m_lastLA = lookAt;
             }
-            UpdateTemplate();
-
+            
         }
     }
 }

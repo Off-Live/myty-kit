@@ -22,8 +22,6 @@ namespace MYTYKit
         void CreateGUI()
         {
             var btn = new Button();
-            var motionBtn = new Button();
-            var mediapipBtn = new Button();
             btn.text = "Migrate!";
             btn.clicked += () =>
             {

@@ -13,7 +13,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
             m_lastUp = Vector3.up;
         }
 
-        void LateUpdate()
+        protected override void Process()
         {
             if (rawPoints == null) return;
 
@@ -34,7 +34,6 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
             lookAt.Normalize();
 
             m_lastUp = up;
-            UpdateTemplate();
         }
     }
 }

@@ -2,11 +2,11 @@ using UnityEngine;
 
 namespace MYTYKit.MotionTemplates.Mediapipe.Model
 {
-    public class MPJointModel: MPBaseModel
+    public abstract class MPJointModel: MPBaseModel
     {
         protected Vector3 up, lookAt;
-        
-        public override void UpdateTemplate()
+
+        protected override void UpdateTemplate()
         {
             if (templateList.Count == 0) return;
             foreach (var motionTemplate in templateList)
@@ -14,6 +14,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
                 var anchorTemplate = (AnchorTemplate)motionTemplate;
                 anchorTemplate.up = up;
                 anchorTemplate.lookAt = lookAt;
+                anchorTemplate.NotifyUpdate();
             }
         }
     }

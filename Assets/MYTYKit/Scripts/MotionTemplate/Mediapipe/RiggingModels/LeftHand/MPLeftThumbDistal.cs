@@ -6,7 +6,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
 {
     public class MPLeftThumbDistal : MPJointModel
     {
-        void LateUpdate()
+        protected override void Process()
         {
             if (rawPoints == null) return;
 
@@ -22,7 +22,6 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
 
             up = distal;
             lookAt = Vector3.Cross(thumbPlane, proximal);
-            UpdateTemplate();
         }
     }
 }

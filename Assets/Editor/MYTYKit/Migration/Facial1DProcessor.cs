@@ -1,7 +1,11 @@
+using System.Collections.Generic;
+using MYTYKit.Controllers;
 using MYTYKit.MotionAdapters;
+using MYTYKit.MotionAdapters.Interpolation;
 using MYTYKit.MotionTemplates;
 using UnityEditor;
 using UnityEngine;
+using MYTYKit.MotionAdapters.Reduce;
 namespace MYTYKit
 {
     public static class Facial1DProcessor
@@ -14,14 +18,26 @@ namespace MYTYKit
             {
                 var go = target.gameObject;
                 var fromAdapter = go.GetComponent<Facial1DAdapter>();
-                var toAdapter = go.AddComponent<Parametric1DAdapter>();
+                var toAdapter = go.AddComponent<ParametricReducer>();
+                var reducer = go.AddComponent<LinearCombination>();
 
-                toAdapter.stabilizeWindow = fromAdapter.stabilizeWindow;
-                toAdapter.smoothWindow = fromAdapter.smoothWindow;
+                if (fromAdapter.con != null &&
+                    (fromAdapter.con.GetType().IsSubclassOf(typeof(SpriteController)) ||
+                     fromAdapter.con.GetType().IsSubclassOf(typeof(MSRSpriteController))))
+                {
+                    toAdapter.stabilizeMethod = InterpolationMethod.LinearInterpolation;
+                }
                 toAdapter.template = mtMapper.GetTemplate("SimpleFaceParam") as ParametricTemplate;
-                toAdapter.paramName = fromAdapter.fieldName;
-                toAdapter.con = fromAdapter.con;
-                toAdapter.stabilizeTime = fromAdapter.stabilizeTime;
+                toAdapter.configuration.Add(new ParametricReducer.ReduceItem()
+                {
+                    reducer = reducer,
+                    paramNames = new List<string>() { fromAdapter.fieldName },
+                    controller = fromAdapter.con,
+                    component = ComponentIndex.X
+                });
+
+                reducer.weights = new List<float>() { 1.0f };
+                
                 EditorUtility.SetDirty(toAdapter);
                 Object.DestroyImmediate(fromAdapter);
             }

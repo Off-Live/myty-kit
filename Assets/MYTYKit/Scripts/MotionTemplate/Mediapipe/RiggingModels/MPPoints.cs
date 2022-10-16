@@ -5,12 +5,12 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
 {
     public class MPPoints : MPBaseModel
     {
-        void LateUpdate()
+        protected override void Process()
         {
-            UpdateTemplate();
+            
         }
 
-        public override void UpdateTemplate()
+        protected override void UpdateTemplate()
         {
             if (templateList.Count == 0) return;
             if (rawPoints == null) return;
@@ -27,6 +27,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
                 {
                     pointsTemplate.points[i] = rawPoints[i];
                 }
+                motionTemplate.NotifyUpdate();
             }
         }
     }

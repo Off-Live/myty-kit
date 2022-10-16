@@ -5,6 +5,7 @@ using UnityEngine;
 using MYTYKit.Components;
 using MYTYKit.MotionAdapters;
 using MYTYKit.MotionTemplates;
+using MYTYKit.Controllers;
 
 namespace MYTYKit.AvatarImporter
 {

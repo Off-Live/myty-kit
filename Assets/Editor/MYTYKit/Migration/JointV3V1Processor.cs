@@ -1,4 +1,6 @@
+using MYTYKit.Controllers;
 using MYTYKit.MotionAdapters;
+using MYTYKit.MotionAdapters.Interpolation;
 using MYTYKit.MotionTemplates;
 using UnityEngine;
 using UnityEditor;
@@ -15,20 +17,26 @@ namespace MYTYKit
             {
                 var go = target.gameObject;
                 var fromAdapter = go.GetComponent<JointVec3ToVec1Adapter>();
-                var toAdapter = go.AddComponent<JointVec3ToVec1AdapterV2>();
-
-                toAdapter.stabilizeWindow = fromAdapter.stabilizeWindow;
-                toAdapter.smoothWindow = fromAdapter.smoothWindow;
+                var toAdapter = go.AddComponent<JointRotationMapper>();
+                
                 if(fromAdapter.joint != null) toAdapter.joint = mtMapper.GetTemplate(fromAdapter.joint.name) as AnchorTemplate;
                 toAdapter.from = fromAdapter.from;
-                toAdapter.component = fromAdapter.component;
-                toAdapter.negate = fromAdapter.negate;
-                if (toAdapter.component == ComponentIndex.X)
+                
+                if (fromAdapter.controller != null &&
+                    (fromAdapter.controller.GetType().IsSubclassOf(typeof(SpriteController)) ||
+                     fromAdapter.controller.GetType().IsSubclassOf(typeof(MSRSpriteController))))
                 {
-                    toAdapter.negate = !fromAdapter.negate;
+                    toAdapter.stabilizeMethod = InterpolationMethod.LinearInterpolation;
                 }
-                toAdapter.controller = fromAdapter.controller;
-                toAdapter.stabilizeTime = fromAdapter.stabilizeTime;
+                
+                toAdapter.configuration.Add(new JointRotationMapper.MapItem()
+                {
+                    isInverted = fromAdapter.component== ComponentIndex.X ? !fromAdapter.negate : fromAdapter.negate,
+                    sourceComponent = fromAdapter.component,
+                    targetComponent = ComponentIndex.X,
+                    targetController = fromAdapter.controller
+                });
+
                 EditorUtility.SetDirty(toAdapter);
                 
                 Object.DestroyImmediate(fromAdapter);

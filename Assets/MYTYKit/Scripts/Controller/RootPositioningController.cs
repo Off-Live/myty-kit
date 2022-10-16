@@ -4,12 +4,12 @@ using UnityEditor;
 
 namespace MYTYKit.Controllers
 {
-    public class RootPositioningController : MYTYController, IVec3Input
+    public class RootPositioningController : MYTYController, IVec3Input, IComponentWiseInput
     {
         public GameObject targetObject;
         public Vector3 displacement;
 
-        private Vector3 m_initPos;
+        Vector3 m_initPos;
 
         public override void PostprocessAfterLoad(Dictionary<GameObject, GameObject> objMap)
         {
@@ -31,7 +31,6 @@ namespace MYTYKit.Controllers
 #endif
         }
 
-        // Start is called before the first frame update
         void Start()
         {
             if (targetObject == null) return;
@@ -49,6 +48,10 @@ namespace MYTYKit.Controllers
         public void SetInput(Vector3 val)
         {
             displacement = val;
+        }
+        public void SetComponent(float value, int componentIdx)
+        {
+            displacement[componentIdx] = value;
         }
     }
 }

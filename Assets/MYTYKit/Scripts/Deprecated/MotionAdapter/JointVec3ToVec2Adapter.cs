@@ -5,8 +5,18 @@ using System.Reflection;
 using MYTYKit.Controllers;
 using UnityEngine;
 using MYTYKit.MotionAdapters;
+
+[Serializable]
+public enum ProjectionPlane
+{
+    XY, 
+    YZ, 
+    XZ
+}
 public class JointVec3ToVec2Adapter : NativeAdapter
 {
+    public int stabilizeWindow = 8;
+    public int smoothWindow = 4;
     public JointModel joint;
     public JointVector from;
     public ProjectionPlane plane;
@@ -24,11 +34,19 @@ public class JointVec3ToVec2Adapter : NativeAdapter
     public float min2nd = -1.0f;
     public float max2nd = 1.0f;
 
-
-
     private float m_elapsed = 0;
     
+    private Vector2[] m_vec2FilterArray;
+    private Vector2[] m_vec2StabilizeArray;
+    private Vector2 m_vec2LastValue;
 
+    private bool m_first = true;
+
+    void Start()
+    {
+        m_vec2FilterArray = new Vector2[smoothWindow];
+        m_vec2StabilizeArray = new Vector2[stabilizeWindow];
+    }
     private void Update()
     {
         if (joint == null) return;
@@ -83,4 +101,54 @@ public class JointVec3ToVec2Adapter : NativeAdapter
         Stabilize(inputVal);
         input.SetInput(GetStabilizedVec2());
     }
+       private Vector2 SmoothFilter(Vector2 newVal)
+            {
+                for (int i = 0; i < smoothWindow - 1; i++)
+                {
+                    m_vec2FilterArray[i] = m_vec2FilterArray[i + 1];
+                }
+    
+                m_vec2FilterArray[smoothWindow - 1] = newVal;
+    
+                Vector2 sum = Vector2.zero;
+                for (int i = 0; i < smoothWindow; i++)
+                {
+                    sum += m_vec2FilterArray[i];
+                }
+    
+                return sum / smoothWindow;
+            }
+    
+            protected void Stabilize(Vector2 newVal)
+            {
+                if (m_first)
+                {
+                    m_vec2LastValue = newVal;
+                    for (int i = 0; i < smoothWindow; i++)
+                    {
+                        m_vec2FilterArray[i] = newVal;
+                    }
+    
+                    m_first = false;
+                }
+    
+                newVal = SmoothFilter(newVal);
+                for (int i = 1; i <= stabilizeWindow; i++)
+                {
+                    m_vec2StabilizeArray[i - 1] = m_vec2LastValue + (newVal - m_vec2LastValue) / stabilizeWindow * i;
+                }
+    
+            }
+    
+            protected Vector2 GetStabilizedVec2()
+            {
+                var ret = m_vec2StabilizeArray[0];
+                for (int i = 0; i < stabilizeWindow - 1; i++)
+                {
+                    m_vec2StabilizeArray[i] = m_vec2StabilizeArray[i + 1];
+                }
+    
+                m_vec2LastValue = ret;
+                return ret;
+            }
 }

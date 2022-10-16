@@ -4,8 +4,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
 {
     public class MPHead : MPJointModel
     {
-        
-        void LateUpdate()
+        protected override void Process()
         {
             if (rawPoints == null) return;
 
@@ -18,11 +17,8 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
             up = Vector3.Cross(faceLr, lookAt).normalized;
             lookAt.z = -lookAt.z;
             up.z = -up.z;
-            UpdateTemplate();
         }
-
     }
-    
     
 }
 

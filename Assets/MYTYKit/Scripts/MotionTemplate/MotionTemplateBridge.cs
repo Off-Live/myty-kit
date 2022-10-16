@@ -17,7 +17,14 @@ namespace MYTYKit.MotionTemplates
             templateList.Clear();
         }
 
-        public abstract void UpdateTemplate();
+        public void Flush()
+        {
+            Process();
+            UpdateTemplate();
+        }
+
+        protected abstract void UpdateTemplate();
+        protected abstract void Process();
 
     }
 }

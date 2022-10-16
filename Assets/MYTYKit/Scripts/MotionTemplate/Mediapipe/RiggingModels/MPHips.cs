@@ -6,7 +6,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
 {
     public class MPHips : MPJointModel
     {
-        void LateUpdate()
+        protected override void Process()
         {
             if (rawPoints == null) return;
             var hipLr = rawPoints[23] - rawPoints[24];
@@ -16,7 +16,6 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
             up = Vector3.Cross(lookAt, hipLr);
             lookAt.z = -lookAt.z;
             up.z = up.z;
-            UpdateTemplate();
         }
     }
 }

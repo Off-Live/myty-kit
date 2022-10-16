@@ -5,6 +5,8 @@ using UnityEngine;
 using MYTYKit.MotionAdapters;
 public class AveragePosFromPointsAdapter : NativeAdapter
 {
+    public int stabilizeWindow = 8;
+    public int smoothWindow = 4;
     public RawPointsModel pointsModel;
     public MYTYController controller;
 
@@ -16,7 +18,16 @@ public class AveragePosFromPointsAdapter : NativeAdapter
     public Vector3 anchor;
 
     private float m_elapsed = 0;
+    private Vector3[] m_vec3FilterArray;
+    private Vector3[] m_vec3StabilizeArray;
+    private Vector3 m_vec3LastValue;
 
+    private bool m_first = true;
+    void Start()
+    {
+        m_vec3FilterArray = new Vector3[smoothWindow];
+        m_vec3StabilizeArray = new Vector3[stabilizeWindow];
+    }
 
     // Update is called once per frame
     void Update()
@@ -64,4 +75,57 @@ public class AveragePosFromPointsAdapter : NativeAdapter
         Stabilize(inputVal);
         input.SetInput(GetStabilizedVec3());
     }
+    
+         private Vector3 SmoothFilter(Vector3 newVal)
+            {
+                for (int i = 0; i < smoothWindow - 1; i++)
+                {
+                    m_vec3FilterArray[i] = m_vec3FilterArray[i + 1];
+                }
+    
+                m_vec3FilterArray[smoothWindow - 1] = newVal;
+    
+                Vector3 sum = Vector3.zero;
+                for (int i = 0; i < smoothWindow; i++)
+                {
+                    sum += m_vec3FilterArray[i];
+                }
+    
+                return sum / smoothWindow;
+            }
+    
+            protected void Stabilize(Vector3 newVal)
+            {
+                if (m_first)
+                {
+                    m_vec3LastValue = newVal;
+                    for (int i = 0; i < smoothWindow; i++)
+                    {
+                        m_vec3FilterArray[i] = newVal;
+                    }
+    
+                    m_first = false;
+                }
+    
+                newVal = SmoothFilter(newVal);
+                for (int i = 1; i <= stabilizeWindow; i++)
+                {
+                    m_vec3StabilizeArray[i - 1] = m_vec3LastValue + (newVal - m_vec3LastValue) / stabilizeWindow * i;
+                }
+    
+            }
+    
+            protected Vector3 GetStabilizedVec3()
+            {
+                var ret = m_vec3StabilizeArray[0];
+                for (int i = 0; i < stabilizeWindow - 1; i++)
+                {
+                    m_vec3StabilizeArray[i] = m_vec3StabilizeArray[i + 1];
+                }
+    
+                m_vec3LastValue = ret;
+                return ret;
+            }
+    
+
 }
