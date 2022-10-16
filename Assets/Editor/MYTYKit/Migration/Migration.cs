@@ -54,6 +54,7 @@ namespace MYTYKit
             this.MigrateFacial2DCompound();
             this.MigrateAveragePosAdapter();
             this.MigrateWeightedSum1DAdapter();
+            this.MigrateWeightedSum2DAdapter();
             FixBone2DController();
         }
 
