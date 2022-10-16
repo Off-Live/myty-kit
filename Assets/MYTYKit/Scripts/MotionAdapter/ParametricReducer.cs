@@ -19,7 +19,7 @@ namespace MYTYKit.MotionAdapters
         }
         
         public ParametricTemplate template;
-        public List<ReduceItem> configuration;
+        public List<ReduceItem> configuration = new();
 
         
         protected override void Start()
@@ -40,7 +40,7 @@ namespace MYTYKit.MotionAdapters
                 }
 
                 var result = reduceItem.reducer.Reduce(paramList);
-                AddToHistory(result);
+                AddToHistory(result,slotIdx);
                 slotIdx++;
             }
         }

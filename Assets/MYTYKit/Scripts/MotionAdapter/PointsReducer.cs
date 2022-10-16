@@ -21,7 +21,7 @@ namespace MYTYKit.MotionAdapters
         public List<int> indices;
         public ReduceOperator reducer;
         
-        public List<MapItem> configuration;
+        public List<MapItem> configuration = new();
 
         
         protected override void Start()
