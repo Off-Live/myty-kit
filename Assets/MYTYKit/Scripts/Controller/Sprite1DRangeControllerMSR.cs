@@ -6,7 +6,7 @@ using MYTYKit.Components;
 
 
 namespace MYTYKit.Controllers{
-    public class Sprite1DRangeControllerMSR : MSRSpriteController, IFloatInput
+    public class Sprite1DRangeControllerMSR : MSRSpriteController, IFloatInput, IComponentWiseInput
     {
         public float min = 0;
         public float max = 1;

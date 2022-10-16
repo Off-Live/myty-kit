@@ -5,7 +5,7 @@ using MYTYKit.Components;
 
 namespace MYTYKit.Controllers
 {
-    public class Sprite2DNearstControllerMSR : MSRSpriteController, IVec2Input
+    public class Sprite2DNearstControllerMSR : MSRSpriteController, IVec2Input, IComponentWiseInput
     {
         public Vector2 bottomLeft = new Vector2(0, 0);
         public Vector2 topRight = new Vector2(1, 1);
