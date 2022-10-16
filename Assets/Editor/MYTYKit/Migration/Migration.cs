@@ -22,14 +22,12 @@ namespace MYTYKit
         void CreateGUI()
         {
             var btn = new Button();
-            var motionBtn = new Button();
-            var mediapipBtn = new Button();
             btn.text = "Migrate!";
             btn.clicked += () =>
             {
-                //PrepareNewMotionSystem();
+                PrepareNewMotionSystem();
                 MigrateAdapter();
-                //RemoveMediapipe();
+                RemoveMediapipe();
                 EditorUtility.DisplayDialog("MYTY Kit", "Migration Done!", "Ok");
                 Close();
             };
@@ -49,18 +47,14 @@ namespace MYTYKit
         }
         void MigrateAdapter()
         {
-            // this.MigrateJointV3ToV2Adapter();
-            // this.MigrateJointV3ToV1Adapter();
-            // this.MigrateFacial1DAdapter();
-            // this.MigrateFacial2DAdapter();
-            // this.MigrateFacial2DCompound();
-            // this.MigrateAveragePosAdapter();
-            // this.MigrateWeightedSum1DAdapter();
-            // this.MigrateWeightedSum2DAdapter();
-            // FixBone2DController();
-            
-            this.MigrateParametric1D();
-            this.MigrateParametric2D();
+            this.MigrateJointV3ToV2Adapter();
+            this.MigrateJointV3ToV1Adapter();
+            this.MigrateFacial1DAdapter();
+            this.MigrateFacial2DAdapter();
+            this.MigrateFacial2DCompound();
+            this.MigrateAveragePosAdapter();
+            this.MigrateWeightedSum1DAdapter();
+            FixBone2DController();
         }
 
         void RemoveMediapipe()

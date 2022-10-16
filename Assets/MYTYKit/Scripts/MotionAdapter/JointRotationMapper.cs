@@ -13,6 +13,14 @@ namespace MYTYKit.MotionAdapters
         Y,
         Z
     }
+    
+    
+    [Serializable]
+    public enum JointVector
+    {
+        LookAt,Up
+    }
+
 
     public class JointRotationMapper : DampingAndStabilizingVec3Adapter, ITemplateObserver
     {
@@ -26,6 +34,7 @@ namespace MYTYKit.MotionAdapters
             public float min = -1.0f;
             public float max = 1.0f;
         }
+
         public AnchorTemplate joint;
         public JointVector from;
 

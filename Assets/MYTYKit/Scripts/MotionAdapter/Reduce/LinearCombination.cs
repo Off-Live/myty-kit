@@ -7,6 +7,7 @@ namespace MYTYKit.MotionAdapters.Reduce
     {
         public List<float> weights = new();
         public Vector3 offset = Vector3.zero;
+        public Vector3 scale = Vector3.one;
         public override Vector3 Reduce(List<Vector3> items)
         {
             if (items.Count != weights.Count)
@@ -21,7 +22,8 @@ namespace MYTYKit.MotionAdapters.Reduce
             {
                 sum += weights[i] * items[i];
             }
-
+            
+            sum.Scale(scale);
             sum += offset;
 
             return sum;
