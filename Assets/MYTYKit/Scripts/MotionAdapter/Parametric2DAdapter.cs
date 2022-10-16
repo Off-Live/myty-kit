@@ -12,9 +12,11 @@ namespace MYTYKit.MotionAdapters
         public string yParamName;
         public MYTYController con;
 
-        void Start()
+        protected override void Start()
         {
+            base.Start();
             ListenToMotionTemplate();
+            SetNumInterpolationSlot(1);
         }
         public void TemplateUpdated()
         {

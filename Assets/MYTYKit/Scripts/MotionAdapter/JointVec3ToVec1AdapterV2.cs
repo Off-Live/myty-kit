@@ -6,14 +6,7 @@ using MYTYKit.MotionTemplates;
 
 namespace MYTYKit.MotionAdapters
 {
-    [Serializable]
-    public enum ComponentIndex
-    {
-        X,
-        Y,
-        Z
-    }
-
+ 
     public class JointVec3ToVec1AdapterV2 : DampingAndStabilizingVec3Adapter, ITemplateObserver
     {
         public AnchorTemplate joint;
@@ -22,9 +15,11 @@ namespace MYTYKit.MotionAdapters
         public bool negate = false;
         public MYTYController controller;
 
-        void Start()
+        protected override void Start()
         {
+            base.Start();
             ListenToMotionTemplate();
+            SetNumInterpolationSlot(1);
         }
 
         public void ListenToMotionTemplate()

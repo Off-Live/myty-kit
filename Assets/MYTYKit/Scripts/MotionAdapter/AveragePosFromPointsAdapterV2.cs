@@ -18,9 +18,11 @@ namespace MYTYKit.MotionAdapters
 
         private float m_elapsed = 0;
 
-        void Start()
+        protected override void Start()
         {
+            base.Start();
             ListenToMotionTemplate();
+            SetNumInterpolationSlot(1);
         }
         public void ListenToMotionTemplate()
         {

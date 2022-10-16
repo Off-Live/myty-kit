@@ -52,9 +52,13 @@ namespace MYTYKit.Controllers{
             }
         }
 
-        void IFloatInput.SetInput(float val)
+        public void SetInput(float val)
         {
             value = val;
+        }
+        public void SetComponent(float value, int componentIdx)
+        {
+            this.value = value;
         }
     }
 }

@@ -5,11 +5,11 @@ using UnityEngine;
 
 namespace MYTYKit.MotionAdapters
 {
-    public class Joint3DAdapter : NativeAdapter , ITemplateObserver
+    public class DirectJointAdapter : NativeAdapter , ITemplateObserver
 
     {
         public AnchorTemplate anchor;
-        public ByPassController target;
+        public Transform target;
 
         void Start()
         {
@@ -20,7 +20,7 @@ namespace MYTYKit.MotionAdapters
         {
             if (anchor == null || target == null) return;
             target.position = anchor.position;
-            target.scale = anchor.scale;
+            target.localScale = anchor.scale;
             target.rotation = Quaternion.LookRotation(anchor.lookAt, anchor.up);
         }
 

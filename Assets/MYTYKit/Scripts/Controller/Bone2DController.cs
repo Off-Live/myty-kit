@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace MYTYKit.Controllers
 {
-    public class Bone2DController : BoneController, IVec2Input
+    public class Bone2DController : BoneController, IVec2Input, IComponentWiseInput
     {
         public Vector2 controlPosition;
         public float xScale = 1.0f;
@@ -178,6 +178,11 @@ namespace MYTYKit.Controllers
 #endif
 
 
+        }
+        public void SetComponent(float value, int componentIdx)
+        {
+            if (componentIdx >= 2 || componentIdx < 0) return;
+            controlPosition[componentIdx] = value;
         }
     }
 }

@@ -39,9 +39,11 @@ namespace MYTYKit.MotionAdapters
         public float min2nd = -1.0f;
         public float max2nd = 1.0f;
 
-        void Start()
+        protected override void Start()
         {
+            base.Start();
             ListenToMotionTemplate();
+            SetNumInterpolationSlot(1);
         }
 
         public void ListenToMotionTemplate()

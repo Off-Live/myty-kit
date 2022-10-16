@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace MYTYKit.Controllers
 {
-    public class Bone1DController : BoneController, IFloatInput
+    public class Bone1DController : BoneController, IFloatInput, IComponentWiseInput
     {
         public float minValue = 0.0f;
         public float maxValue = 1.0f;
@@ -55,6 +55,12 @@ namespace MYTYKit.Controllers
         public void SetInput(float val)
         {
             controlValue = val;
+        }
+
+
+        public void SetComponent(float value, int componentIdx)
+        {
+            controlValue = value;
         }
     }
 }

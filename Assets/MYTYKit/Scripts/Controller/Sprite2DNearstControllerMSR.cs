@@ -55,6 +55,11 @@ namespace MYTYKit.Controllers
         {
             value = val;
         }
+        public void SetComponent(float value, int componentIdx)
+        {
+            if (componentIdx >= 2 || componentIdx < 0) return;
+            this.value[componentIdx] = value;
+        }
 
     }
 }

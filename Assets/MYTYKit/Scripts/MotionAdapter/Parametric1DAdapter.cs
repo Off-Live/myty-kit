@@ -1,6 +1,5 @@
 using MYTYKit.Controllers;
 using UnityEngine;
-
 using MYTYKit.MotionTemplates;
 
 namespace MYTYKit.MotionAdapters
@@ -11,9 +10,11 @@ namespace MYTYKit.MotionAdapters
         public string paramName;
         public MYTYController con;
 
-        void Start()
+        protected override void Start()
         {
+            base.Start();
             ListenToMotionTemplate();
+            SetNumInterpolationSlot(1);
         }
         public void TemplateUpdated()
         {

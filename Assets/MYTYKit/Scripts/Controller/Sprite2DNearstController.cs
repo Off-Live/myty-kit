@@ -13,7 +13,7 @@ namespace MYTYKit.Controllers
         public Vector2 point;
     }
 
-    public class Sprite2DNearstController : SpriteController, IVec2Input
+    public class Sprite2DNearstController : SpriteController, IVec2Input, IComponentWiseInput
     {
         public Vector2 bottomLeft = new Vector2(0, 0);
         public Vector2 topRight = new Vector2(1, 1);
@@ -59,6 +59,12 @@ namespace MYTYKit.Controllers
         public void SetInput(Vector2 val)
         {
             value = val;
+        }
+        
+        public void SetComponent(float value, int componentIdx)
+        {
+            if (componentIdx >= 2 || componentIdx < 0) return;
+            this.value[componentIdx] = value;
         }
     }
 }

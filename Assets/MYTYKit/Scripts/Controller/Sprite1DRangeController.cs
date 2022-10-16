@@ -14,7 +14,7 @@ namespace MYTYKit.Controllers
         public float max;
     }
 
-    public class Sprite1DRangeController : SpriteController, IFloatInput
+    public class Sprite1DRangeController : SpriteController, IFloatInput,IComponentWiseInput
     {
         public float min = 0;
         public float max = 1;
@@ -61,9 +61,13 @@ namespace MYTYKit.Controllers
         }
 
 
-        void IFloatInput.SetInput(float val)
+        public void SetInput(float val)
         {
             value = val;
+        }
+        public void SetComponent(float value, int componentIdx)
+        {
+            this.value = value;
         }
     }
 }
