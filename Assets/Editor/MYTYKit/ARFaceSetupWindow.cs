@@ -23,7 +23,7 @@ namespace MYTYKit
 
         Image m_preview;
 
-        [MenuItem("MYTY Kit/AR Face Mode Setup", false, 1)]
+        [MenuItem("MYTY Kit/AR Face Mode Setup", false, 20)]
 
         public static void ShowGUI()
         {
