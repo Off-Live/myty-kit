@@ -6,7 +6,8 @@ namespace MYTYKit
 {
     public class PSBPostprocessor : AssetPostprocessor
     {
-        static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths, bool didDomainReload)
+        static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets,
+            string[] movedFromAssetPaths, bool didDomainReload)
         {
             var mytyManager = GameObject.FindObjectOfType<MYTYAssetTemplate>();
 
@@ -29,6 +30,5 @@ namespace MYTYKit
             return AssetDeleteResult.DidNotDelete;
         }
     }
-
-#endif
 }
+#endif
