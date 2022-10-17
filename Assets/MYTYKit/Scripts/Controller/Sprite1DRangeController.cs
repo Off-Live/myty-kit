@@ -4,101 +4,70 @@ using UnityEngine;
 using UnityEngine.U2D.Animation;
 using UnityEditor;
 
-
-[Serializable]
-public class Interval
+namespace MYTYKit.Controllers
 {
-    public string label;
-    public float min;
-    public float max;
-}
-
-public class Sprite1DRangeController : MYTYController, IFloatInput 
-{
-    public float min=0;
-    public float max=1;
-    public float value=0;
-
-    public List<SpriteResolver> spriteObjects;
-    public List<Interval> intervals;
-
-    [SerializeField]
-    private string currentLabel;
-    
-
-    // Start is called before the first frame update
-    void Start()
+    [Serializable]
+    public class Interval
     {
-        
+        public string label;
+        public float min;
+        public float max;
     }
 
-    // Update is called once per frame
-    void Update()
+    public class Sprite1DRangeController : SpriteController, IFloatInput,IComponentWiseInput
     {
-        if (spriteObjects == null || intervals == null) return;
-        UpdateLabel();
-       
-    }
+        public float min = 0;
+        public float max = 1;
+        public float value = 0;
 
-    public void UpdateLabel()
-    {
+        public List<Interval> intervals;
 
-        if (max < min) return;
-        float scaledValue = min + (max - min) * value;
-        if (spriteObjects == null) return;
-        foreach (var spriteResolver in spriteObjects)
+        [SerializeField] private string currentLabel;
+
+
+        void Update()
         {
-            if (spriteResolver == null) return;
-            var selected = "";
-            foreach (var interval in intervals)
+            if (spriteObjects == null || intervals == null) return;
+            UpdateLabel();
+
+        }
+
+        public void UpdateLabel()
+        {
+
+            if (max < min) return;
+            float scaledValue = min + (max - min) * value;
+            if (spriteObjects == null) return;
+            foreach (var spriteResolver in spriteObjects)
             {
-                if (interval.min <= scaledValue && interval.max > scaledValue)
+                if (spriteResolver == null) return;
+                var selected = "";
+                foreach (var interval in intervals)
                 {
-                    selected = interval.label;
-                    break;
+                    if (interval.min <= scaledValue && interval.max > scaledValue)
+                    {
+                        selected = interval.label;
+                        break;
+                    }
                 }
+
+                if (selected.Length > 0)
+                {
+                    spriteResolver.SetCategoryAndLabel(spriteResolver.GetCategory(), selected);
+                    currentLabel = selected;
+                }
+
             }
-
-            if (selected.Length > 0)
-            {
-                spriteResolver.SetCategoryAndLabel(spriteResolver.GetCategory(), selected);
-                currentLabel = selected;
-            }
-            
         }
-    }
 
-    public override void PrepareToSave()
-    {
-#if UNITY_EDITOR
-        for (int i = 0; i < spriteObjects.Count; i++)
+
+        public void SetInput(float val)
         {
-            spriteObjects[i] = PrefabUtility.GetCorrespondingObjectFromSource(spriteObjects[i]);
+            value = val;
         }
-#endif
-    }
-
-    public override void PostprocessAfterLoad(Dictionary<GameObject, GameObject> objMap)
-    {
-        for (int i = 0; i < spriteObjects.Count; i++)
+        public void SetComponent(float value, int componentIdx)
         {
-            spriteObjects[i] = objMap[spriteObjects[i].gameObject].GetComponent<SpriteResolver>();
+            this.value = value;
         }
-#if UNITY_EDITOR
-        if (Application.isEditor)
-        {
-            var so = new SerializedObject(this);
-            for (int i = 0; i < spriteObjects.Count; i++)
-            {
-                so.FindProperty("spriteObjects").GetArrayElementAtIndex(i).objectReferenceValue = spriteObjects[i];
-            }
-            so.ApplyModifiedProperties();
-        }
-#endif
-    }
-
-    void IFloatInput.SetInput(float val)
-    {
-        value = val;
     }
 }
