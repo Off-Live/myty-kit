@@ -9,7 +9,7 @@ using MYTYKit.Controllers;
 
 namespace MYTYKit.AvatarImporter
 {
-    public class MYTYAvatarImporterV2 : MYTYAvatarImporter
+    public class MYTYAvatarImporterV2 : MYTYAvatarImporter, IARFaceLoader
     {
         AssetBundle m_assetBundle;
         Dictionary<GameObject, GameObject> m_goMap;
@@ -108,6 +108,29 @@ namespace MYTYKit.AvatarImporter
                 }
 
             }
+        }
+
+        public (bool isSupported, bool isAROnly) IsARFaceSupported(AssetBundle bundle)
+        {
+            var asset = bundle.LoadAsset<ARFaceAsset>("ARFaceData.asset");
+            if (asset == null) return (false, false);
+
+            if (asset.AROnly) return (true, true);
+            return (true, false);
+        }
+
+        public IEnumerator LoadARFace(AssetBundle bundle, GameObject gameObject)
+        {
+            var request = bundle.LoadAssetAsync<ARFaceAsset>("ARFaceData.asset");
+            yield return request;
+            var asset = request.asset as ARFaceAsset;
+            if (gameObject == null)
+            {
+                gameObject = new GameObject("ARFaceDataHolder");
+            }
+
+            var holder = gameObject.AddComponent<ARFaceDataHolder>();
+            holder.arFaceAsset = asset;
         }
 
     }
