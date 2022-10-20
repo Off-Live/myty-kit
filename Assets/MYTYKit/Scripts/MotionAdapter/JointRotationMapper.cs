@@ -22,7 +22,7 @@ namespace MYTYKit.MotionAdapters
     }
 
 
-    public class JointRotationMapper : DampingAndStabilizingVec3Adapter, ITemplateObserver
+    public class JointRotationMapper : DampingAndStabilizingVec3Adapter, ITemplateObserver, ISerializableAdapter
     {
         [Serializable]
         public class MapItem
@@ -86,6 +86,36 @@ namespace MYTYKit.MotionAdapters
                 
                 input.SetComponent(sourceValue, (int) mapItem.targetComponent);
             }
+            
+        }
+
+        public GameObject GetSerializedClone(Dictionary<GameObject, GameObject> prefabMapping)
+        {
+            var motionAdapterClone = GameObject.Instantiate(gameObject);
+            var mtGo = joint.gameObject;
+            var prefabGo = prefabMapping[mtGo];
+            var clonedAdapter = motionAdapterClone.GetComponent<JointRotationMapper>();
+            motionAdapterClone.name = gameObject.name;
+            clonedAdapter.joint = prefabGo.GetComponent<AnchorTemplate>();
+
+            for (var i = 0; i < configuration.Count; i++)
+            {
+                var conGo = configuration[i].targetController.gameObject;
+                var prefabConGo = prefabMapping[conGo];
+                clonedAdapter.configuration[i].targetController = prefabConGo.GetComponent<MYTYController>();
+            }
+
+            return motionAdapterClone;
+        }
+
+        public void Deserialize(Dictionary<GameObject, GameObject> prefabMapping)
+        {
+            joint = prefabMapping[joint.gameObject].GetComponent<AnchorTemplate>();
+            foreach(var item in configuration)
+            {
+                item.targetController = prefabMapping[item.targetController.gameObject].GetComponent<MYTYController>();
+            }
+            
             
         }
     }

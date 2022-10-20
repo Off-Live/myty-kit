@@ -14,7 +14,7 @@
                     return true;
                 }
 
-                var importerType = Type.GetType(textAsset.text);
+                var importerType = Type.GetType("MYTYKit.AvatarImporter."+textAsset.text);
                 if (importerType == null || !typeof(IMYTYAvatarImporter).IsAssignableFrom(importerType)) return false;
 
                 if (go.GetComponent(importerType) == null) go.AddComponent(importerType);

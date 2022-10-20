@@ -7,7 +7,7 @@ using MYTYKit.MotionTemplates;
 
 namespace MYTYKit.MotionAdapters
 {
-    public class PointsReducer : DampingAndStabilizingVec3Adapter, ITemplateObserver
+    public class PointsReducer : DampingAndStabilizingVec3Adapter, ITemplateObserver, ISerializableAdapter
     {
         [Serializable]
         public class MapItem
@@ -29,6 +29,12 @@ namespace MYTYKit.MotionAdapters
             base.Start();
             ListenToMotionTemplate();
             SetNumInterpolationSlot(1);
+            
+            if (reducer.gameObject != gameObject)
+            {
+                Debug.LogWarning("The reducer is not from the same gameobject. it can be exported abnormally");
+            }
+        
         }
         public void TemplateUpdated()
         {
@@ -73,6 +79,34 @@ namespace MYTYKit.MotionAdapters
 
                 var sourceValue = sourceVector[(int)mapItem.sourceComponent];
                 input.SetComponent(sourceValue, (int) mapItem.targetComponent);
+            }
+        }
+
+        public GameObject GetSerializedClone(Dictionary<GameObject, GameObject> prefabMapping)
+        {
+            var motionAdapterClone = GameObject.Instantiate(gameObject);
+            var mtGo = template.gameObject;
+            var prefabGo = prefabMapping[mtGo];
+            var clonedAdapter = motionAdapterClone.GetComponent<PointsReducer>();
+            motionAdapterClone.name = gameObject.name;
+            clonedAdapter.template = prefabGo.GetComponent<PointsTemplate>();
+
+            for (var i = 0; i < configuration.Count; i++)
+            {
+                var conGo = configuration[i].targetController.gameObject;
+                var prefabConGo = prefabMapping[conGo];
+                clonedAdapter.configuration[i].targetController = prefabConGo.GetComponent<MYTYController>();
+            }
+
+            return motionAdapterClone;
+        }
+
+        public void Deserialize(Dictionary<GameObject, GameObject> prefabMapping)
+        {
+            template = prefabMapping[template.gameObject].GetComponent<PointsTemplate>();
+            foreach(var item in configuration)
+            {
+                item.targetController = prefabMapping[item.targetController.gameObject].GetComponent<MYTYController>();
             }
         }
     }

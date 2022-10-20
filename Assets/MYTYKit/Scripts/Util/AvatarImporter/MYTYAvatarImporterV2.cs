@@ -12,7 +12,7 @@ namespace MYTYKit.AvatarImporter
     public class MYTYAvatarImporterV2 : MYTYAvatarImporter, IARFaceLoader
     {
         AssetBundle m_assetBundle;
-        Dictionary<GameObject, GameObject> m_goMap;
+        
 
         public override IEnumerator LoadMYTYAvatarAsync(GameObject motionSourceGo, AssetBundle bundle, GameObject root,
             bool spriteOnly = false)
@@ -89,25 +89,9 @@ namespace MYTYKit.AvatarImporter
 
         void SetupMotionAdapter(GameObject root, GameObject motionAdapterGO, GameObject motionTemplateGO)
         {
-            var nativeAdapter = motionAdapterGO.GetComponent<NativeAdapter>();
+            var nativeAdapter = motionAdapterGO.GetComponent<NativeAdapter>() as ISerializableAdapter;
             if (nativeAdapter == null) return;
-
-            foreach (var field in nativeAdapter.GetType().GetFields())
-            {
-                if (field.FieldType.IsSubclassOf(typeof(MYTYController)) ||
-                    field.FieldType.IsEquivalentTo(typeof(MYTYController)))
-                {
-                    var prefab = (field.GetValue(nativeAdapter) as MYTYController).gameObject;
-                    var conGO = goMap[prefab];
-                    field.SetValue(nativeAdapter, conGO.GetComponent<MYTYController>());
-                }
-                else if (field.FieldType.IsSubclassOf(typeof(MotionTemplate)))
-                {
-                    var prefab = (field.GetValue(nativeAdapter) as MotionTemplate).gameObject;
-                    field.SetValue(nativeAdapter, goMap[prefab].GetComponent<MotionTemplate>());
-                }
-
-            }
+            nativeAdapter.Deserialize(goMap);
         }
 
         public (bool isSupported, bool isAROnly) IsARFaceSupported(AssetBundle bundle)

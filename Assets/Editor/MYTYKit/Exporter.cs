@@ -348,44 +348,23 @@ namespace MYTYKit
             return true;
         }
 
-        private bool PrepareMotionAdapter(MYTYAssetScriptableObject mytyAsset, List<string> assetName)
+        bool PrepareMotionAdapter(MYTYAssetScriptableObject mytyAsset, List<string> assetName)
         {
             var motionAdapters = rootVisualElement.Q<ListView>("LSTMotionAdapter").itemsSource;
             mytyAsset.motionAdapters = new();
             foreach (var elem in motionAdapters)
             {
-                var motionAdapter = elem as GameObject;
-                var motionAdapterClone = GameObject.Instantiate(motionAdapter);
+                var motionAdapterGo = elem as GameObject;
+                var serializableAdapter = motionAdapterGo.GetComponent<NativeAdapter>() as ISerializableAdapter;
+                if (serializableAdapter == null) continue;
 
-                var nativeAdapter = motionAdapterClone.GetComponent<NativeAdapter>();
-                if (nativeAdapter == null) continue;
-
-                foreach (var fieldInfo in nativeAdapter.GetType().GetFields())
-                {
-                    if (fieldInfo.FieldType.IsSubclassOf(typeof(MotionTemplate)))
-                    {
-                        var motionTemplate = fieldInfo.GetValue(nativeAdapter) as MotionTemplate;
-                    
-                        if (motionTemplate != null)
-                        {
-                            var mtGo = motionTemplate.gameObject;
-                            var prefabGo = m_objectMap[mtGo];
-                            fieldInfo.SetValue(nativeAdapter, prefabGo.GetComponent<MotionTemplate>());
-                        }
-                    }else if (fieldInfo.FieldType.IsSubclassOf(typeof(MYTYController)) || fieldInfo.FieldType.IsEquivalentTo(typeof(MYTYController)))
-                    {
-                    
-                        var conGO = (fieldInfo.GetValue(nativeAdapter) as MYTYController).gameObject;
-                        var prefabGO = m_objectMap[conGO];
-                        fieldInfo.SetValue(nativeAdapter, prefabGO.GetComponent<MYTYController>());
-                    }
-                }
+                var cloneObj = serializableAdapter.GetSerializedClone(m_objectMap);
             
-                var path = AssetDatabase.GenerateUniqueAssetPath(MYTYUtil.PrefabPath + "/" + motionAdapter.name + ".prefab");
-                var savedPrefab = PrefabUtility.SaveAsPrefabAsset(motionAdapterClone.gameObject, path);
+                var path = AssetDatabase.GenerateUniqueAssetPath(MYTYUtil.PrefabPath + "/" + motionAdapterGo.name + ".prefab");
+                var savedPrefab = PrefabUtility.SaveAsPrefabAsset(cloneObj, path);
                 assetName.Add(path);
                 mytyAsset.motionAdapters.Add(path);
-                DestroyImmediate(motionAdapterClone);
+                DestroyImmediate(cloneObj);
             }
 
             return true;
