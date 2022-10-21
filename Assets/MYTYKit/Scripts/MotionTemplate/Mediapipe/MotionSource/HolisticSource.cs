@@ -411,7 +411,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe
             }
 
             var solverRig = motionSource.GetBridgesInCategory(categoryName);
-            m_solver.Solve(m_solverBuffer);
+            m_solver.Solve(m_solverBuffer, m_sourceWidth, m_sourceHeight);
 
             foreach (var model in solverRig)
             {
