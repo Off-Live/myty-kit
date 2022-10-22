@@ -13,7 +13,7 @@ namespace MYTYKit.ThirdParty.MeFaMo
         public Vector3[] m_landmarks;
         List<Vector3[]> m_history = new();
         
-        public void Solve(Vector3[] landmarks, int frameWidth = 640, int frameHeight = 480)
+        public void Solve(Vector3[] landmarks, int frameWidth, int frameHeight)
         {
             if (landmarks == null || landmarks.Length < 468)
             {
