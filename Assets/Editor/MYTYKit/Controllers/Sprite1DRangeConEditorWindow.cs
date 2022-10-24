@@ -17,7 +17,7 @@ namespace MYTYKit
 
         private SerializedObject _conSO;
 
-        [MenuItem("MYTY Kit/Controller/Sprite 1D Range Controller", false,20)]
+        //[MenuItem("MYTY Kit/Controller/Sprite 1D Range Controller", false,20)]
         public static void ShowController()
         {
             var wnd = GetWindow<Sprite1DRangeConEditorWindow>();

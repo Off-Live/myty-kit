@@ -7,8 +7,8 @@ using MYTYKit.Controllers;
 
 namespace MYTYKit
 {
-    [CustomEditor(typeof(RiggedSprite2DNearstController))]
-    public class RiggedSprite2DNearstControllerEditor : Editor
+    [CustomEditor(typeof(RiggedSprite2DNearestController))]
+    public class RiggedSprite2DNearestControllerEditor : Editor
     {
         public override VisualElement CreateInspectorGUI()
         {

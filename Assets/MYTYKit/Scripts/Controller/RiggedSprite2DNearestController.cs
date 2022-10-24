@@ -12,7 +12,7 @@ namespace MYTYKit.Controllers
         public List<RiggingEntity> riggingState;
     }
 
-    public class RiggedSprite2DNearstController : BoneController, IVec2Input
+    public class RiggedSprite2DNearestController : BoneController, IVec2Input
     {
         public Vector2 controlPosition;
         public float xScale = 1.0f;

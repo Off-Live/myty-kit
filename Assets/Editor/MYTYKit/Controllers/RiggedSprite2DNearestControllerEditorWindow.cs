@@ -8,24 +8,24 @@ using MYTYKit.Controllers;
 
 namespace MYTYKit
 {
-    public class RiggedSprite2DNearstControllerEditorWindow : EditorWindow
+    public class RiggedSprite2DNearestControllerEditorWindow : EditorWindow
     {
         public VisualTreeAsset UITemplate;
 
         SerializedObject m_conSO;
         bool m_isPressed = false;
     
-        [UnityEditor.MenuItem("MYTY Kit/Controller/Rigged Sprite 2D Nearst Controller", false, 20)]
+        [UnityEditor.MenuItem("MYTY Kit/Controller/Rigged Sprite 2D Nearest Controller", false, 20)]
         public static void ShowController()
         {
-            var wnd = GetWindow<RiggedSprite2DNearstControllerEditorWindow>();
+            var wnd = GetWindow<RiggedSprite2DNearestControllerEditorWindow>();
             wnd.titleContent = new GUIContent("Rigged Sprite 2D Nearst Controller");
         }
     
         void CreateGUI()
         {
             UITemplate.CloneTree(rootVisualElement);
-            var selectedGOs = Selection.GetFiltered<RiggedSprite2DNearstController>(SelectionMode.Editable);
+            var selectedGOs = Selection.GetFiltered<RiggedSprite2DNearestController>(SelectionMode.Editable);
             var conVE = rootVisualElement.Q<ObjectField>("OBJController");
             var listView = rootVisualElement.Q<ListView>("LSTRiggingGO");
             var addBtn = rootVisualElement.Q<Button>("BTNAdd");
@@ -42,7 +42,7 @@ namespace MYTYKit
             removePivotBtn.clicked += OnRemovePivot;
             copyPosBtn.clicked += OnCopyPos;
         
-            conVE.objectType = typeof(RiggedSprite2DNearstController);
+            conVE.objectType = typeof(RiggedSprite2DNearestController);
             listView.makeItem = () =>
             {
                 return new ObjectField();
@@ -56,7 +56,7 @@ namespace MYTYKit
         
             conVE.RegisterValueChangedCallback((ChangeEvent<Object> e) =>
             {
-                InitWithController(e.newValue as RiggedSprite2DNearstController);
+                InitWithController(e.newValue as RiggedSprite2DNearestController);
         
             });
         
@@ -69,7 +69,7 @@ namespace MYTYKit
             InitWithController(selectedGOs[0]);
         }
 
-        void InitWithController(RiggedSprite2DNearstController controller)
+        void InitWithController(RiggedSprite2DNearestController controller)
         {
             m_conSO = new SerializedObject(controller);
 
@@ -198,7 +198,7 @@ namespace MYTYKit
             {
                 return;
             }
-            var controller = m_conSO.targetObject as RiggedSprite2DNearstController;
+            var controller = m_conSO.targetObject as RiggedSprite2DNearestController;
 
             for (var i = 0; i < controller.rigTarget.Count; i++)
             {
@@ -459,7 +459,7 @@ namespace MYTYKit
         void UpdateController()
         {
             if (IsPivotEmpty()) return;
-            var controller = m_conSO.targetObject as RiggedSprite2DNearstController;
+            var controller = m_conSO.targetObject as RiggedSprite2DNearestController;
 
             for (var i = 0; i < controller.rigTarget.Count; i++)
             {

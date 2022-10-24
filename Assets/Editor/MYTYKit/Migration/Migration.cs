@@ -37,8 +37,8 @@ namespace MYTYKit
         void PrepareNewMotionSystem()
         {
             var mpGo = PrefabUtility.InstantiatePrefab(
-                AssetDatabase.LoadAssetAtPath<GameObject>("Assets/MYTYKit/Prefabs/MediapipeMotionPack.prefab")) as GameObject;
-            var templateGo = PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/MYTYKit/Prefabs/DefaultMotionTemplate.prefab")) as GameObject;
+                AssetDatabase.LoadAssetAtPath<GameObject>("Assets/MYTYKit/MotionTemplate/Motion Source Samples/MediapipeMotionPack.prefab")) as GameObject;
+            var templateGo = PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/MYTYKit/MotionTemplate/DefaultMotionTemplate.prefab")) as GameObject;
             var mapper = templateGo.GetComponent<MotionTemplateMapper>();
             var source = mpGo.transform.GetComponentInChildren<MotionSource>();
             source.motionTemplateMapperList = new();
