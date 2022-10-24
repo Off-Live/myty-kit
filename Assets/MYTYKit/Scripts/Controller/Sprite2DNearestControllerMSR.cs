@@ -1,20 +1,19 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.U2D.Animation;
-using UnityEditor;
 using System;
+
 
 namespace MYTYKit.Controllers
 {
-    [Serializable]
-    public class Label2D
+    public class Sprite2DNearestControllerMSR : MSRSpriteController, IVec2Input, IComponentWiseInput
     {
-        public string label;
-        public Vector2 point;
-    }
+        [Serializable]
+        public class Label2D
+        {
+            public string label;
+            public Vector2 point;
+        }
 
-    public class Sprite2DNearstController : SpriteController, IVec2Input, IComponentWiseInput
-    {
         public Vector2 bottomLeft = new Vector2(0, 0);
         public Vector2 topRight = new Vector2(1, 1);
         public Vector2 value = new Vector2(0, 0);
@@ -23,7 +22,6 @@ namespace MYTYKit.Controllers
 
         [SerializeField] private string currentLabel;
 
-       
         void Update()
         {
             if (spriteObjects == null || labels == null) return;
@@ -32,6 +30,7 @@ namespace MYTYKit.Controllers
 
         public void UpdateLabel()
         {
+
             var selected = "";
             var minDist = float.MaxValue;
             if (labels == null || labels.Count == 0) return;
@@ -50,7 +49,10 @@ namespace MYTYKit.Controllers
                 foreach (var spriteResolver in spriteObjects)
                 {
                     if (spriteResolver == null) continue;
-                    spriteResolver.SetCategoryAndLabel(spriteResolver.GetCategory(), selected);
+                    var catName = spriteResolver.GetCategory();
+
+                    spriteResolver.SetCategoryAndLabel(catName, selected);
+
                     currentLabel = selected;
                 }
             }
@@ -60,11 +62,12 @@ namespace MYTYKit.Controllers
         {
             value = val;
         }
-        
+
         public void SetComponent(float value, int componentIdx)
         {
             if (componentIdx >= 2 || componentIdx < 0) return;
             this.value[componentIdx] = value;
         }
+
     }
 }

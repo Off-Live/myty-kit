@@ -2,14 +2,15 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
-using UnityEngine.U2D.Animation;
 using UnityEngine.UIElements;
 
+using MYTYKit.Components;
 using MYTYKit.Controllers;
+
 namespace MYTYKit
 {
-    [CustomEditor(typeof(Sprite1DRangeController))]
-    public class Sprite1DRangeEditor : UnityEditor.Editor
+    [CustomEditor(typeof(Sprite2DNearestControllerMSR))]
+    public class Sprite2DRNearestEditorMSR : UnityEditor.Editor
     {
         public override VisualElement CreateInspectorGUI()
         {
@@ -19,7 +20,7 @@ namespace MYTYKit
 
             targetList.virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight;
             targetList.styleSheets.Add(styleSheet);
-        
+
             targetList.makeItem = () =>
             {
                 return new ObjectField();
@@ -41,7 +42,7 @@ namespace MYTYKit
                 {
                     listSource.Add(null);
                 }
-                else listSource.Add((spritesProps.GetArrayElementAtIndex(i).objectReferenceValue as SpriteResolver).gameObject);
+                else listSource.Add((spritesProps.GetArrayElementAtIndex(i).objectReferenceValue as MYTYSpriteResolver).gameObject);
             }
 
             targetList.itemsSource = listSource;

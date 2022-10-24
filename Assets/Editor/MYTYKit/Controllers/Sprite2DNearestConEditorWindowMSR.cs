@@ -10,26 +10,25 @@ using MYTYKit.Controllers;
 
 namespace MYTYKit
 {
-    public class Sprite2DNearstConEditorWindowMSR : EditorWindow
+    public class Sprite2DNearestConEditorWindowMSR : EditorWindow
     {
         public VisualTreeAsset UITemplate;
 
-
-        private SerializedObject _conSO;
-        private bool _isPressed = false;
-        private Vector2 _lastPos = new();
+        SerializedObject _conSO;
+        bool _isPressed = false;
+        Vector2 _lastPos = new();
 
         [MenuItem("MYTY Kit/Controller/Sprite 2D Nearest Controller MSR", false, 20)]
         public static void ShowController()
         {
-            var wnd = GetWindow<Sprite2DNearstConEditorWindowMSR>();
-            wnd.titleContent = new GUIContent("Sprite 2D Nearst Controller");
+            var wnd = GetWindow<Sprite2DNearestConEditorWindowMSR>();
+            wnd.titleContent = new GUIContent("Sprite 2D Nearest Controller");
         }
 
         private void CreateGUI()
         {
             UITemplate.CloneTree(rootVisualElement);
-            var selectedGOs = Selection.GetFiltered<Sprite2DNearstControllerMSR>(SelectionMode.Editable);
+            var selectedGOs = Selection.GetFiltered<Sprite2DNearestControllerMSR>(SelectionMode.Editable);
             var conVE = rootVisualElement.Q<ObjectField>("OBJController");
             var listView = rootVisualElement.Q<ListView>("LSTSpriteGO");
             var addBtn = rootVisualElement.Q<Button>("BTNAdd");
@@ -41,7 +40,7 @@ namespace MYTYKit
             removeBtn.clicked += Remove;
             removeAllBtn.clicked += RemoveAll;
 
-            conVE.objectType = typeof(Sprite2DNearstControllerMSR);
+            conVE.objectType = typeof(Sprite2DNearestControllerMSR);
             listView.makeItem = () =>
             {
                 return new ObjectField();
@@ -55,7 +54,7 @@ namespace MYTYKit
 
             conVE.RegisterValueChangedCallback((ChangeEvent<Object> e) =>
             {
-                InitWithController(e.newValue as Sprite2DNearstControllerMSR);
+                InitWithController(e.newValue as Sprite2DNearestControllerMSR);
 
             });
 
@@ -71,7 +70,7 @@ namespace MYTYKit
             rootVisualElement.Q<Vector2Field>("VEC2Value").RegisterValueChangedCallback((ChangeEvent<Vector2> e) =>
             {
                 if (_conSO == null) return;
-                var controller = _conSO.targetObject as Sprite2DNearstControllerMSR;
+                var controller = _conSO.targetObject as Sprite2DNearestControllerMSR;
                 if (controller == null) return;
                 controller.UpdateLabel();
             });
@@ -83,7 +82,7 @@ namespace MYTYKit
             InitWithController(selectedGOs[0]);
         }
 
-        void InitWithController(Sprite2DNearstControllerMSR controller)
+        void InitWithController(Sprite2DNearestControllerMSR controller)
         {
             _conSO = new SerializedObject(controller);
 
