@@ -34,7 +34,9 @@ namespace MYTYKit
             var makePivotBtn = rootVisualElement.Q<Button>("BTNPivot");
             var removePivotBtn = rootVisualElement.Q<Button>("BTNPivotRemove");
             var copyPosBtn = rootVisualElement.Q<Button>("BTNCopyPos");
-        
+            var pivotPanel = rootVisualElement.Q<VisualElement>("VEPivot");
+            var pointPanel = rootVisualElement.Q<VisualElement>("VEPanel");
+            var anchorToggle = rootVisualElement.Q<Toggle>("TGLAnchor");
             addBtn.clicked += OnAdd;
             removeBtn.clicked += OnRemove;
             removeAllBtn.clicked += OnRemoveAll;
@@ -63,6 +65,17 @@ namespace MYTYKit
             rootVisualElement.Q<Vector2Field>("VEC2BL").RegisterValueChangedCallback((ChangeEvent<Vector2> e) => SetPanelCoord());
             rootVisualElement.Q<Vector2Field>("VEC2TR").RegisterValueChangedCallback((ChangeEvent<Vector2> e) => SetPanelCoord());
             rootVisualElement.Q<Vector2Field>("VEC2Value").RegisterValueChangedCallback((ChangeEvent<Vector2> e) => UpdateIndicator());
+            
+            var panel = rootVisualElement.Q<VisualElement>("VEClickArea");
+            panel.RegisterCallback<MouseDownEvent>(OnMousePress);
+            panel.RegisterCallback<MouseMoveEvent>(OnMouseMove);
+            panel.RegisterCallback((MouseUpEvent e) => { m_isPressed = false; });
+            panel.RegisterCallback((MouseLeaveEvent e) => { m_isPressed = false; });
+            
+            anchorToggle.RegisterValueChangedCallback(OnAnchorToggled);
+            pivotPanel.RegisterCallback<GeometryChangedEvent>( evt => SyncPivotPosition());
+            pointPanel.RegisterCallback<GeometryChangedEvent>(evt => UpdateIndicator());
+
             UpdatePanelConfig();
             if (selectedGOs.Length == 0) return;
         
@@ -78,9 +91,7 @@ namespace MYTYKit
             var listSource = new List<GameObject>();
             var anchorToggle = rootVisualElement.Q<Toggle>("TGLAnchor");
             var targetProps = m_conSO.FindProperty("rigTarget");
-            var pivotPanel = rootVisualElement.Q<VisualElement>("VEPivot");
-            var pointPanel = rootVisualElement.Q<VisualElement>("VEPanel");
-
+            
             for (int i = 0; i < targetProps.arraySize; i++)
             {
                 listSource.Add(targetProps.GetArrayElementAtIndex(i).objectReferenceValue as GameObject);
@@ -96,19 +107,9 @@ namespace MYTYKit
             rootVisualElement.Q<Vector2Field>("VEC2TR").BindProperty(m_conSO.FindProperty("topRight"));
             rootVisualElement.Q<Vector2Field>("VEC2Value").BindProperty(m_conSO.FindProperty("controlPosition"));
         
-            var panel = rootVisualElement.Q<VisualElement>("VEClickArea");
-            panel.RegisterCallback<MouseDownEvent>(OnMousePress);
-            panel.RegisterCallback<MouseMoveEvent>(OnMouseMove);
-            panel.RegisterCallback((MouseUpEvent e) => { m_isPressed = false; });
-            panel.RegisterCallback((MouseLeaveEvent e) => { m_isPressed = false; });
-
             SetPanelCoord();
-        
             anchorToggle.SetValueWithoutNotify(!IsPivotEmpty());
-            anchorToggle.RegisterValueChangedCallback(OnAnchorToggled);
             UpdatePanelConfig();
-            pivotPanel.RegisterCallback<GeometryChangedEvent>( evt => SyncPivotPosition());
-            pointPanel.RegisterCallback<GeometryChangedEvent>(evt => UpdateIndicator());
             UpdatePivotList();
         }
     
@@ -138,8 +139,6 @@ namespace MYTYKit
                     FindChild(parent.transform.GetChild(i).gameObject, objList);
                 }
             }
-
-
         }
 
         void OnAnchorToggled(ChangeEvent<bool> e)

@@ -1,22 +1,38 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <Style src="project://database/Assets/MYTYKit/UI/Bone2DCon.uss?fileID=7433441132597879392&amp;guid=61da35d4500e948e697bd5d8bbd0fb7a&amp;type=3#Bone2DCon" />
-    <uie:ObjectField label="Controller" name="OBJController" />
-    <ui:VisualElement style="flex-direction: row; justify-content: center; height: 30px;">
-        <ui:Button text="Add" display-tooltip-when-elided="true" name="BTNAdd" style="width: 32%;" />
-        <ui:Button text="Remove" display-tooltip-when-elided="true" name="BTNRemove" style="width: 32%;" />
-        <ui:Button text="RemoveAll" display-tooltip-when-elided="true" name="BTNRemoveAll" style="width: 32%;" />
-    </ui:VisualElement>
-    <ui:ListView focusable="true" name="LSTSpriteGO" fixed-item-height="15" virtualization-method="DynamicHeight" style="max-height: 200px; min-height: 100px; border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; border-left-color: rgb(87, 87, 87); border-right-color: rgb(87, 87, 87); border-top-color: rgb(87, 87, 87); border-bottom-color: rgb(87, 87, 87);" />
-    <ui:VisualElement style="align-items: center; justify-content: center; height: 400px;">
-        <ui:VisualElement name="VEPanel" style="width: 300px; height: 300px; align-items: auto; justify-content: flex-start; background-color: rgb(164, 164, 164);">
-            <ui:VisualElement name="VEPointer" style="position: absolute; left: 145px; top: 145px; background-color: rgb(255, 0, 0); width: 10px; height: 10px; border-top-left-radius: 5px; border-bottom-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 5px;" />
-            <ui:Label display-tooltip-when-elided="true" name="LBLBL" style="position: absolute; left: 0; bottom: -20px;" />
-            <ui:Label display-tooltip-when-elided="true" name="LBLTR" style="position: absolute; right: 0; top: -20px;" />
+    <ui:ScrollView horizontal-scroller-visibility="Hidden">
+        <uie:ObjectField label="Controller" name="OBJController" />
+        <ui:VisualElement style="flex-direction: row; justify-content: center; height: 30px;">
+            <ui:Button text="Add" display-tooltip-when-elided="true" name="BTNAdd" style="width: 32%;" />
+            <ui:Button text="Remove" display-tooltip-when-elided="true" name="BTNRemove" style="width: 32%;" />
+            <ui:Button text="RemoveAll" display-tooltip-when-elided="true" name="BTNRemoveAll" style="width: 32%;" />
         </ui:VisualElement>
-    </ui:VisualElement>
-    <uie:Vector2Field label="Value" name="VEC2Value" />
-    <uie:Vector2Field label="Bottom Left" name="VEC2BL" />
-    <uie:Vector2Field label="Top Right" name="VEC2TR" />
-    <ui:Button text="Auto Load Labels" display-tooltip-when-elided="true" name="BTNAutoSetup" />
-    <uie:PropertyField name="PRPLabel2D" />
+        <ui:ListView focusable="true" name="LSTSpriteGO" fixed-item-height="15" virtualization-method="DynamicHeight" style="max-height: 200px; min-height: 100px; border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; border-left-color: rgb(87, 87, 87); border-right-color: rgb(87, 87, 87); border-top-color: rgb(87, 87, 87); border-bottom-color: rgb(87, 87, 87);" />
+        <ui:VisualElement style="align-items: center; justify-content: center; height: 400px; min-height: 400px;">
+            <ui:VisualElement name="VEPanel" style="width: 300px; height: 300px; align-items: auto; justify-content: flex-start; background-color: rgb(164, 164, 164);">
+                <ui:VisualElement name="VEPointer" style="position: absolute; left: 145px; background-color: rgb(255, 0, 0); width: 10px; height: 10px; border-top-left-radius: 5px; border-bottom-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 5px; bottom: 145px;" />
+                <ui:Label display-tooltip-when-elided="true" name="LBLBL" style="position: absolute; left: 0; bottom: -20px;" />
+                <ui:Label display-tooltip-when-elided="true" name="LBLTR" style="position: absolute; right: 0; top: -20px;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="VEPivot" style="position: absolute; width: 300px; height: 300px;" />
+            <ui:VisualElement name="VEClickArea" style="position: absolute; width: 300px; height: 300px;" />
+        </ui:VisualElement>
+        <uie:Vector2Field label="Current Value" name="VEC2Value" />
+        <uie:Vector2Field label="Top Right" name="VEC2TR" />
+        <uie:Vector2Field label="Bottom Left" name="VEC2BL" />
+        <ui:VisualElement style="margin-top: 20px; margin-bottom: 20px;">
+            <ui:TextField picking-mode="Ignore" label="Pivot Name" name="TXTPivotName" />
+            <uie:Vector2Field label="Pivot Position" name="VEC2PivotPos" />
+            <ui:Button text="Copy Position" display-tooltip-when-elided="true" name="BTNCopyPos" />
+            <ui:Button text="Make New Pivot" display-tooltip-when-elided="true" name="BTNPivot" />
+            <ui:Button text="Auto Load Labels" display-tooltip-when-elided="true" name="BTNAutoSetup" />
+        </ui:VisualElement>
+        <ui:VisualElement>
+            <ui:Label text="Pivots" display-tooltip-when-elided="true" />
+            <ui:ListView focusable="true" name="LSTPivot" fixed-item-height="15" show-border="true" style="min-height: 60px; margin-left: 1px; margin-right: 1px; border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;" />
+            <ui:VisualElement style="flex-direction: row-reverse;">
+                <ui:Button text="-" display-tooltip-when-elided="true" name="BTNPivotRemove" style="width: 20px; height: 20px;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:ScrollView>
 </ui:UXML>
