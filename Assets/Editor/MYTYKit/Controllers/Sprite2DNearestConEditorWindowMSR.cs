@@ -410,7 +410,6 @@ namespace MYTYKit
 
         void OnChangePivot(string label, Vector2 point)
         {
-            Debug.Log("modal : "+label+" "+point);
             var listPivot = rootVisualElement.Q<ListView>("LSTPivot");
             var pivotsProp = m_conSO.FindProperty("labels");
             var selectedIndex = listPivot.selectedIndex;

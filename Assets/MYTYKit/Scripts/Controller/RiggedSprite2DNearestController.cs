@@ -25,14 +25,18 @@ namespace MYTYKit.Controllers
 
         public void Update()
         {
-            Debug.Log("update");
             var interpList = CalcInterpolate();
-            if (interpList == null) return;
+            if (interpList == null)
+            {
+                diffBuffer = null;
+                return;
+            }
+            
             diffBuffer = CalcDiff(orgRig, interpList);
 
         }
 
-
+        
         public override void ApplyDiff()
         {
             if (diffBuffer == null || diffBuffer.Count == 0) return;
@@ -42,7 +46,6 @@ namespace MYTYKit.Controllers
 
         protected override List<RiggingEntity> CalcInterpolate()
         {
-
             if (orgRig == null || orgRig.Count == 0) return null;
 
             var u = Math.Abs(controlPosition.x) / xScale;
@@ -61,8 +64,7 @@ namespace MYTYKit.Controllers
                 }
 
             }
-
-            Debug.Log("selected : " + selected);
+            
             if (selected < 0) return null;
 
             return pivots[selected].riggingState;

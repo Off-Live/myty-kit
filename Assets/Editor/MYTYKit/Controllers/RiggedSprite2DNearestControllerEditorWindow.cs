@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -5,6 +6,7 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using MYTYKit.Controllers;
+using Object = UnityEngine.Object;
 
 namespace MYTYKit
 {
@@ -14,6 +16,7 @@ namespace MYTYKit
 
         SerializedObject m_conSO;
         bool m_isPressed = false;
+        double m_lastClickTime = 0.0f;
     
         [UnityEditor.MenuItem("MYTY Kit/Controller/Rigged Sprite 2D Nearest Controller", false, 20)]
         public static void ShowController()
@@ -37,6 +40,9 @@ namespace MYTYKit
             var pivotPanel = rootVisualElement.Q<VisualElement>("VEPivot");
             var pointPanel = rootVisualElement.Q<VisualElement>("VEPanel");
             var anchorToggle = rootVisualElement.Q<Toggle>("TGLAnchor");
+            var listPivot = rootVisualElement.Q<ListView>("LSTPivot");
+
+            
             addBtn.clicked += OnAdd;
             removeBtn.clicked += OnRemove;
             removeAllBtn.clicked += OnRemoveAll;
@@ -75,6 +81,8 @@ namespace MYTYKit
             anchorToggle.RegisterValueChangedCallback(OnAnchorToggled);
             pivotPanel.RegisterCallback<GeometryChangedEvent>( evt => SyncPivotPosition());
             pointPanel.RegisterCallback<GeometryChangedEvent>(evt => UpdateIndicator());
+
+            listPivot.RegisterCallback<ClickEvent>(evt => OnClickPivotList());
 
             UpdatePanelConfig();
             if (selectedGOs.Length == 0) return;
@@ -487,6 +495,41 @@ namespace MYTYKit
 
             var norm = (value - bl) / (tr-bl);
             return panelDim * norm;
+        }
+        void OnClickPivotList()
+        {
+            if (m_conSO == null) return;
+            var timestamp = (DateTime.Now - new DateTime(1970, 1, 1)).TotalMilliseconds;
+            var diff = timestamp - m_lastClickTime;
+            m_lastClickTime = timestamp;
+            if (diff > 250) return;
+
+            var listPivot = rootVisualElement.Q<ListView>("LSTPivot");
+            var pivotsProp = m_conSO.FindProperty("pivots");
+            var selectedIndex = listPivot.selectedIndex;
+            if (selectedIndex < 0) return;
+            var name = pivotsProp.GetArrayElementAtIndex(selectedIndex).FindPropertyRelative("name").stringValue;
+            var position = pivotsProp.GetArrayElementAtIndex(selectedIndex).FindPropertyRelative("position").vector2Value;
+
+            var modalWindow = CreateInstance<PivotModalDialog>();
+            modalWindow.Init(OnChangePivot,name,position);
+            modalWindow.titleContent =new GUIContent( "Edit Pivot");
+            modalWindow.minSize = modalWindow.maxSize = new Vector2(300, 70);
+            modalWindow.ShowModalUtility();
+            
+        }
+
+
+        void OnChangePivot(string name, Vector2 position)
+        {
+            var listPivot = rootVisualElement.Q<ListView>("LSTPivot");
+            var pivotsProp = m_conSO.FindProperty("pivots");
+            var selectedIndex = listPivot.selectedIndex;
+
+            pivotsProp.GetArrayElementAtIndex(selectedIndex).FindPropertyRelative("name").stringValue = name;
+            pivotsProp.GetArrayElementAtIndex(selectedIndex).FindPropertyRelative("position").vector2Value = position;
+            m_conSO.ApplyModifiedProperties();
+            UpdatePivotList();
         }
     }
 }
