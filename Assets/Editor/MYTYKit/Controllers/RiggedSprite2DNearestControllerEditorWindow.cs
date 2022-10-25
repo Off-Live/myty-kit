@@ -19,7 +19,7 @@ namespace MYTYKit
         public static void ShowController()
         {
             var wnd = GetWindow<RiggedSprite2DNearestControllerEditorWindow>();
-            wnd.titleContent = new GUIContent("Rigged Sprite 2D Nearst Controller");
+            wnd.titleContent = new GUIContent("Rigged Sprite 2D Nearest Controller");
         }
     
         void CreateGUI()

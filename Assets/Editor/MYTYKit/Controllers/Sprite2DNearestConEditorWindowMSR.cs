@@ -18,7 +18,7 @@ namespace MYTYKit
         bool _isPressed = false;
         Vector2 _lastPos = new();
 
-        [MenuItem("MYTY Kit/Controller/Sprite 2D Nearest Controller MSR", false, 20)]
+        [MenuItem("MYTY Kit/Controller/Sprite 2D Nearest Controller", false, 20)]
         public static void ShowController()
         {
             var wnd = GetWindow<Sprite2DNearestConEditorWindowMSR>();
