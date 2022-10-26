@@ -15,23 +15,23 @@ namespace MYTYKit
         {
             Debug.Log("MYTYKit Start Up");
 
-            var testPath = Path.GetFullPath("Packages/com.unity.2d.common");
-            var files = Directory.GetFiles(testPath);
-            // foreach (var dir in files)
+            // var testPath = Path.GetFullPath("Packages/com.unity.2d.common");
+            // var files = Directory.GetFiles(testPath);
+            // // foreach (var dir in files)
+            // // {
+            // //     var info = new DirectoryInfo(dir);
+            // //     Debug.Log(dir);
+            // //     Debug.Log(info.Name);
+            // // }
+            // foreach (var file in files)
             // {
-            //     var info = new DirectoryInfo(dir);
-            //     Debug.Log(dir);
-            //     Debug.Log(info.Name);
+            //     FileInfo fileinfo = new FileInfo(file);
+            //     Debug.Log(fileinfo.Name + "  "+fileinfo.Extension);
             // }
-            foreach (var file in files)
-            {
-                FileInfo fileinfo = new FileInfo(file);
-                Debug.Log(fileinfo.Name + "  "+fileinfo.Extension);
-            }
-            var kitFullPath = Path.GetFullPath(KitPath);
-            if (!Directory.Exists(kitFullPath)) return;
-            CopyKitFiles();
-            CopyStreamingAssets();
+            // var kitFullPath = Path.GetFullPath(KitPath);
+            // if (!Directory.Exists(kitFullPath)) return;
+            // CopyKitFiles();
+            // CopyStreamingAssets();
         }
 
         static void CopyKitFiles()
