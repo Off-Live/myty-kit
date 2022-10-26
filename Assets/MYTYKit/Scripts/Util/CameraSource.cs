@@ -1,44 +1,52 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-public class CameraSource : MonoBehaviour
+namespace MYTYKit
 {
-    public WebCamTexture camTexture;
-    public Renderer previewRenderer;
-
-    public string camDeviceName = ""; 
-    // Start is called before the first frame update
-    void Start()
+    public class CameraSource : MonoBehaviour
     {
-        string devName = "";
-        Debug.Log("Webcam Device : " + camDeviceName);
-        if (camDeviceName.Length == 0)
+        public WebCamTexture camTexture;
+        public Renderer previewRenderer;
+
+        public string camDeviceName = "";
+
+        // Start is called before the first frame update
+        void Start()
         {
-            foreach (var dev in WebCamTexture.devices)
+            string devName = "";
+            Debug.Log("Webcam Device : " + camDeviceName);
+            if (!WebCamTexture.devices.Select(_ => _.name).Contains(camDeviceName)) camDeviceName = "";
+            if (camDeviceName.Length == 0)
             {
-                if (dev.name.StartsWith("MYTY") || dev.name.StartsWith("Off"))
+                foreach (var dev in WebCamTexture.devices)
                 {
-                    continue;
+                    if (dev.name.StartsWith("MYTY") || dev.name.StartsWith("Off"))
+                    {
+                        continue;
+                    }
+
+                    devName = dev.name;
+                    break;
+
                 }
-                devName = dev.name;
-                break;
-
             }
-        }
-        else
-        {
-            devName = camDeviceName;
-        }
-        
-        SelectDevice(devName);
-    }
-    public void SelectDevice(string name)
-    {
-        if(camTexture!=null) camTexture.Stop();
-        camTexture = new WebCamTexture(name);
-        camTexture.Play();
-        previewRenderer.material.mainTexture = camTexture;
-    }
+            else
+            {
+                devName = camDeviceName;
+            }
 
+            SelectDevice(devName);
+        }
+
+        public void SelectDevice(string name)
+        {
+            if (camTexture != null) camTexture.Stop();
+            camTexture = new WebCamTexture(name);
+            camTexture.Play();
+            previewRenderer.material.mainTexture = camTexture;
+        }
+
+    }
 }

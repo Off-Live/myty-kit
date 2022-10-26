@@ -1,8 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class ShaderMap : MonoBehaviour
+namespace MYTYKit
 {
-    public ShaderMapAsset shaderMap;
+    public class ShaderMap : MonoBehaviour
+    {
+        public ShaderMapAsset shaderMap;
+    }
 }

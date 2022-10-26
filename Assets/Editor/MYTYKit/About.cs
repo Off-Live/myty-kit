@@ -1,33 +1,35 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
+using Newtonsoft.Json.Linq;
 using UnityEditor;
-using UnityEditor.UIElements;
+using UnityEngine;
 using UnityEngine.UIElements;
 
-public class About : EditorWindow
+namespace MYTYKit
 {
-    public VisualTreeAsset UITemplate;
-
-    [MenuItem("MYTY Kit/About", false, 100)]
-    public static void ShowWindow()
+    public class About : EditorWindow
     {
-        var wnd = GetWindow<About>();
-        wnd.titleContent = new GUIContent("About");
-    }
+        public VisualTreeAsset UITemplate;
 
-    void CreateGUI()
-    {
-        UITemplate.CloneTree(rootVisualElement);
-        maxSize = new Vector2(300, 120);
-        minSize = maxSize;
+        [MenuItem("MYTY Kit/About", false, 100)]
+        public static void ShowWindow()
+        {
+            var wnd = GetWindow<About>();
+            wnd.titleContent = new GUIContent("About");
+        }
 
-        var versionField = rootVisualElement.Q<Label>("LBLVersion");
-        var filename = Application.streamingAssetsPath + "/VERSION.txt";
-        var versionStr = File.ReadAllText(filename);
-        versionStr = versionStr.Trim();
-        versionField.text = versionStr;
+        void CreateGUI()
+        {
+            UITemplate.CloneTree(rootVisualElement);
+            maxSize = new Vector2(300, 120);
+            minSize = maxSize;
 
+            var versionField = rootVisualElement.Q<Label>("LBLVersion");
+            var packageJson = Path.GetFullPath("Packages/com.offlive.myty.myty-kit/package.json");
+            var jsonText= File.ReadAllText(packageJson);
+            var json = JObject.Parse(jsonText);
+            var versionStr = (string)json["version"];
+            versionField.text = versionStr;
+
+        }
     }
 }

@@ -1,0 +1,20 @@
+{
+    "name": "Holistic",
+    "rootNamespace": "",
+    "references": [
+        "GUID:04c4d86a70aa56c55a78c61f1ab1a56d",
+        "GUID:9513bc30d46ec4841a6fc8d80a91f1db"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [
+        "iOS",
+        "WebGL"
+    ],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

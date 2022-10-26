@@ -1,6 +1,9 @@
 
 
-public interface IFloatInput 
+namespace MYTYKit.Controllers
 {
-    public void SetInput(float val);
+    public interface IFloatInput 
+    {
+        public void SetInput(float val);
+    }
 }

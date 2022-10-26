@@ -3,53 +3,56 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 
-[Serializable]
-public class TemplateMapEntry
+namespace MYTYKit
 {
-    public string templateName;
-    public string fileName;
-}
-
-[Serializable]
-public class TraitItem
-{
-    public string filename;
-    public int id;
-    public List<string> traits;
-}
-
-[Serializable]
-public class AvatarTemplateInfo
-{
-    public string template;
-    public string instance;
-    public string spriteLibrary;
-}
-
-public class MYTYAssetScriptableObject : ScriptableObject
-{
-    public List<TraitItem> traits;
-    public List<string> rootControllers;
-    public List<string> motionAdapters;
-    public List<AvatarTemplateInfo> templateInfos;
-    
-}
-
-
-public class JsonHelper
-{
-    public static T[] getJsonArray<T>(string json)
+    [Serializable]
+    public class TemplateMapEntry
     {
-        string newJson = "{ \"array\": " + json + "}";
-
-        Wrapper<T> wrapper = JsonUtility.FromJson<Wrapper<T>>(newJson);
-
-        return wrapper.array;
+        public string templateName;
+        public string fileName;
     }
 
     [Serializable]
-    private class Wrapper<T>
+    public class TraitItem
     {
-        public T[] array;
+        public string filename;
+        public int id;
+        public List<string> traits;
+    }
+
+    [Serializable]
+    public class AvatarTemplateInfo
+    {
+        public string template;
+        public string instance;
+        public string spriteLibrary;
+    }
+
+    public class MYTYAssetScriptableObject : ScriptableObject
+    {
+        public List<TraitItem> traits;
+        public List<string> rootControllers;
+        public List<string> motionAdapters;
+        public List<AvatarTemplateInfo> templateInfos;
+
+    }
+
+
+    public class JsonHelper
+    {
+        public static T[] getJsonArray<T>(string json)
+        {
+            string newJson = "{ \"array\": " + json + "}";
+
+            Wrapper<T> wrapper = JsonUtility.FromJson<Wrapper<T>>(newJson);
+
+            return wrapper.array;
+        }
+
+        [Serializable]
+        private class Wrapper<T>
+        {
+            public T[] array;
+        }
     }
 }
