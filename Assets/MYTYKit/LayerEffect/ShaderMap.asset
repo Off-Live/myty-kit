@@ -16,7 +16,7 @@ MonoBehaviour:
   - name: SpriteHardLight
     material: {fileID: 2100000, guid: 4b5b4fc2870769448ac61866dea63fca, type: 2}
   - name: SpriteMultiply
-    material: {fileID: 2100000, guid: 5585cf762f89c40419c1af56785a7f3a, type: 2}
+    material: {fileID: 2100000, guid: c3fd76f411d88b84bba49fe896f88512, type: 2}
   - name: SpriteScreen
     material: {fileID: 2100000, guid: 9d464a86d9a94304d875715a6ee3b0f9, type: 2}
   - name: SpriteSoftLight
