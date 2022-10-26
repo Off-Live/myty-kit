@@ -9,7 +9,6 @@
     "excludePlatforms": [
         "Android",
         "CloudRendering",
-        "Editor",
         "EmbeddedLinux",
         "GameCoreScarlett",
         "GameCoreXboxOne",
