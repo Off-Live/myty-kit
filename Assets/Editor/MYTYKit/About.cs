@@ -1,5 +1,4 @@
 using System.IO;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -25,7 +24,7 @@ namespace MYTYKit
             minSize = maxSize;
 
             var versionField = rootVisualElement.Q<Label>("LBLVersion");
-            var packageJson = "Assets/package.json";
+            var packageJson = Path.GetFullPath("Packages/com.offlive.myty.myty-kit/package.json");
             var jsonText= File.ReadAllText(packageJson);
             var json = JObject.Parse(jsonText);
             var versionStr = (string)json["version"];

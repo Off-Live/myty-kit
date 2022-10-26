@@ -373,7 +373,7 @@ namespace MYTYKit
 
         void PrepareVersionInfo(List<string> assetName)
         {
-            var packageJson = "Assets/package.json";
+            var packageJson = Path.GetFullPath("Packages/com.offlive.myty.myty-kit/package.json");
             var jsonText= File.ReadAllText(packageJson);
             var json = JObject.Parse(jsonText);
             var versionStr = (string)json["version"];
