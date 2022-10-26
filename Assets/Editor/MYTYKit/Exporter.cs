@@ -372,7 +372,7 @@ namespace MYTYKit
 
         void PrepareVersionInfo(List<string> assetName)
         {
-            var filepath = Application.streamingAssetsPath + "/VERSION.txt";
+            var filepath = Application.streamingAssetsPath + "/MYTYKit/VERSION.txt";
             if (!File.Exists(filepath)) return;
 
             File.Copy(filepath, MYTYUtil.PrefabPath + "/VERSION.txt");

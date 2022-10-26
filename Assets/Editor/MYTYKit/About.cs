@@ -23,7 +23,7 @@ namespace MYTYKit
             minSize = maxSize;
 
             var versionField = rootVisualElement.Q<Label>("LBLVersion");
-            var filename = Application.streamingAssetsPath + "/VERSION.txt";
+            var filename = Application.streamingAssetsPath + "/MYTYKit/VERSION.txt";
             var versionStr = File.ReadAllText(filename);
             versionStr = versionStr.Trim();
             versionField.text = versionStr;
