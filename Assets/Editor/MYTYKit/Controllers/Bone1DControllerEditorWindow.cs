@@ -9,7 +9,7 @@ using MYTYKit.Controllers;
 
 namespace MYTYKit
 {
-    public class Bone1DConEditorWindow : EditorWindow
+    public class Bone1DControllerEditorWindow : EditorWindow
     {
         public VisualTreeAsset UITemplate;
         private SerializedObject _conSO;
@@ -17,7 +17,7 @@ namespace MYTYKit
         [MenuItem("MYTY Kit/Controller/Bone 1D Controller", false, 20)]
         public static void ShowController()
         {
-            var wnd = GetWindow<Bone1DConEditorWindow>();
+            var wnd = GetWindow<Bone1DControllerEditorWindow>();
             wnd.titleContent = new GUIContent("Bone 1D Controller");
         }
 
