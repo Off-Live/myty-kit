@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -5,27 +6,29 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using MYTYKit.Controllers;
+using Object = UnityEngine.Object;
 
 namespace MYTYKit
 {
-    public class RiggedSprite2DNearstControllerEditorWindow : EditorWindow
+    public class RiggedSprite2DNearestControllerEditorWindow : EditorWindow
     {
         public VisualTreeAsset UITemplate;
 
         SerializedObject m_conSO;
         bool m_isPressed = false;
+        double m_lastClickTime = 0.0f;
     
-        [UnityEditor.MenuItem("MYTY Kit/Controller/Rigged Sprite 2D Nearst Controller", false, 20)]
+        [UnityEditor.MenuItem("MYTY Kit/Controller/Rigged Sprite 2D Nearest Controller", false, 20)]
         public static void ShowController()
         {
-            var wnd = GetWindow<RiggedSprite2DNearstControllerEditorWindow>();
-            wnd.titleContent = new GUIContent("Rigged Sprite 2D Nearst Controller");
+            var wnd = GetWindow<RiggedSprite2DNearestControllerEditorWindow>();
+            wnd.titleContent = new GUIContent("Rigged Sprite 2D Nearest Controller");
         }
     
         void CreateGUI()
         {
             UITemplate.CloneTree(rootVisualElement);
-            var selectedGOs = Selection.GetFiltered<RiggedSprite2DNearstController>(SelectionMode.Editable);
+            var selectedGOs = Selection.GetFiltered<RiggedSprite2DNearestController>(SelectionMode.Editable);
             var conVE = rootVisualElement.Q<ObjectField>("OBJController");
             var listView = rootVisualElement.Q<ListView>("LSTRiggingGO");
             var addBtn = rootVisualElement.Q<Button>("BTNAdd");
@@ -34,7 +37,12 @@ namespace MYTYKit
             var makePivotBtn = rootVisualElement.Q<Button>("BTNPivot");
             var removePivotBtn = rootVisualElement.Q<Button>("BTNPivotRemove");
             var copyPosBtn = rootVisualElement.Q<Button>("BTNCopyPos");
-        
+            var pivotPanel = rootVisualElement.Q<VisualElement>("VEPivot");
+            var pointPanel = rootVisualElement.Q<VisualElement>("VEPanel");
+            var anchorToggle = rootVisualElement.Q<Toggle>("TGLAnchor");
+            var listPivot = rootVisualElement.Q<ListView>("LSTPivot");
+
+            
             addBtn.clicked += OnAdd;
             removeBtn.clicked += OnRemove;
             removeAllBtn.clicked += OnRemoveAll;
@@ -42,7 +50,7 @@ namespace MYTYKit
             removePivotBtn.clicked += OnRemovePivot;
             copyPosBtn.clicked += OnCopyPos;
         
-            conVE.objectType = typeof(RiggedSprite2DNearstController);
+            conVE.objectType = typeof(RiggedSprite2DNearestController);
             listView.makeItem = () =>
             {
                 return new ObjectField();
@@ -56,20 +64,33 @@ namespace MYTYKit
         
             conVE.RegisterValueChangedCallback((ChangeEvent<Object> e) =>
             {
-                InitWithController(e.newValue as RiggedSprite2DNearstController);
+                InitWithController(e.newValue as RiggedSprite2DNearestController);
         
             });
         
             rootVisualElement.Q<Vector2Field>("VEC2BL").RegisterValueChangedCallback((ChangeEvent<Vector2> e) => SetPanelCoord());
             rootVisualElement.Q<Vector2Field>("VEC2TR").RegisterValueChangedCallback((ChangeEvent<Vector2> e) => SetPanelCoord());
             rootVisualElement.Q<Vector2Field>("VEC2Value").RegisterValueChangedCallback((ChangeEvent<Vector2> e) => UpdateIndicator());
+            
+            var panel = rootVisualElement.Q<VisualElement>("VEClickArea");
+            panel.RegisterCallback<MouseDownEvent>(OnMousePress);
+            panel.RegisterCallback<MouseMoveEvent>(OnMouseMove);
+            panel.RegisterCallback((MouseUpEvent e) => { m_isPressed = false; });
+            panel.RegisterCallback((MouseLeaveEvent e) => { m_isPressed = false; });
+            
+            anchorToggle.RegisterValueChangedCallback(OnAnchorToggled);
+            pivotPanel.RegisterCallback<GeometryChangedEvent>( evt => SyncPivotPosition());
+            pointPanel.RegisterCallback<GeometryChangedEvent>(evt => UpdateIndicator());
+
+            listPivot.RegisterCallback<ClickEvent>(evt => OnClickPivotList());
+
             UpdatePanelConfig();
             if (selectedGOs.Length == 0) return;
         
             InitWithController(selectedGOs[0]);
         }
 
-        void InitWithController(RiggedSprite2DNearstController controller)
+        void InitWithController(RiggedSprite2DNearestController controller)
         {
             m_conSO = new SerializedObject(controller);
 
@@ -78,9 +99,7 @@ namespace MYTYKit
             var listSource = new List<GameObject>();
             var anchorToggle = rootVisualElement.Q<Toggle>("TGLAnchor");
             var targetProps = m_conSO.FindProperty("rigTarget");
-            var pivotPanel = rootVisualElement.Q<VisualElement>("VEPivot");
-            var pointPanel = rootVisualElement.Q<VisualElement>("VEPanel");
-
+            
             for (int i = 0; i < targetProps.arraySize; i++)
             {
                 listSource.Add(targetProps.GetArrayElementAtIndex(i).objectReferenceValue as GameObject);
@@ -96,19 +115,9 @@ namespace MYTYKit
             rootVisualElement.Q<Vector2Field>("VEC2TR").BindProperty(m_conSO.FindProperty("topRight"));
             rootVisualElement.Q<Vector2Field>("VEC2Value").BindProperty(m_conSO.FindProperty("controlPosition"));
         
-            var panel = rootVisualElement.Q<VisualElement>("VEClickArea");
-            panel.RegisterCallback<MouseDownEvent>(OnMousePress);
-            panel.RegisterCallback<MouseMoveEvent>(OnMouseMove);
-            panel.RegisterCallback((MouseUpEvent e) => { m_isPressed = false; });
-            panel.RegisterCallback((MouseLeaveEvent e) => { m_isPressed = false; });
-
             SetPanelCoord();
-        
             anchorToggle.SetValueWithoutNotify(!IsPivotEmpty());
-            anchorToggle.RegisterValueChangedCallback(OnAnchorToggled);
             UpdatePanelConfig();
-            pivotPanel.RegisterCallback<GeometryChangedEvent>( evt => SyncPivotPosition());
-            pointPanel.RegisterCallback<GeometryChangedEvent>(evt => UpdateIndicator());
             UpdatePivotList();
         }
     
@@ -138,8 +147,6 @@ namespace MYTYKit
                     FindChild(parent.transform.GetChild(i).gameObject, objList);
                 }
             }
-
-
         }
 
         void OnAnchorToggled(ChangeEvent<bool> e)
@@ -198,7 +205,7 @@ namespace MYTYKit
             {
                 return;
             }
-            var controller = m_conSO.targetObject as RiggedSprite2DNearstController;
+            var controller = m_conSO.targetObject as RiggedSprite2DNearestController;
 
             for (var i = 0; i < controller.rigTarget.Count; i++)
             {
@@ -459,7 +466,7 @@ namespace MYTYKit
         void UpdateController()
         {
             if (IsPivotEmpty()) return;
-            var controller = m_conSO.targetObject as RiggedSprite2DNearstController;
+            var controller = m_conSO.targetObject as RiggedSprite2DNearestController;
 
             for (var i = 0; i < controller.rigTarget.Count; i++)
             {
@@ -488,6 +495,41 @@ namespace MYTYKit
 
             var norm = (value - bl) / (tr-bl);
             return panelDim * norm;
+        }
+        void OnClickPivotList()
+        {
+            if (m_conSO == null) return;
+            var timestamp = (DateTime.Now - new DateTime(1970, 1, 1)).TotalMilliseconds;
+            var diff = timestamp - m_lastClickTime;
+            m_lastClickTime = timestamp;
+            if (diff > 250) return;
+
+            var listPivot = rootVisualElement.Q<ListView>("LSTPivot");
+            var pivotsProp = m_conSO.FindProperty("pivots");
+            var selectedIndex = listPivot.selectedIndex;
+            if (selectedIndex < 0) return;
+            var name = pivotsProp.GetArrayElementAtIndex(selectedIndex).FindPropertyRelative("name").stringValue;
+            var position = pivotsProp.GetArrayElementAtIndex(selectedIndex).FindPropertyRelative("position").vector2Value;
+
+            var modalWindow = CreateInstance<PivotModalDialog>();
+            modalWindow.Init(OnChangePivot,name,position);
+            modalWindow.titleContent =new GUIContent( "Edit Pivot");
+            modalWindow.minSize = modalWindow.maxSize = new Vector2(300, 70);
+            modalWindow.ShowModalUtility();
+            
+        }
+
+
+        void OnChangePivot(string name, Vector2 position)
+        {
+            var listPivot = rootVisualElement.Q<ListView>("LSTPivot");
+            var pivotsProp = m_conSO.FindProperty("pivots");
+            var selectedIndex = listPivot.selectedIndex;
+
+            pivotsProp.GetArrayElementAtIndex(selectedIndex).FindPropertyRelative("name").stringValue = name;
+            pivotsProp.GetArrayElementAtIndex(selectedIndex).FindPropertyRelative("position").vector2Value = position;
+            m_conSO.ApplyModifiedProperties();
+            UpdatePivotList();
         }
     }
 }

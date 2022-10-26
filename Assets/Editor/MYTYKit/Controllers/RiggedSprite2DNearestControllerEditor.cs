@@ -1,15 +1,14 @@
-using System.Collections.Generic;
+using UnityEngine.UIElements;
+using UnityEngine;
 using UnityEditor;
 using UnityEditor.UIElements;
-using UnityEngine;
-using UnityEngine.U2D.Animation;
-using UnityEngine.UIElements;
-
+using System.Collections.Generic;
 using MYTYKit.Controllers;
+
 namespace MYTYKit
 {
-    [CustomEditor(typeof(Sprite1DRangeController))]
-    public class Sprite1DRangeEditor : UnityEditor.Editor
+    [CustomEditor(typeof(RiggedSprite2DNearestController))]
+    public class RiggedSprite2DNearestControllerEditor : Editor
     {
         public override VisualElement CreateInspectorGUI()
         {
@@ -19,11 +18,8 @@ namespace MYTYKit
 
             targetList.virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight;
             targetList.styleSheets.Add(styleSheet);
-        
-            targetList.makeItem = () =>
-            {
-                return new ObjectField();
-            };
+
+            targetList.makeItem = () => { return new ObjectField(); };
 
             targetList.bindItem = (e, i) =>
             {
@@ -34,19 +30,18 @@ namespace MYTYKit
             };
 
             var listSource = new List<GameObject>();
-            var spritesProps = serializedObject.FindProperty("spriteObjects");
-            for (int i = 0; i < spritesProps.arraySize; i++)
+            var rigTargetProps = serializedObject.FindProperty("rigTarget");
+            for (int i = 0; i < rigTargetProps.arraySize; i++)
             {
-                if (spritesProps.GetArrayElementAtIndex(i).objectReferenceValue == null)
+                if (rigTargetProps.GetArrayElementAtIndex(i).objectReferenceValue == null)
                 {
                     listSource.Add(null);
                 }
-                else listSource.Add((spritesProps.GetArrayElementAtIndex(i).objectReferenceValue as SpriteResolver).gameObject);
+                else listSource.Add(rigTargetProps.GetArrayElementAtIndex(i).objectReferenceValue as GameObject);
             }
 
             targetList.itemsSource = listSource;
-
-            rootElem.Add(new Label("Rigged Sprites : "));
+            rootElem.Add(new Label("Rigged Bones : "));
             rootElem.Add(targetList);
 
             return rootElem;

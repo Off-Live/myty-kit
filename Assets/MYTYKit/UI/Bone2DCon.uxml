@@ -1,44 +1,46 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <Style src="project://database/Assets/MYTYKit/UI/Bone2DCon.uss?fileID=7433441132597879392&amp;guid=61da35d4500e948e697bd5d8bbd0fb7a&amp;type=3#Bone2DCon" />
-    <ui:VisualElement>
-        <uie:ObjectField label="Controller" name="Bone2DController" />
-        <ui:VisualElement style="flex-direction: column;">
-            <ui:Toggle label="Recursive Selection" value="false" name="CHKRecursive" />
-            <ui:VisualElement style="flex-direction: row; justify-content: space-between;">
-                <ui:Button text="Add" display-tooltip-when-elided="true" name="BTNAddTarget" style="width: 32%;" />
-                <ui:Button text="Remove" display-tooltip-when-elided="true" name="BTNRemoveSelection" style="width: 32%;" />
-                <ui:Button text="Remove All" display-tooltip-when-elided="true" name="BTNRemoveAll" style="width: 32%;" />
+    <ui:ScrollView>
+        <ui:VisualElement>
+            <uie:ObjectField label="Controller" name="Bone2DController" />
+            <ui:VisualElement style="flex-direction: column;">
+                <ui:Toggle label="Recursive Selection" value="false" name="CHKRecursive" />
+                <ui:VisualElement style="flex-direction: row; justify-content: space-between;">
+                    <ui:Button text="Add" display-tooltip-when-elided="true" name="BTNAddTarget" style="width: 32%;" />
+                    <ui:Button text="Remove" display-tooltip-when-elided="true" name="BTNRemoveSelection" style="width: 32%;" />
+                    <ui:Button text="Remove All" display-tooltip-when-elided="true" name="BTNRemoveAll" style="width: 32%;" />
+                </ui:VisualElement>
+                <ui:ListView focusable="true" selection-type="Multiple" show-foldout-header="false" show-add-remove-footer="false" name="TargetList" show-alternating-row-backgrounds="All" show-bound-collection-size="true" virtualization-method="DynamicHeight" fixed-item-height="15" style="min-height: 100px; border-left-color: rgb(96, 96, 96); border-right-color: rgb(96, 96, 96); border-top-color: rgb(96, 96, 96); border-bottom-color: rgb(96, 96, 96); border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; max-height: 200px; margin-left: 3px; margin-right: 3px;" />
             </ui:VisualElement>
-            <ui:ListView focusable="true" selection-type="Multiple" show-foldout-header="false" show-add-remove-footer="false" name="TargetList" show-alternating-row-backgrounds="All" show-bound-collection-size="true" virtualization-method="DynamicHeight" fixed-item-height="15" style="min-height: 100px; border-left-color: rgb(96, 96, 96); border-right-color: rgb(96, 96, 96); border-top-color: rgb(96, 96, 96); border-bottom-color: rgb(96, 96, 96); border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; max-height: 200px; margin-left: 3px; margin-right: 3px;" />
+            <uie:PropertyField name="Targets" label="Targets" style="height: auto; display: none;" />
+            <uie:PropertyField name="Rigmap" />
         </ui:VisualElement>
-        <uie:PropertyField name="Targets" label="Targets" style="height: auto; display: none;" />
-        <uie:PropertyField name="Rigmap" />
-    </ui:VisualElement>
-    <ui:VisualElement style="height: 350px; flex-shrink: 1; flex-grow: 1; align-items: center; justify-content: center;">
-        <ui:VisualElement name="Panel" style="background-color: rgb(164, 164, 164); width: 300px; height: 300px; border-top-left-radius: 10px; border-bottom-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; min-width: 300px; min-height: 300px;">
-            <ui:Label text="L" display-tooltip-when-elided="true" name="LeftMarker" class="markerUnset" style="position: absolute; left: 5px; top: 135px;" />
-            <ui:Label text="R" display-tooltip-when-elided="true" name="RightMarker" class="markerUnset" style="right: 5px; position: absolute; left: auto; top: 135px;" />
-            <ui:Label text="U" display-tooltip-when-elided="true" name="UpMarker" class="markerUnset" style="position: absolute; top: 5px; left: 135px;" />
-            <ui:Label text="D" display-tooltip-when-elided="true" name="DownMarker" class="markerUnset" style="position: absolute; left: 135px; bottom: 5px;" />
-            <ui:Label text="O" display-tooltip-when-elided="true" name="OriginMarker" class="markerUnset" style="position: absolute; left: 135px; top: 135px;" />
-            <ui:VisualElement name="Controller" style="width: 20px; height: 20px; position: absolute; left: 140px; background-color: rgb(255, 0, 0); border-top-left-radius: 10px; border-bottom-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; bottom: 140px;" />
+        <ui:VisualElement style="height: 350px; flex-shrink: 1; flex-grow: 1; align-items: center; justify-content: center;">
+            <ui:VisualElement name="Panel" style="background-color: rgb(164, 164, 164); width: 300px; height: 300px; border-top-left-radius: 10px; border-bottom-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; min-width: 300px; min-height: 300px;">
+                <ui:Label text="L" display-tooltip-when-elided="true" name="LeftMarker" class="markerUnset" style="position: absolute; left: 5px; top: 135px;" />
+                <ui:Label text="R" display-tooltip-when-elided="true" name="RightMarker" class="markerUnset" style="right: 5px; position: absolute; left: auto; top: 135px;" />
+                <ui:Label text="U" display-tooltip-when-elided="true" name="UpMarker" class="markerUnset" style="position: absolute; top: 5px; left: 135px;" />
+                <ui:Label text="D" display-tooltip-when-elided="true" name="DownMarker" class="markerUnset" style="position: absolute; left: 135px; bottom: 5px;" />
+                <ui:Label text="O" display-tooltip-when-elided="true" name="OriginMarker" class="markerUnset" style="position: absolute; left: 135px; top: 135px;" />
+                <ui:VisualElement name="Controller" style="width: 20px; height: 20px; position: absolute; left: 140px; background-color: rgb(255, 0, 0); border-top-left-radius: 10px; border-bottom-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; bottom: 140px;" />
+            </ui:VisualElement>
         </ui:VisualElement>
-    </ui:VisualElement>
-    <ui:VisualElement name="SubPanel" style="height: auto; flex-direction: column;">
-        <uie:Vector2Field label="Position" name="ControllerPos" />
-        <uie:FloatField label="X Scale" value="1" name="FLTXScale" style="height: 18px;" />
-        <uie:FloatField label="Y Scale" value="1" name="FLTYScale" />
-        <ui:Button text="Reset Position" display-tooltip-when-elided="true" name="BTNReset" />
-    </ui:VisualElement>
-    <ui:VisualElement>
-        <ui:VisualElement style="height: 20px;" />
-        <ui:Label text="Pivots" display-tooltip-when-elided="true" style="margin-left: 2px; -unity-text-align: upper-center;" />
-        <ui:VisualElement style="flex-direction: row; justify-content: space-between; align-items: center; flex-shrink: 0; width: 100%;">
-            <ui:Toggle label="Origin" name="BTNRegOrigin" class="toggleButton" style="width: 18%;" />
-            <ui:Toggle label="Left" name="BTNRegLeft" class="toggleButton" style="width: 18%;" />
-            <ui:Toggle label="Right" name="BTNRegRight" class="toggleButton" style="width: 18%;" />
-            <ui:Toggle label="Up" name="BTNRegUp" class="toggleButton" style="width: 18%;" />
-            <ui:Toggle label="Down" name="BTNRegDown" value="false" class="toggleButton" style="width: 18%;" />
+        <ui:VisualElement name="SubPanel" style="height: auto; flex-direction: column;">
+            <uie:Vector2Field label="Position" name="ControllerPos" />
+            <uie:FloatField label="X Scale" value="1" name="FLTXScale" style="height: 18px;" />
+            <uie:FloatField label="Y Scale" value="1" name="FLTYScale" />
+            <ui:Button text="Reset Position" display-tooltip-when-elided="true" name="BTNReset" />
         </ui:VisualElement>
-    </ui:VisualElement>
+        <ui:VisualElement>
+            <ui:VisualElement style="height: 20px;" />
+            <ui:Label text="Pivots" display-tooltip-when-elided="true" style="margin-left: 2px; -unity-text-align: upper-center;" />
+            <ui:VisualElement style="flex-direction: row; justify-content: space-between; align-items: center; flex-shrink: 0; width: 100%;">
+                <ui:Toggle label="Origin" name="BTNRegOrigin" class="toggleButton" style="width: 18%;" />
+                <ui:Toggle label="Left" name="BTNRegLeft" class="toggleButton" style="width: 18%;" />
+                <ui:Toggle label="Right" name="BTNRegRight" class="toggleButton" style="width: 18%;" />
+                <ui:Toggle label="Up" name="BTNRegUp" class="toggleButton" style="width: 18%;" />
+                <ui:Toggle label="Down" name="BTNRegDown" value="false" class="toggleButton" style="width: 18%;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:ScrollView>
 </ui:UXML>

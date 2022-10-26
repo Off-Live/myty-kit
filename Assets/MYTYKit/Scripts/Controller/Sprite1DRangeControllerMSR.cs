@@ -3,11 +3,18 @@ using UnityEngine;
 using UnityEditor;
 
 using MYTYKit.Components;
-
+using System;
 
 namespace MYTYKit.Controllers{
     public class Sprite1DRangeControllerMSR : MSRSpriteController, IFloatInput, IComponentWiseInput
     {
+        [Serializable]
+        public class Interval
+        {
+            public string label;
+            public float min;
+            public float max;
+        }
         public float min = 0;
         public float max = 1;
         public float value = 0;

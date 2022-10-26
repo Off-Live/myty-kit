@@ -1,4 +1,6 @@
 using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -23,9 +25,10 @@ namespace MYTYKit
             minSize = maxSize;
 
             var versionField = rootVisualElement.Q<Label>("LBLVersion");
-            var filename = Application.streamingAssetsPath + "/VERSION.txt";
-            var versionStr = File.ReadAllText(filename);
-            versionStr = versionStr.Trim();
+            var packageJson = "Assets/package.json";
+            var jsonText= File.ReadAllText(packageJson);
+            var json = JObject.Parse(jsonText);
+            var versionStr = (string)json["version"];
             versionField.text = versionStr;
 
         }

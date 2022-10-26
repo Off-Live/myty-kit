@@ -1,3 +1,4 @@
+using MYTYKit.Components;
 using MYTYKit.Controllers;
 using UnityEditor;
 using UnityEngine;
@@ -14,31 +15,42 @@ namespace MYTYKit
         {
             var wnd = CreateInstance<Migration>();
             wnd.titleContent = new GUIContent("Migrate project to v1.0");
-            wnd.minSize = wnd.maxSize = new Vector2(300, 30);
+            wnd.minSize = wnd.maxSize = new Vector2(300, 60);
             wnd.ShowUtility();
             
         }
 
         void CreateGUI()
         {
-            var btn = new Button();
-            btn.text = "Migrate!";
-            btn.clicked += () =>
+            var adapterBtn = new Button();
+            var controllerBtn = new Button();
+            adapterBtn.text = "Migrate Adapters";
+            adapterBtn.clicked += () =>
             {
+                var selector = FindObjectOfType<AvatarSelector>();
+                if (selector == null) return;
+                selector.Configure();
                 PrepareNewMotionSystem();
                 MigrateAdapter();
                 RemoveMediapipe();
                 EditorUtility.DisplayDialog("MYTY Kit", "Migration Done!", "Ok");
                 Close();
             };
-            rootVisualElement.Add(btn);
+            
+            controllerBtn.text = "Fix Sprite Controllers";
+            controllerBtn.clicked += () =>
+            {
+                FixSpriteControllers();
+            };
+            rootVisualElement.Add(adapterBtn);
+            rootVisualElement.Add(controllerBtn);
         }
 
         void PrepareNewMotionSystem()
         {
             var mpGo = PrefabUtility.InstantiatePrefab(
-                AssetDatabase.LoadAssetAtPath<GameObject>("Assets/MYTYKit/Prefabs/MediapipeMotionPack.prefab")) as GameObject;
-            var templateGo = PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/MYTYKit/Prefabs/DefaultMotionTemplate.prefab")) as GameObject;
+                AssetDatabase.LoadAssetAtPath<GameObject>("Assets/MYTYKit/MotionTemplate/Motion Source Samples/MediapipeMotionPack.prefab")) as GameObject;
+            var templateGo = PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/MYTYKit/MotionTemplate/DefaultMotionTemplate.prefab")) as GameObject;
             var mapper = templateGo.GetComponent<MotionTemplateMapper>();
             var source = mpGo.transform.GetComponentInChildren<MotionSource>();
             source.motionTemplateMapperList = new();
@@ -56,6 +68,13 @@ namespace MYTYKit
             this.MigrateWeightedSum1DAdapter();
             this.MigrateWeightedSum2DAdapter();
             FixBone2DController();
+            FixSpriteControllers();
+        }
+
+        void FixSpriteControllers()
+        {
+            this.ConvertSprite1DController();
+            this.ConvertSprite2DController();
         }
 
         void RemoveMediapipe()

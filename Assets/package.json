@@ -1,0 +1,32 @@
+{
+	"name": "com.offlive.myty.myty-kit",
+	"displayName": "MYTY Kit",
+	"description": "MYTY Kit Unity core",
+	"version": "1.0.0-rc4",
+	"unity": "2021.3",
+	"author": {
+		"name": "OFF LIVE PTE. LTD",
+		"email": "myty@off.live",
+		"url": "https://www.myty.space/"
+	},
+	"dependencies": {
+		
+	},
+	"repository": {
+		"type": "git",
+		"url": "git@github.com:Off-Live/myty-kit.git"
+	},
+	"keywords": [
+		"myty",
+		"myty-kit",
+		"runtimes",
+		"2d",
+		"animation"
+	],
+	"license": "MIT",
+	"bugs": {
+		"url": "https://discord.gg/yvEVqPCu"
+	},
+	"homepage": "https://github.com/Off-Live/myty-kit/"
+}
+

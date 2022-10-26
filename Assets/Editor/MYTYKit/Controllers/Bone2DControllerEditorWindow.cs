@@ -13,7 +13,6 @@ namespace MYTYKit
         public VisualTreeAsset UITemplate;
 
         bool m_isPressed = false;
-        Vector2 m_lastPos = new();
         SerializedObject m_conSO;
 
         [MenuItem("MYTY Kit/Controller/Bone 2D Controller", false, 20)]

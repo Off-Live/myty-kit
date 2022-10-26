@@ -1,0 +1,17 @@
+{
+    "name": "MYTYKitEditor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:9513bc30d46ec4841a6fc8d80a91f1db",
+        "GUID:41524c21c95e5fe4dbc5b48bd21995a4"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
