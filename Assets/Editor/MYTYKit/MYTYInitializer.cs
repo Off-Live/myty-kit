@@ -14,24 +14,11 @@ namespace MYTYKit
         static MYTYInitializer()
         {
             Debug.Log("MYTYKit Start Up");
-
-            // var testPath = Path.GetFullPath("Packages/com.unity.2d.common");
-            // var files = Directory.GetFiles(testPath);
-            // // foreach (var dir in files)
-            // // {
-            // //     var info = new DirectoryInfo(dir);
-            // //     Debug.Log(dir);
-            // //     Debug.Log(info.Name);
-            // // }
-            // foreach (var file in files)
-            // {
-            //     FileInfo fileinfo = new FileInfo(file);
-            //     Debug.Log(fileinfo.Name + "  "+fileinfo.Extension);
-            // }
-            // var kitFullPath = Path.GetFullPath(KitPath);
-            // if (!Directory.Exists(kitFullPath)) return;
-            // CopyKitFiles();
-            // CopyStreamingAssets();
+            
+            var kitFullPath = Path.GetFullPath(KitPath);
+            if (!Directory.Exists(kitFullPath)) return;
+            CopyKitFiles();
+            CopyStreamingAssets();
         }
 
         static void CopyKitFiles()
@@ -52,12 +39,13 @@ namespace MYTYKit
         static void CopyStreamingAssets()
         {
             var saFullPath = Path.GetFullPath(StreamingAssetsPath);
-            RecursiveCopy(saFullPath, StreamingAssetsPath);
+            RecursiveCopy(saFullPath, Application.streamingAssetsPath);
         }
 
         static void RecursiveCopy(string fromAbsolutePath, string toPath)
         {
             var files = Directory.GetFiles(fromAbsolutePath);
+            Directory.CreateDirectory(toPath);
             foreach (var file in files)
             {
                 var fileInfo = new FileInfo(file);

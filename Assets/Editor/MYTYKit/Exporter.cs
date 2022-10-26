@@ -10,6 +10,7 @@ using MYTYKit.Controllers;
 using MYTYKit.Components;
 using MYTYKit.MotionTemplates;
 using MYTYKit.MotionAdapters;
+using Newtonsoft.Json.Linq;
 
 
 namespace MYTYKit
@@ -372,10 +373,13 @@ namespace MYTYKit
 
         void PrepareVersionInfo(List<string> assetName)
         {
-            var filepath = Application.streamingAssetsPath + "/MYTYKit/VERSION.txt";
-            if (!File.Exists(filepath)) return;
-
-            File.Copy(filepath, MYTYUtil.PrefabPath + "/VERSION.txt");
+            var packageJson = "Assets/package.json";
+            var jsonText= File.ReadAllText(packageJson);
+            var json = JObject.Parse(jsonText);
+            var versionStr = (string)json["version"];
+            var writer = File.CreateText(MYTYUtil.PrefabPath + "/VERSION.txt");
+            writer.Write(versionStr);
+            writer.Close();
             assetName.Add(MYTYUtil.PrefabPath + "/VERSION.txt");
         }
 
