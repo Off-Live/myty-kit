@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace MYTYKit
@@ -16,6 +17,7 @@ namespace MYTYKit
         {
             string devName = "";
             Debug.Log("Webcam Device : " + camDeviceName);
+            if (!WebCamTexture.devices.Select(_ => _.name).Contains(camDeviceName)) camDeviceName = "";
             if (camDeviceName.Length == 0)
             {
                 foreach (var dev in WebCamTexture.devices)
