@@ -103,6 +103,7 @@ namespace MYTYKit
                 process.StartInfo.Arguments = psbPath;
                 process.StartInfo.UseShellExecute = false;
                 process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.CreateNoWindow = true;
                 process.Start();
 
                 StreamReader reader = process.StandardOutput;
@@ -187,9 +188,28 @@ namespace MYTYKit
                     process.StartInfo.FileName = "sh";
                     process.StartInfo.Arguments =
                         "Assets/MYTYKit/CmdTools/LayerTool/mac.sh";
+                }else
+                {
+                    var path = "Assets\\MYTYKit\\CmdTools\\LayerTool\\";
+                    var sourceStr = "";
+                    for(char surfix = 'a'; surfix < 'g'; surfix++)
+                    {
+                        sourceStr += path + "Windows.zip.a" + surfix +"+";
+                    }
+
+                    sourceStr += path + "Windows.zip.ag";
+
+                    var targetStr = path + "Windows.zip";
+
+                    process.StartInfo.FileName = "cmd.exe";
+                    process.StartInfo.Arguments =
+                        "/c copy /b " + sourceStr + " " + targetStr;
+                    
+                    process.StartInfo.CreateNoWindow = true;
                 }
                 process.StartInfo.UseShellExecute = false;
-                process.StartInfo.RedirectStandardOutput = false;
+                process.StartInfo.RedirectStandardOutput = true;
+                
                 process.Start(); 
                 process.WaitForExit();
                 
@@ -208,6 +228,7 @@ namespace MYTYKit
                     process.StartInfo.FileName = "Assets/MYTYKit/CmdTools/LayerTool/7za.exe";
                     process.StartInfo.Arguments =
                         "x Assets/MYTYKit/CmdTools/LayerTool/Windows.zip -oAssets/MYTYKit/CmdTools/LayerTool/.extracted/";
+                    process.StartInfo.CreateNoWindow = true;
                 }
 
                 process.StartInfo.UseShellExecute = false;
