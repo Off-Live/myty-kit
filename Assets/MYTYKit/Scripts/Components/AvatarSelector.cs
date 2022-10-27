@@ -53,6 +53,17 @@ namespace MYTYKit.Components
             }
         }
 
+        public bool CheckRootBoneValidity()
+        {
+            if (templates == null || templates.Count==0) return false;
+            foreach (var template in templates)
+            {
+                if (template.boneRootObj == null) return false;
+                if (!template.boneRootObj.name.ToLower().StartsWith("bone")) return false;
+            }
+            return true;
+        }
+
         public void Configure()
         {
             m_activeInstance = null;

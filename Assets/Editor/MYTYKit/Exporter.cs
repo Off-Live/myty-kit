@@ -39,7 +39,6 @@ namespace MYTYKit
 
         void OnFocus()
         {
-            Debug.Log("On Focus");
             var avatarConfigElem = rootVisualElement.Q<ObjectField>("OBJConfig");
             var avatarSelector = FindObjectOfType<AvatarSelector>();
             if (avatarSelector == null) return;
@@ -146,6 +145,18 @@ namespace MYTYKit
             var avatarConfigVE = rootVisualElement.Q<ObjectField>("OBJConfig");
             var selector = avatarConfigVE.value as AvatarSelector;
             var mytyAsset = selector.mytyAssetStorage;
+
+            if(selector == null)
+            {
+                EditorUtility.DisplayDialog("MYTY Kit", "Avatar Selector is missing or refreshed. Please reopen exporter dialog.", "Ok");
+                return;
+            }
+
+            if (!selector.CheckRootBoneValidity())
+            {
+                EditorUtility.DisplayDialog("MYTY Kit", "RootBoneObjs in Avatar Selector is invalid. They must be assigned or the name of root bone of avatar should be started with BONE(Case insensitive).", "Ok");
+                return;
+            }
 
             if (Directory.Exists(MYTYUtil.PrefabPath))
             {
@@ -261,6 +272,7 @@ namespace MYTYKit
 
         }
 
+        
         private bool PrepareConfigurator(MYTYAssetScriptableObject mytyAsset, List<string> assetName)
         {
             var avatarConfigVE = rootVisualElement.Q<ObjectField>("OBJConfig");

@@ -1,34 +1,33 @@
 {
-	"name": "com.offlive.myty.myty-kit",
-	"displayName": "MYTY Kit",
-	"description": "Avatar Development Kit for Social Metaverse. https://myty.space/",
-	"version": "1.0.0-rc5",
-	"unity": "2021.3",
-	"author": {
-		"name": "OFF LIVE PTE. LTD",
-		"email": "myty@off.live",
-		"url": "https://www.myty.space/"
-	},
-	"dependencies": {
-		"com.unity.2d.psdimporter": "6.0.4",
-		"com.unity.2d.sprite": "1.0.0",
-		"com.unity.2d.tilemap": "1.0.0"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git@github.com:Off-Live/myty-kit.git"
-	},
-	"keywords": [
-		"myty",
-		"myty-kit",
-		"runtimes",
-		"2d",
-		"animation"
-	],
-	"license": "MIT",
-	"bugs": {
-		"url": "https://discord.gg/yvEVqPCu"
-	},
-	"homepage": "https://github.com/Off-Live/myty-kit/"
+  "name": "com.offlive.myty.myty-kit",
+  "displayName": "MYTY Kit",
+  "description": "Avatar Development Kit for Social Metaverse. https://myty.space/",
+  "version": "1.0.0-rc6",
+  "unity": "2021.3",
+  "author": {
+    "name": "OFF LIVE PTE. LTD",
+    "email": "myty@off.live",
+    "url": "https://www.myty.space/"
+  },
+  "dependencies": {
+    "com.unity.2d.psdimporter": "6.0.4",
+    "com.unity.2d.sprite": "1.0.0",
+    "com.unity.2d.tilemap": "1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Off-Live/myty-kit.git"
+  },
+  "keywords": [
+    "myty",
+    "myty-kit",
+    "runtimes",
+    "2d",
+    "animation"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://discord.gg/yvEVqPCu"
+  },
+  "homepage": "https://github.com/Off-Live/myty-kit/"
 }
-
