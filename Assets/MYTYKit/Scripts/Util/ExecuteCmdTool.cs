@@ -184,6 +184,21 @@ namespace MYTYKit
             {
                 if (SystemInfo.operatingSystem.StartsWith("Mac"))
                 {
+                    process.StartInfo.FileName = "sh";
+                    process.StartInfo.Arguments =
+                        "Assets/MYTYKit/CmdTools/LayerTool/mac.sh";
+                }
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.RedirectStandardOutput = false;
+                process.Start(); 
+                process.WaitForExit();
+                
+            }
+            
+            using (Process process = new Process())
+            {
+                if (SystemInfo.operatingSystem.StartsWith("Mac"))
+                {
                     process.StartInfo.FileName = "ditto";
                     process.StartInfo.Arguments =
                         "-x -k Assets/MYTYKit/CmdTools/LayerTool/macOS.zip Assets/MYTYKit/CmdTools/LayerTool/.extracted/";
