@@ -7,7 +7,7 @@ Our goal is to help our users become **mighty** by setting themselves free from 
 Project MYTY introduces **Open Standard for Social Metaverse**, and creates a network effect among the “Metaverses”. In turn, MYTY helps Metaverses to benefit from this network effect by providing various products both on-chain and off-chain.
 
 ### More about MYTY
-To learn more, please visit our [website](https://myty.space/)  or [medium](https://medium.com/@MYTY_Official).
+To learn more, please visit our [website](https://myty.space/)  or [medium](https://myty-official.medium.com/).
 
 
 ## MYTY Kit
@@ -103,7 +103,7 @@ OFF is seeking a talented individual who believes humanity will spend more time 
 
 - Email : <myty@off.live>
 - [Website](http://myty.space) 
-- [Discord](https://discord.gg/myty)  |  [Twitter](https://twitter.com/myty_official)  |  [Medium](https://medium.com/@MYTY_Official)  |  [Youtube](https://www.youtube.com/channel/UCKqsyiL_WZqIHEMqc7da4zA)
+- [Discord](https://discord.gg/myty)  |  [Twitter](https://twitter.com/myty_official)  |  [Medium](https://myty-official.medium.com/)  |  [Youtube](https://www.youtube.com/channel/UCKqsyiL_WZqIHEMqc7da4zA)
 
 
 

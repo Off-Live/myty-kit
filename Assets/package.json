@@ -1,8 +1,8 @@
 {
 	"name": "com.offlive.myty.myty-kit",
 	"displayName": "MYTY Kit",
-	"description": "MYTY Kit Unity core",
-	"version": "1.0.0-rc4",
+	"description": "Avatar Development Kit for Social Metaverse. https://myty.space/",
+	"version": "1.0.0-rc5",
 	"unity": "2021.3",
 	"author": {
 		"name": "OFF LIVE PTE. LTD",
