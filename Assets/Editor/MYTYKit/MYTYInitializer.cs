@@ -26,7 +26,7 @@ namespace MYTYKit
             var kitFullPath = Path.GetFullPath(KitPath);
             var subAssetDir = new string[]
             {
-                "CmdTools","LayerEffect","MotionAdapter","MotionTemplate"
+                "CmdTools","LayerEffect","MotionAdapter","MotionTemplate", "UI"
             };
 
             foreach (var dir in subAssetDir)

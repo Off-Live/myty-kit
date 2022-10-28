@@ -386,7 +386,13 @@ namespace MYTYKit
         {
             if (m_isPressed)
             {
-                HandleMousePos(e.localMousePosition);
+                var panel = rootVisualElement.Q<VisualElement>("Panel");
+                var mousePos = e.localMousePosition;
+                if (mousePos.x < 0) mousePos.x = 0;
+                if (mousePos.x > panel.localBound.width) mousePos.x = panel.localBound.width;
+                if (mousePos.y < 0) mousePos.y = 0;
+                if (mousePos.y > panel.localBound.height) mousePos.y = panel.localBound.height;
+                HandleMousePos(mousePos);
             }
         }
         
