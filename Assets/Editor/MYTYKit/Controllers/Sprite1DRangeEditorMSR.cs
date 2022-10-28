@@ -11,14 +11,13 @@ namespace MYTYKit
     [CustomEditor(typeof(Sprite1DRangeControllerMSR))]
     public class Sprite1DRangeEditorMSR : UnityEditor.Editor
     {
-        [SerializeField] StyleSheet m_styleSheet;
         public override VisualElement CreateInspectorGUI()
         {
             var rootElem = new VisualElement();
             var targetList = new ListView();
-            
+            var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/MYTYKit/UI/Bone2DCon.uss");
             targetList.virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight;
-            targetList.styleSheets.Add(m_styleSheet);
+            targetList.styleSheets.Add(styleSheet);
         
             targetList.makeItem = () =>
             {
