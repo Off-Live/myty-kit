@@ -67,7 +67,7 @@ We do not want to limit your imagination. Any social activities in the physical 
 
 ## How to use MYTY Kit
 
-### for Avatar Creators [[Link]](https://myty.gitbook.io/english/)
+### for Avatar Creators [[Link]](https://myty.gitbook.io/)
 
 ### for Metaverse Creators [[Link]](https://myty.gitbook.io/myty-kit-guide/v/for-metaverse-creator-eng/)
 
