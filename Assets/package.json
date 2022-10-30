@@ -29,5 +29,8 @@
   "bugs": {
     "url": "https://discord.gg/yvEVqPCu"
   },
-  "homepage": "https://github.com/Off-Live/myty-kit/"
+  "homepage": "https://github.com/Off-Live/myty-kit/",
+  "documentationUrl": "https://github.com/Off-Live/myty-kit/blob/main/README.md",
+  "changelogUrl": "https://github.com/Off-Live/myty-kit/releases",
+  "licensesUrl": "https://github.com/Off-Live/myty-kit/blob/main/LICENSE.md"
 }
