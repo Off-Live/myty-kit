@@ -156,8 +156,8 @@ namespace MYTYKit
 
         private bool HandleRigToggle(MouseUpEvent e, string prop)
         {
+            var keepPivot = rootVisualElement.Q<Toggle>("TGLPivotPos");
             var elem = e.target as Toggle;
-            var result = true;
             if (elem.value)
             {
                 Record(_conSO.FindProperty(prop));
@@ -165,14 +165,14 @@ namespace MYTYKit
             else
             {
                 var target = _conSO.targetObject as Bone1DController;
-                target.ToOrigin();
+                if(!keepPivot.value) target.ToOrigin();
                 _conSO.FindProperty(prop).arraySize = 0;
                 _conSO.ApplyModifiedProperties();
-                result = false;
+               
             }
 
             SyncRiggingStatus();
-            return result;
+            return elem.value;
         }
 
         private void SyncRiggingStatus()

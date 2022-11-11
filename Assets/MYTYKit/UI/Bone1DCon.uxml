@@ -11,9 +11,10 @@
     <uie:FloatField label="Max" value="1" name="FLTMax" />
     <uie:FloatField label="Current value" value="0" name="FLTValue" />
     <ui:Slider picking-mode="Ignore" label="Slider Control" value="0.2" high-value="1" name="SLDValue" />
-    <ui:VisualElement>
+    <ui:Toggle label="Keep pivot position" value="true" name="TGLPivotPos" />
+    <ui:VisualElement style="margin-top: 20px;">
         <ui:Label text="Pivots" display-tooltip-when-elided="true" style="-unity-text-align: upper-center;" />
-        <ui:VisualElement class="toggleButton" style="flex-direction: row; justify-content: center;">
+        <ui:VisualElement style="flex-direction: row; justify-content: center;">
             <ui:Toggle label="Min" name="BTNMin" value="false" class="toggleButton" style="height: auto; width: 25%;" />
             <ui:Toggle label="Max" name="BTNMax" value="false" class="toggleButton" style="width: 25%;" />
         </ui:VisualElement>
