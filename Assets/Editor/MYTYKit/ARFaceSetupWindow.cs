@@ -263,7 +263,8 @@ namespace MYTYKit
             GameObject savedCamFab = null;
             if (renderCam != null)
             {
-                savedCamFab = PrefabUtility.SaveAsPrefabAsset(renderCam.gameObject, MYTYUtil.AssetPath + "/" + camName);
+                if (PrefabUtility.IsPartOfPrefabAsset(renderCam)) savedCamFab = renderCam.gameObject;
+                else savedCamFab = PrefabUtility.SaveAsPrefabAsset(renderCam.gameObject, MYTYUtil.AssetPath + "/" + camName);
             }
 
             asset.items[index].isValid = true;
