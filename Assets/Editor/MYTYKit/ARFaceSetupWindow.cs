@@ -252,6 +252,7 @@ namespace MYTYKit
             var listView = rootVisualElement.Q<ListView>("LSTTemplate");
             var renderCamProp = rootVisualElement.Q<ObjectField>("OBJRenderCam");
             var assetProp = rootVisualElement.Q<ObjectField>("OBJAsset");
+            var boneProp = rootVisualElement.Q<ObjectField>("OBJBone");
             var traitListView = rootVisualElement.Q<ListView>("LSTTraits");
             var index = listView.selectedIndex;
             var asset = assetProp.value as ARFaceAsset;
@@ -273,6 +274,9 @@ namespace MYTYKit
             else asset.items[index].renderCam = null;
 
             asset.items[index].traits = traits;
+
+            var boneInScene = boneProp.value as GameObject;
+            asset.items[index].headBone = PrefabUtility.GetCorrespondingObjectFromSource(boneInScene); 
 
             EditorUtility.SetDirty(asset);
             AssetDatabase.SaveAssets();

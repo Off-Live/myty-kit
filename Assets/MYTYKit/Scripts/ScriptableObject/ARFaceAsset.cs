@@ -10,6 +10,7 @@ namespace MYTYKit
         public bool isValid = false;
         public Camera renderCam;
         public List<string> traits;
+        public GameObject headBone;
     }
 
     public class ARFaceAsset : ScriptableObject
