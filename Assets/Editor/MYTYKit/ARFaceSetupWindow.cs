@@ -176,9 +176,8 @@ namespace MYTYKit
             {
                 renderCamProp.value = null;
             }
-
+            boneProp.SetValueWithoutNotify(asset.items[index].headBone);
             traitListView.Rebuild();
-            boneProp.SetValueWithoutNotify(null);
             ChangeMode(true);
         }
 
