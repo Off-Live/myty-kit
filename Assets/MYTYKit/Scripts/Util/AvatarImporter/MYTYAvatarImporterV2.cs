@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 using MYTYKit.Components;
@@ -117,5 +118,50 @@ namespace MYTYKit.AvatarImporter
             holder.arFaceAsset = asset;
         }
 
+        public void LockController(GameObject arAssetObj, GameObject rootGo)
+        {
+            var holder = arAssetObj.GetComponent<ARFaceDataHolder>();
+            if (holder == null)
+            {
+                Debug.LogWarning("LockController : No ARFaceDataHolder in asset object");
+                return;
+            }
+
+            var asset = holder.arFaceAsset;
+            var selector = rootGo.GetComponentInChildren<AvatarSelector>();
+
+            int idx = 0;
+            foreach (var item in asset.items)
+            {
+                var parentBoneList = new List<GameObject>();
+                var currBone = goMap[item.headBone];
+                do
+                {
+                    parentBoneList.Add(currBone);
+                    if (currBone == selector.templates[idx].boneRootObj) break;
+                    currBone = currBone.transform.parent.gameObject;
+                } while (currBone != null);
+                
+
+                var boneControllers = rootGo.GetComponentsInChildren<BoneController>();
+                
+                var filteredBone = boneControllers.Where(controller =>
+                {
+                    foreach (var bone in parentBoneList)
+                    {
+                        if (controller.rigTarget.Contains(bone)) return true;
+                    }
+                
+                    return false;
+                });
+                foreach (var bone in filteredBone)
+                {
+                    bone.skip = true;
+                }
+                ++idx;
+            }
+            
+            
+        }
     }
 }

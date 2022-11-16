@@ -7,5 +7,6 @@ namespace MYTYKit.AvatarImporter
     {
         public (bool isSupported, bool isAROnly) IsARFaceSupported(AssetBundle bundle);
         public IEnumerator LoadARFace(AssetBundle bundle, GameObject rootGo);
+        public void LockController(GameObject arAssetObj, GameObject rootGo);
     }
 }

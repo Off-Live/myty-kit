@@ -176,9 +176,8 @@ namespace MYTYKit
             {
                 renderCamProp.value = null;
             }
-
+            boneProp.SetValueWithoutNotify(asset.items[index].headBone);
             traitListView.Rebuild();
-            boneProp.SetValueWithoutNotify(null);
             ChangeMode(true);
         }
 
@@ -252,6 +251,7 @@ namespace MYTYKit
             var listView = rootVisualElement.Q<ListView>("LSTTemplate");
             var renderCamProp = rootVisualElement.Q<ObjectField>("OBJRenderCam");
             var assetProp = rootVisualElement.Q<ObjectField>("OBJAsset");
+            var boneProp = rootVisualElement.Q<ObjectField>("OBJBone");
             var traitListView = rootVisualElement.Q<ListView>("LSTTraits");
             var index = listView.selectedIndex;
             var asset = assetProp.value as ARFaceAsset;
@@ -262,7 +262,8 @@ namespace MYTYKit
             GameObject savedCamFab = null;
             if (renderCam != null)
             {
-                savedCamFab = PrefabUtility.SaveAsPrefabAsset(renderCam.gameObject, MYTYUtil.AssetPath + "/" + camName);
+                if (PrefabUtility.IsPartOfPrefabAsset(renderCam)) savedCamFab = renderCam.gameObject;
+                else savedCamFab = PrefabUtility.SaveAsPrefabAsset(renderCam.gameObject, MYTYUtil.AssetPath + "/" + camName);
             }
 
             asset.items[index].isValid = true;
@@ -273,6 +274,9 @@ namespace MYTYKit
             else asset.items[index].renderCam = null;
 
             asset.items[index].traits = traits;
+
+            var boneInScene = boneProp.value as GameObject;
+            asset.items[index].headBone = PrefabUtility.GetCorrespondingObjectFromSource(boneInScene); 
 
             EditorUtility.SetDirty(asset);
             AssetDatabase.SaveAssets();

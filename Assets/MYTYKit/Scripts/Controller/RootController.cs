@@ -32,7 +32,7 @@ namespace MYTYKit.Controllers
 
             foreach (var con in _bones)
             {
-                if (con.orgRig == null || con.orgRig.Count == 0) continue;
+                if (con.orgRig == null || con.orgRig.Count == 0 || con.skip) continue;
                 con.ApplyDiff();
             }
         }

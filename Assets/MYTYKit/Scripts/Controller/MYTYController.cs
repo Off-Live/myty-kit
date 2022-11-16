@@ -26,6 +26,7 @@ namespace MYTYKit.Controllers
     {
         public List<GameObject> rigTarget;
         public List<RiggingEntity> orgRig;
+        public bool skip = false;
         public abstract void ApplyDiff();
         protected abstract List<RiggingEntity> CalcInterpolate();
 

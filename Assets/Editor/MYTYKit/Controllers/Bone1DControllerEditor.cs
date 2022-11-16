@@ -15,6 +15,9 @@ namespace MYTYKit
             var rootElem = new VisualElement();
             var targetList = new ListView();
             var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/MYTYKit/UI/Bone2DCon.uss");
+
+            rootElem.Add(new PropertyField(serializedObject.FindProperty("skip")));
+            
             targetList.virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight;
             targetList.styleSheets.Add(styleSheet);
 
