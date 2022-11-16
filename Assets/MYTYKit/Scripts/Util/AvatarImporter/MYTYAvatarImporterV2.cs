@@ -133,6 +133,7 @@ namespace MYTYKit.AvatarImporter
             int idx = 0;
             foreach (var item in asset.items)
             {
+                if(item.headBone == null) continue;
                 var parentBoneList = new List<GameObject>();
                 var currBone = goMap[item.headBone];
                 do
