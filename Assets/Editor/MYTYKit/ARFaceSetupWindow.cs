@@ -176,6 +176,8 @@ namespace MYTYKit
             {
                 renderCamProp.value = null;
             }
+             
+            
             boneProp.SetValueWithoutNotify(asset.items[index].headBone);
             traitListView.Rebuild();
             ChangeMode(true);
@@ -276,7 +278,11 @@ namespace MYTYKit
             asset.items[index].traits = traits;
 
             var boneInScene = boneProp.value as GameObject;
-            asset.items[index].headBone = PrefabUtility.GetCorrespondingObjectFromSource(boneInScene); 
+            if (boneInScene.scene != null)
+            {
+                asset.items[index].headBone = PrefabUtility.GetCorrespondingObjectFromSource(boneInScene); 
+            }
+             
 
             EditorUtility.SetDirty(asset);
             AssetDatabase.SaveAssets();
