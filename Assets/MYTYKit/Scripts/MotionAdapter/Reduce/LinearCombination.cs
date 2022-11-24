@@ -28,5 +28,14 @@ namespace MYTYKit.MotionAdapters.Reduce
 
             return sum;
         }
+
+        public override ReduceOperator SerializeIntoNewObject(GameObject target, Dictionary<GameObject, GameObject> prefabMapping)
+        {
+            var newOperator = target.AddComponent<LinearCombination>();
+            newOperator.offset = offset;
+            newOperator.scale = scale;
+            newOperator.weights = new List<float>(weights);
+            return newOperator;
+        }
     }
 }

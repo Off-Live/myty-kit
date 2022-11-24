@@ -368,16 +368,23 @@ namespace MYTYKit
             foreach (var elem in motionAdapters)
             {
                 var motionAdapterGo = elem as GameObject;
-                var serializableAdapter = motionAdapterGo.GetComponent<NativeAdapter>() as ISerializableAdapter;
-                if (serializableAdapter == null) continue;
 
-                var cloneObj = serializableAdapter.GetSerializedClone(m_objectMap);
-            
+                var adapterArrayforGo = motionAdapterGo.GetComponents<NativeAdapter>();
+                var cloningTargetGo = new GameObject();
+                cloningTargetGo.name = motionAdapterGo.name;
+                
+                foreach (var item in adapterArrayforGo)
+                {
+                    var serializableAdapter = item as ISerializableAdapter;
+                    if (serializableAdapter == null) continue;
+                    serializableAdapter.SerializeIntoNewObject(cloningTargetGo, m_objectMap);
+                }
                 var path = AssetDatabase.GenerateUniqueAssetPath(MYTYUtil.PrefabPath + "/" + motionAdapterGo.name + ".prefab");
-                var savedPrefab = PrefabUtility.SaveAsPrefabAsset(cloneObj, path);
+                var savedPrefab = PrefabUtility.SaveAsPrefabAsset(cloningTargetGo, path);
                 assetName.Add(path);
                 mytyAsset.motionAdapters.Add(path);
-                DestroyImmediate(cloneObj);
+                DestroyImmediate(cloningTargetGo);
+                
             }
 
             return true;

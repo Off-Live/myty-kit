@@ -32,5 +32,14 @@ namespace MYTYKit.MotionAdapters.Reduce
             prod.Scale(scale);
             return prod;
         }
+
+
+        public override ReduceOperator SerializeIntoNewObject(GameObject target, Dictionary<GameObject, GameObject> prefabMapping)
+        {
+            var newOperator = target.AddComponent<ComponentProduct>();
+            newOperator.scale = scale;
+            newOperator.exponents = new List<float>(exponents);
+            return newOperator;
+        }
     }
 }
