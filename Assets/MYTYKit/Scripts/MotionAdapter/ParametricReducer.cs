@@ -91,7 +91,9 @@ namespace MYTYKit.MotionAdapters
                 var conGo = configuration[i].controller.gameObject;
                 var prefabConGo = prefabMapping[conGo];
                 newItem.controller = prefabConGo.GetComponent<MYTYController>();
-                newItem.reducer = configuration[i].reducer.SerializeIntoNewObject(target, prefabMapping);
+
+                var serializableReducer = configuration[i].reducer as ISerializableOperator;
+                if(serializableReducer!=null) newItem.reducer = serializableReducer.SerializeIntoNewObject(target, prefabMapping);
                 newItem.paramNames = new List<string>(configuration[i].paramNames);
                 
                 newAdapter.configuration.Add(newItem);

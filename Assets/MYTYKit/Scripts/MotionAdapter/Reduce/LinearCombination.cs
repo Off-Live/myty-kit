@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace MYTYKit.MotionAdapters.Reduce
 {
-    public class LinearCombination : ReduceOperator
+    public class LinearCombination : ReduceOperator, ISerializableOperator
     {
         public List<float> weights = new();
         public Vector3 offset = Vector3.zero;
@@ -29,7 +29,7 @@ namespace MYTYKit.MotionAdapters.Reduce
             return sum;
         }
 
-        public override ReduceOperator SerializeIntoNewObject(GameObject target, Dictionary<GameObject, GameObject> prefabMapping)
+        public ReduceOperator SerializeIntoNewObject(GameObject target, Dictionary<GameObject, GameObject> prefabMapping)
         {
             var newOperator = target.AddComponent<LinearCombination>();
             newOperator.offset = offset;

@@ -89,7 +89,9 @@ namespace MYTYKit.MotionAdapters
             var prefabGo = prefabMapping[mtGo];
             newAdapter.template = prefabGo.GetComponent<PointsTemplate>();
             newAdapter.indices = new List<int>(indices);
-            newAdapter.reducer = reducer.SerializeIntoNewObject(target, prefabMapping);
+
+            var serializableReducer = reducer as ISerializableOperator;
+            if(serializableReducer!=null) newAdapter.reducer = serializableReducer.SerializeIntoNewObject(target, prefabMapping);
             newAdapter.configuration = new();
             for (var i = 0; i < configuration.Count; i++)
             {
