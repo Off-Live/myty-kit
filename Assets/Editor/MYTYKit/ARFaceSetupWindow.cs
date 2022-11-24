@@ -176,9 +176,23 @@ namespace MYTYKit
             {
                 renderCamProp.value = null;
             }
-             
+
+            if (asset.items[index].headBone != null)
+            {
+                var boneInScene = GetBoneInScene(selector, index, asset.items[index].headBone);
+                if (boneInScene != null) boneProp.SetValueWithoutNotify(boneInScene);
+                else
+                {
+                    boneProp.value = null;
+                    traitListView.itemsSource = null;
+                }
+            }
+            else
+            {
+                boneProp.value = null;
+                traitListView.itemsSource = null;
+            }
             
-            boneProp.SetValueWithoutNotify(asset.items[index].headBone);
             traitListView.Rebuild();
             ChangeMode(true);
         }
@@ -278,10 +292,13 @@ namespace MYTYKit
             asset.items[index].traits = traits;
 
             var boneInScene = boneProp.value as GameObject;
-            if (boneInScene.scene != null)
+            if (boneInScene == null)
             {
-                asset.items[index].headBone = PrefabUtility.GetCorrespondingObjectFromSource(boneInScene); 
+                EditorUtility.DisplayDialog("MYTY Kit", "Failed to save setting. No head bone is set", "Ok");
+                return;
             }
+            asset.items[index].headBone = PrefabUtility.GetCorrespondingObjectFromSource(boneInScene); 
+            
              
 
             EditorUtility.SetDirty(asset);
@@ -388,6 +405,30 @@ namespace MYTYKit
             {
                 ExtractTraits(root.children[i], history, traits);
             }
+        }
+
+        GameObject GetBoneInScene(AvatarSelector selector, int templateID, GameObject selectedBone)
+        {
+            var rootBoneInScene = selector.templates[templateID].boneRootObj;
+            if (rootBoneInScene == null) return null;
+
+            var dfsQ = new Stack<GameObject>();
+            
+            dfsQ.Push(rootBoneInScene);
+            while (dfsQ.Count > 0)
+            {
+                var currObject = dfsQ.Pop();
+                if(currObject == selectedBone) return selectedBone;
+                if(PrefabUtility.GetCorrespondingObjectFromSource(currObject)==selectedBone) return currObject;
+                if (PrefabUtility.GetCorrespondingObjectFromOriginalSource(currObject) == selectedBone)
+                    return currObject;
+
+                for (var i = 0; i < currObject.transform.childCount; i++)
+                {
+                    dfsQ.Push(currObject.transform.GetChild(i).gameObject);
+                }
+            }
+            return null;
         }
     }
 }
