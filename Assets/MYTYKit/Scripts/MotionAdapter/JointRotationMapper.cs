@@ -100,7 +100,11 @@ namespace MYTYKit.MotionAdapters
             for (var i = 0; i < configuration.Count; i++)
             {
                 var newItem = new MapItem();
-                newItem = configuration[i];
+                newItem.isInverted = configuration[i].isInverted;
+                newItem.max = configuration[i].max;
+                newItem.min = configuration[i].min;
+                newItem.sourceComponent = configuration[i].sourceComponent;
+                newItem.targetComponent = configuration[i].targetComponent;
 
                 var conGo = configuration[i].targetController.gameObject;
                 var prefabConGo = prefabMapping[conGo];
