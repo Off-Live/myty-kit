@@ -46,7 +46,7 @@ namespace MYTYKit.Components
                 template.instance.SetActive(true);
                 for (int i = 0; i < childCount; i++)
                 {
-                    FixName(template.instance.transform.GetChild(i).gameObject);
+                    if(template.instance.transform.GetChild(i).gameObject!=template.boneRootObj) FixName(template.instance.transform.GetChild(i).gameObject);
                     EnableLayer(template.instance.transform.GetChild(i).gameObject);
                 }
 
@@ -121,6 +121,7 @@ namespace MYTYKit.Components
 
             for (int i = 0; i < childCount; i++)
             {
+                if (m_activeInstance.transform.GetChild(i).gameObject == m_activeBoneRoot) continue;
                 FixName(m_activeInstance.transform.GetChild(i).gameObject);
             }
 

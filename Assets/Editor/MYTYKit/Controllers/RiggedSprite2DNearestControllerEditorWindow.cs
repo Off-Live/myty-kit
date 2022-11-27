@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MYTYKit.Components;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -269,6 +270,7 @@ namespace MYTYKit
             m_conSO.FindProperty("orgRig").arraySize = 0;
 
             m_conSO.ApplyModifiedProperties();
+            BoneControllerStorage.Save();
         }
 
         void OnRemove()
@@ -301,6 +303,7 @@ namespace MYTYKit
             m_conSO.FindProperty("orgRig").arraySize = 0;
 
             m_conSO.ApplyModifiedProperties();
+            BoneControllerStorage.Save();
         }
 
         void OnRemoveAll()
@@ -317,6 +320,7 @@ namespace MYTYKit
             listView.Rebuild();
             m_conSO.FindProperty("orgRig").arraySize = 0;
             m_conSO.ApplyModifiedProperties();
+            BoneControllerStorage.Save();
         }
 
         void OnRemovePivot()

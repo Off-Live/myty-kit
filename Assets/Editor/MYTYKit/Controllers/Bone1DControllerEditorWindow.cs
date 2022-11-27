@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using System.Linq;
+using MYTYKit.Components;
 using MYTYKit.Controllers;
 
 namespace MYTYKit
@@ -227,6 +228,7 @@ namespace MYTYKit
             rootVisualElement.Q<ListView>("LSTBoneGO").Rebuild();
 
             Record(_conSO.FindProperty("orgRig"));
+            BoneControllerStorage.Save();
         }
 
         void Remove()
@@ -259,6 +261,7 @@ namespace MYTYKit
             listView.Rebuild();
             _conSO.ApplyModifiedProperties();
             Record(_conSO.FindProperty("orgRig"));
+            BoneControllerStorage.Save();
         }
 
         void RemoveAll()
@@ -275,6 +278,7 @@ namespace MYTYKit
             listView.itemsSource = new List<GameObject>();
             listView.Rebuild();
             _conSO.ApplyModifiedProperties();
+            BoneControllerStorage.Save();
         }
     }
 }

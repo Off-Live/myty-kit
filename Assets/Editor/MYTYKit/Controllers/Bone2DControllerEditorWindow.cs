@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using MYTYKit.Components;
 using MYTYKit.Controllers;
 using UnityEngine;
 using UnityEditor;
@@ -252,6 +253,7 @@ namespace MYTYKit
             m_conSO.FindProperty("orgRig").arraySize = 0;
 
             m_conSO.ApplyModifiedProperties();
+            BoneControllerStorage.Save();
         }
 
         private void RemoveSelection()
@@ -283,6 +285,7 @@ namespace MYTYKit
             listView.Rebuild();
 
             m_conSO.ApplyModifiedProperties();
+            BoneControllerStorage.Save();
         }
 
         private void RemoveAll()
@@ -299,6 +302,7 @@ namespace MYTYKit
             listView.itemsSource = new List<GameObject>();
             listView.Rebuild();
             m_conSO.ApplyModifiedProperties();
+            BoneControllerStorage.Save();
         }
 
         private void ResetPos()

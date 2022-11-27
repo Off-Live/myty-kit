@@ -1,4 +1,5 @@
 using System.IO;
+using MYTYKit.Components;
 using UnityEditor;
 using UnityEngine;
 
@@ -13,11 +14,12 @@ namespace MYTYKit
         static MYTYInitializer()
         {
             Debug.Log("MYTYKit Start Up");
-            
+            BoneControllerStorage.Save();
             var kitFullPath = Path.GetFullPath(KitPath);
             if (!Directory.Exists(kitFullPath)) return;
             CopyKitFiles();
             CopyStreamingAssets();
+            
         }
 
         static void CopyKitFiles()

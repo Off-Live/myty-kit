@@ -40,7 +40,7 @@ namespace MYTYKit
             SpriteLibraryFactory.CreateLibrary(go, GetSpriteLibraryAssetPath(path));
             UpdateAvatarSelector();
             cmdTool.ExecuteLayerTool(path, go);
-        
+            BoneControllerStorage.Restore();
         }
     
 
