@@ -77,6 +77,7 @@ namespace MYTYKit.Controllers
             if (orgRig == null || orgRig.Count == 0) return;
             for (int i = 0; i < rigTarget.Count; i++)
             {
+                if(rigTarget[i]==null) continue;
                 rigTarget[i].transform.localPosition = orgRig[i].position;
                 rigTarget[i].transform.localRotation = orgRig[i].rotation;
                 rigTarget[i].transform.localScale = orgRig[i].scale;
@@ -87,6 +88,7 @@ namespace MYTYKit.Controllers
         {
             for (int i = 0; i < rigTarget.Count; i++)
             {
+                if(rigTarget[i]==null) continue;
                 rigTarget[i].transform.localPosition = poseList[i].position;
                 rigTarget[i].transform.localScale = poseList[i].scale;
                 rigTarget[i].transform.localRotation = poseList[i].rotation;
@@ -97,6 +99,7 @@ namespace MYTYKit.Controllers
         {
             for (int i = 0; i < rigTarget.Count; i++)
             {
+                if(rigTarget[i]==null) continue;
                 rigTarget[i].transform.localPosition += diffList[i].position;
                 rigTarget[i].transform.localRotation = diffList[i].rotation * rigTarget[i].transform.localRotation;
 
