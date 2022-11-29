@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Web.WebPages;
 using MYTYKit.Controllers;
 using UnityEditor;
 using UnityEngine;
@@ -88,7 +87,7 @@ namespace MYTYKit.Components
                 valueProp.arraySize = state.rigTargetNames.Count;
                 for (int i = 0; i < state.rigTargetNames.Count; i++)
                 {
-                    if (state.rigTargetNames[i].IsEmpty())
+                    if (state.rigTargetNames[i].Length==0)
                     {
                         continue;
                     }
