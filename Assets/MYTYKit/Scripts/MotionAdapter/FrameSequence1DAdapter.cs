@@ -1,9 +1,10 @@
+using System.Collections.Generic;
 using MYTYKit.Controllers;
 using UnityEngine;
 
 namespace MYTYKit.MotionAdapters
 {
-    public class FrameSequence1DAdapter : NativeAdapter
+    public class FrameSequence1DAdapter : NativeAdapter, ISerializableAdapter
     {
         public MYTYController controller;
 
@@ -22,13 +23,13 @@ namespace MYTYKit.MotionAdapters
         private bool m_stopped = false;
         private bool m_forward = true;
 
-        private IFloatInput m_input;
+        private IComponentWiseInput m_input;
 
         public void Start()
         {
-            m_input = controller as IFloatInput;
+            m_input = controller as IComponentWiseInput;
             if (m_input == null) return;
-            m_input.SetInput(m_curValue);
+            m_input.SetComponent(m_curValue,0);
 
         }
 
@@ -50,7 +51,7 @@ namespace MYTYKit.MotionAdapters
             if (!m_forward) step *= -1;
             m_curValue += step;
 
-            m_input.SetInput(m_curValue);
+            m_input.SetComponent(m_curValue,0);
 
             if (m_forward)
             {
@@ -74,6 +75,24 @@ namespace MYTYKit.MotionAdapters
             }
 
 
+        }
+
+        public void Deserialize(Dictionary<GameObject, GameObject> prefabMapping)
+        {
+            controller = prefabMapping[controller.gameObject].GetComponent<MYTYController>();
+        }
+
+        public void SerializeIntoNewObject(GameObject target, Dictionary<GameObject, GameObject> prefabMapping)
+        {
+            var newAdapter = target.AddComponent<FrameSequence1DAdapter>();
+            var prefabConGo = prefabMapping[controller.gameObject];
+            newAdapter.controller = prefabConGo.GetComponent<MYTYController>();
+            newAdapter.start = start;
+            newAdapter.end = end;
+            newAdapter.repeat = repeat;
+            newAdapter.swing = swing;
+            newAdapter.stepCount = stepCount;
+            newAdapter.unitTime = unitTime;
         }
     }
 }
