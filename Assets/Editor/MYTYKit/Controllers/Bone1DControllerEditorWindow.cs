@@ -155,6 +155,15 @@ namespace MYTYKit
             _conSO.ApplyModifiedProperties();
         }
 
+        void SetPropTransform(SerializedProperty prop, int index, Transform transform)
+        {
+            prop.GetArrayElementAtIndex(index).FindPropertyRelative("position").vector3Value =
+                transform.localPosition;
+            prop.GetArrayElementAtIndex(index).FindPropertyRelative("rotation").quaternionValue =
+                transform.localRotation;
+            prop.GetArrayElementAtIndex(index).FindPropertyRelative("scale").vector3Value = transform.localScale;
+        }
+
         private bool HandleRigToggle(MouseUpEvent e, string prop)
         {
             var keepPivot = rootVisualElement.Q<Toggle>("TGLPivotPos");
@@ -166,10 +175,10 @@ namespace MYTYKit
             else
             {
                 var target = _conSO.targetObject as Bone1DController;
-                if(!keepPivot.value) target.ToOrigin();
+                if (!keepPivot.value) target.ToOrigin();
                 _conSO.FindProperty(prop).arraySize = 0;
                 _conSO.ApplyModifiedProperties();
-               
+
             }
 
             SyncRiggingStatus();
@@ -208,18 +217,35 @@ namespace MYTYKit
         {
             var bones = Selection.GetFiltered<GameObject>(SelectionMode.Editable);
             var boneProps = _conSO.FindProperty("rigTarget");
+            var originProps = _conSO.FindProperty("orgRig");
+            var xminProps = _conSO.FindProperty("xminRig");
+            var xmaxProps = _conSO.FindProperty("xmaxRig");
+
+            Debug.Assert(boneProps.arraySize == originProps.arraySize &&
+                         boneProps.arraySize == xminProps.arraySize &&
+                         boneProps.arraySize == xmaxProps.arraySize);
+
             var newSource = new List<GameObject>();
-            if (!CheckPivots())
+            var beforeAddSize = boneProps.arraySize;
+
+            boneProps.arraySize = beforeAddSize + bones.Length;
+            originProps.arraySize = boneProps.arraySize;
+            xminProps.arraySize = boneProps.arraySize;
+            xmaxProps.arraySize = boneProps.arraySize;
+
+            for (var i = 0; i < beforeAddSize; i++)
             {
-                EditorUtility.DisplayDialog("MYTY Kit", "Reset all pivots first.", "Ok");
-                return;
+                newSource.Add(boneProps.GetArrayElementAtIndex(i).objectReferenceValue as GameObject);
             }
 
-            boneProps.arraySize = bones.Length;
             for (int i = 0; i < bones.Length; i++)
             {
-                boneProps.GetArrayElementAtIndex(i).objectReferenceValue = bones[i];
+                boneProps.GetArrayElementAtIndex(beforeAddSize + i).objectReferenceValue = bones[i];
                 newSource.Add(bones[i].gameObject);
+
+                SetPropTransform(originProps, beforeAddSize + i, bones[i].transform);
+                SetPropTransform(xminProps, beforeAddSize + i, bones[i].transform);
+                SetPropTransform(xmaxProps, beforeAddSize + i, bones[i].transform);
             }
 
             _conSO.ApplyModifiedProperties();
@@ -227,22 +253,25 @@ namespace MYTYKit
             rootVisualElement.Q<ListView>("LSTBoneGO").itemsSource = newSource;
             rootVisualElement.Q<ListView>("LSTBoneGO").Rebuild();
 
-            Record(_conSO.FindProperty("orgRig"));
+            //Record(_conSO.FindProperty("orgRig"));
             BoneControllerStorage.Save();
         }
 
         void Remove()
         {
             var boneProps = _conSO.FindProperty("rigTarget");
+            var originProps = _conSO.FindProperty("orgRig");
+            var xminProps = _conSO.FindProperty("xminRig");
+            var xmaxProps = _conSO.FindProperty("xmaxRig");
             var listView = rootVisualElement.Q<ListView>("LSTBoneGO");
             var willRemove = listView.selectedIndices.ToList();
             var newList = new List<GameObject>();
+            
             if (willRemove.Count == 0) return;
-            if (!CheckPivots())
-            {
-                EditorUtility.DisplayDialog("MYTY Kit", "Reset all pivots first.", "Ok");
-                return;
-            }
+
+            Debug.Assert(boneProps.arraySize == originProps.arraySize &&
+                         boneProps.arraySize == xminProps.arraySize &&
+                         boneProps.arraySize == xmaxProps.arraySize);
 
 
             for (int i = 0; i < boneProps.arraySize; i++)
@@ -256,29 +285,56 @@ namespace MYTYKit
             {
                 boneProps.GetArrayElementAtIndex(i).objectReferenceValue = newList[i];
             }
+            
+            DeleteRiggingEntityWithIndices(originProps, willRemove);
+            DeleteRiggingEntityWithIndices(xminProps, willRemove);
+            DeleteRiggingEntityWithIndices(xmaxProps, willRemove);
 
             listView.itemsSource = newList;
             listView.Rebuild();
             _conSO.ApplyModifiedProperties();
-            Record(_conSO.FindProperty("orgRig"));
+            //Record(_conSO.FindProperty("orgRig"));
             BoneControllerStorage.Save();
         }
 
         void RemoveAll()
         {
-            if (!CheckPivots())
-            {
-                EditorUtility.DisplayDialog("MYTY Kit", "Reset all pivots first.", "Ok");
-                return;
-            }
-
             var boneProps = _conSO.FindProperty("rigTarget");
+            var originProps = _conSO.FindProperty("orgRig");
+            var xminProps = _conSO.FindProperty("xminRig");
+            var xmaxProps = _conSO.FindProperty("xmaxRig");
             var listView = rootVisualElement.Q<ListView>("LSTBoneGO");
             boneProps.arraySize = 0;
+            originProps.arraySize = 0;
+            xminProps.arraySize = 0;
+            xmaxProps.arraySize = 0;
             listView.itemsSource = new List<GameObject>();
             listView.Rebuild();
             _conSO.ApplyModifiedProperties();
             BoneControllerStorage.Save();
+        }
+
+        void DeleteRiggingEntityWithIndices(SerializedProperty prop, List<int> indices)
+        {
+            var newREList = new List<RiggingEntity>();
+            for (var i = 0; i < prop.arraySize; i++)
+            {
+                if (indices.Contains(i)) continue;
+                var tempRE = new RiggingEntity();
+                tempRE.position = prop.GetArrayElementAtIndex(i).FindPropertyRelative("position").vector3Value;
+                tempRE.scale = prop.GetArrayElementAtIndex(i).FindPropertyRelative("scale").vector3Value;
+                tempRE.rotation = prop.GetArrayElementAtIndex(i).FindPropertyRelative("rotation").quaternionValue;
+                newREList.Add(tempRE);
+            }
+
+            prop.arraySize = newREList.Count;
+
+            for (var i = 0; i < prop.arraySize; i++)
+            {
+                prop.GetArrayElementAtIndex(i).FindPropertyRelative("position").vector3Value = newREList[i].position;
+                prop.GetArrayElementAtIndex(i).FindPropertyRelative("scale").vector3Value= newREList[i].scale;
+                prop.GetArrayElementAtIndex(i).FindPropertyRelative("rotation").quaternionValue = newREList[i].rotation;
+            }
         }
     }
 }
