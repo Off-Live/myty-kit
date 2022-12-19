@@ -2,6 +2,7 @@ using System.IO;
 using MYTYKit.Components;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace MYTYKit
 {
@@ -14,7 +15,7 @@ namespace MYTYKit
         static MYTYInitializer()
         {
             Debug.Log("MYTYKit Start Up");
-            BoneControllerStorage.Save();
+            UnityEditor.SceneManagement.EditorSceneManager.sceneOpened += SceneOpenedCallback;
             var kitFullPath = Path.GetFullPath(KitPath);
             if (!Directory.Exists(kitFullPath)) return;
             CopyKitFiles();
@@ -22,6 +23,12 @@ namespace MYTYKit
             
         }
 
+        static void SceneOpenedCallback(
+            Scene _scene,
+            UnityEditor.SceneManagement.OpenSceneMode _mode)
+        {
+            BoneControllerStorage.Save();
+        }
         static void CopyKitFiles()
         {
             var kitAssetPath = "Assets/MYTYKit";
