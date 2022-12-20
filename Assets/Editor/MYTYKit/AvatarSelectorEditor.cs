@@ -14,7 +14,8 @@ namespace MYTYKit
         public override VisualElement CreateInspectorGUI()
         {
             var root = new VisualElement();
-            var idField = new IntegerField();
+            var assetField = new ObjectField();
+            var idField = new TextField();
             var configureBtn = new Button();
             var templateField = new PropertyField();
             var searchObj = new ObjectField();
@@ -23,6 +24,10 @@ namespace MYTYKit
             idField.label = "Avatar ID";
             idField.BindProperty(serializedObject.FindProperty("id"));
             idField.isDelayed = true;
+
+            assetField.label = "MYTY Asset";
+            assetField.BindProperty(serializedObject.FindProperty("m_mytyAssetStorage"));
+            assetField.objectType = typeof(MYTYAssetScriptableObject);
 
             configureBtn.text = "Configure";
             configureBtn.clicked += () => { (target as AvatarSelector).Configure(); };
@@ -35,6 +40,7 @@ namespace MYTYKit
 
             templateField.BindProperty(serializedObject.FindProperty("templates"));
             root.Add(templateField);
+            root.Add(assetField);
             root.Add(idField);
             root.Add(configureBtn);
             root.Add(searchObj);

@@ -18,8 +18,21 @@ namespace MYTYKit.Components
     public class AvatarSelector : MonoBehaviour
     {
         public List<AvatarTemplate> templates;
-        public MYTYAssetScriptableObject mytyAssetStorage;
-        public int id;
+
+        public MYTYAssetScriptableObject mytyAssetStorage
+        {
+            set
+            {
+                m_mytyAssetStorage = value;
+                BuildTokenIdList();
+            }
+
+            get
+            {
+                return m_mytyAssetStorage;
+            }
+        }
+        public string id="";
 
         private GameObject m_activeInstance;
         private SpriteLibraryAsset m_activeSLA;
@@ -27,6 +40,10 @@ namespace MYTYKit.Components
 
         private ShaderMapAsset m_shaderMap;
 
+        [SerializeField] MYTYAssetScriptableObject m_mytyAssetStorage;
+
+        string[] m_tokenIdList;
+        
         private void Start()
         {
             var shaderMapGO = FindObjectOfType<ShaderMap>();
@@ -66,13 +83,26 @@ namespace MYTYKit.Components
 
         public void Configure()
         {
+            
             m_activeInstance = null;
+            if (m_tokenIdList==null || m_tokenIdList.Length == 0)
+            {
+                if(m_mytyAssetStorage!=null) BuildTokenIdList();
+                else return;
+            }
 
+            if (id == null) id = "";
+            
+            if (id.Trim()=="")
+            {
+                id = m_tokenIdList[0];
+            }
 
             var index = -1;
-            for (int i = 0; i < mytyAssetStorage.traits.Count; i++)
+            for (int i = 0; i < m_mytyAssetStorage.traits.Count; i++)
             {
-                if (id == mytyAssetStorage.traits[i].id)
+                
+                if (id == m_tokenIdList[i])
                 {
                     index = i;
                 }
@@ -84,7 +114,7 @@ namespace MYTYKit.Components
                 return;
             }
 
-            var traitItem = mytyAssetStorage.traits[index];
+            var traitItem = m_mytyAssetStorage.traits[index];
 
 
             foreach (var template in templates)
@@ -169,10 +199,25 @@ namespace MYTYKit.Components
             Debug.Log("Trait path : " + path);
 
             var found = false;
-            for (int i = id + 1, count = 0; count < 10000; i++, count++)
+            
+            var index = -1;
+            if (id.Trim()=="")
             {
-                i %= 10000;
-                var traitItem = mytyAssetStorage.traits[i];
+                id = m_tokenIdList[0];
+            }
+            for (int i = 0; i < m_mytyAssetStorage.traits.Count; i++)
+            {
+                
+                if (id == m_tokenIdList[i])
+                {
+                    index = i;
+                }
+            }
+            
+            for (int i = index + 1, count = 0; count < m_tokenIdList.Length; i++, count++)
+            {
+                i %= m_tokenIdList.Length;
+                var traitItem = m_mytyAssetStorage.traits[i];
                 var psbPath = templates[templateIdx].PSBPath;
                 if (traitItem.filename != psbPath) continue;
 
@@ -180,7 +225,7 @@ namespace MYTYKit.Components
                 {
                     if (path == traitPath || path.StartsWith(traitPath + "/"))
                     {
-                        id = i;
+                        id = m_tokenIdList[i];
                         found = true;
                     }
                 }
@@ -192,7 +237,7 @@ namespace MYTYKit.Components
             if (found)
             {
                 var so = new SerializedObject(this);
-                so.FindProperty("id").intValue = id;
+                so.FindProperty("id").stringValue = id;
                 so.ApplyModifiedProperties();
                 Configure();
             }
@@ -392,5 +437,22 @@ namespace MYTYKit.Components
             }
         }
 
+        void BuildTokenIdList()
+        {
+            m_tokenIdList = new string[m_mytyAssetStorage.traits.Count];
+
+            for (var i = 0; i < m_mytyAssetStorage.traits.Count; i++)
+            {
+                if (string.IsNullOrEmpty(m_mytyAssetStorage.traits[i].tokenId))
+                {
+                    m_tokenIdList[i] = m_mytyAssetStorage.traits[i].id.ToString();
+                }
+                else
+                {
+                    m_tokenIdList[i] = m_mytyAssetStorage.traits[i].tokenId;
+                }
+                    
+            }
+        }
     }
 }
