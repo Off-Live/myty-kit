@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -24,7 +25,7 @@ namespace MYTYKit
             { BuildTarget.StandaloneOSX, BuildTarget.iOS, BuildTarget.Android, BuildTarget.WebGL };
 
         readonly string[] m_platforms = { "Standalone(Mac/Win)", "iOS", "Android", "WebGL" };
-        readonly string[] m_bundleSurfix = { "", "_ios", "_android", "_webgl" };
+        readonly string[] m_bundleSurfix = { "_standalone", "_ios", "_android", "_webgl" };
 
         const string ImportSig= "MYTYAvatarImporterV2";
 
@@ -228,16 +229,21 @@ namespace MYTYKit
                 m_buildPlatform[0] = BuildTarget.StandaloneWindows;
             }
 
-            for (int i = 0; i < platformSelection.Length; i++)
+            using (ZipArchive zip = ZipFile.Open(MYTYUtil.BundlePath+ "/"+ filename + ".zip", ZipArchiveMode.Create))
             {
-                if (platformSelection[i])
+                for (int i = 0; i < platformSelection.Length; i++)
                 {
-                    buildMap[0].assetBundleName = filename + m_bundleSurfix[i];
-                    BuildPipeline.BuildAssetBundles(MYTYUtil.BundlePath, buildMap, BuildAssetBundleOptions.None,
-                        m_buildPlatform[i]);
+                    if (platformSelection[i])
+                    {
+                        buildMap[0].assetBundleName = filename + m_bundleSurfix[i];
+                        BuildPipeline.BuildAssetBundles(MYTYUtil.BundlePath, buildMap, BuildAssetBundleOptions.None,
+                            m_buildPlatform[i]);
+                        zip.CreateEntryFromFile(MYTYUtil.BundlePath + "/" + filename + m_bundleSurfix[i], filename+m_bundleSurfix[i]);
+                    }
                 }
             }
-        
+
+
             Close();
         }
 
