@@ -23,37 +23,41 @@ namespace MYTYKit.Controllers{
 
         [SerializeField] private string currentLabel;
 
-
+        string m_lastLabel = "";
         void Update()
         {
             if (spriteObjects == null || intervals == null) return;
-            UpdateLabel();
+            if (max < min) return;
+            
+            float scaledValue = min + (max - min) * value;
+            var selected = "";
+            foreach (var interval in intervals)
+            {
+                if (interval.min <= scaledValue && interval.max >= scaledValue)
+                {
+                    selected = interval.label;
+                    break;
+                }
+            }
 
+            if (m_lastLabel != selected)
+            {
+                m_lastLabel = selected;
+                UpdateLabel();
+            }
         }
 
         public void UpdateLabel()
         {
 
-            if (max < min) return;
-            float scaledValue = min + (max - min) * value;
             if (spriteObjects == null) return;
             foreach (var spriteResolver in spriteObjects)
             {
-                if (spriteResolver == null) return;
-                var selected = "";
-                foreach (var interval in intervals)
+                if (spriteResolver == null) continue;
+                if (m_lastLabel.Length > 0)
                 {
-                    if (interval.min <= scaledValue && interval.max >= scaledValue)
-                    {
-                        selected = interval.label;
-                        break;
-                    }
-                }
-
-                if (selected.Length > 0)
-                {
-                    spriteResolver.SetCategoryAndLabel(spriteResolver.GetCategory(), selected);
-                    currentLabel = selected;
+                    spriteResolver.SetCategoryAndLabel(spriteResolver.GetCategory(), m_lastLabel);
+                    currentLabel = m_lastLabel;
                 }
 
             }
