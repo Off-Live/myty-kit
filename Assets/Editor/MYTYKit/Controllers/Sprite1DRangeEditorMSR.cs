@@ -11,11 +11,11 @@ namespace MYTYKit
     [CustomEditor(typeof(Sprite1DRangeControllerMSR))]
     public class Sprite1DRangeEditorMSR : UnityEditor.Editor
     {
+        public StyleSheet styleSheet;
         public override VisualElement CreateInspectorGUI()
         {
             var rootElem = new VisualElement();
             var targetList = new ListView();
-            var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/MYTYKit/UI/Bone2DCon.uss");
             targetList.virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight;
             targetList.styleSheets.Add(styleSheet);
         
@@ -27,8 +27,20 @@ namespace MYTYKit
             targetList.bindItem = (e, i) =>
             {
                 (e as ObjectField).value = targetList.itemsSource[i] as GameObject;
-                (e as ObjectField).AddToClassList("noEditableObjField");
-                (e as ObjectField).AddToClassList("itemSize");
+                if (targetList.itemsSource[i] == null)
+                {
+                    (e as ObjectField).label = "Deleted or modified.";
+                    (e as ObjectField).AddToClassList("deletedObjField");
+                    (e as ObjectField).RemoveFromClassList("noEditableObjField");
+                }
+                else
+                {
+                    (e as ObjectField).label = "";
+                    (e as ObjectField).AddToClassList("noEditableObjField");
+                    (e as ObjectField).RemoveFromClassList("deletedObjField");
+                    (e as ObjectField).AddToClassList("itemSize");
+                }
+
 
             };
 

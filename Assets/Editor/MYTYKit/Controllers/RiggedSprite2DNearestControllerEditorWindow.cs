@@ -60,7 +60,18 @@ namespace MYTYKit
             listView.bindItem = (e, i) =>
             {
                 (e as ObjectField).value = listView.itemsSource[i] as GameObject;
-                (e as ObjectField).AddToClassList("noEditableObjField");
+                if (listView.itemsSource[i] == null)
+                {
+                    (e as ObjectField).label = "Deleted or modified.";
+                    (e as ObjectField).AddToClassList("deletedObjField");
+                    (e as ObjectField).RemoveFromClassList("noEditableObjField");
+                }
+                else
+                {
+                    (e as ObjectField).label = "";
+                    (e as ObjectField).AddToClassList("noEditableObjField");
+                    (e as ObjectField).RemoveFromClassList("deletedObjField");
+                }
             };
         
             conVE.RegisterValueChangedCallback((ChangeEvent<Object> e) =>

@@ -10,11 +10,11 @@ namespace MYTYKit
     [CustomEditor(typeof(Bone2DController))]
     public class Bone2DControllerEditor : UnityEditor.Editor
     {
+        public StyleSheet styleSheet;
         public override VisualElement CreateInspectorGUI()
         {
             var rootElem = new VisualElement();
             var targetList = new ListView();
-            var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/MYTYKit/UI/Bone2DCon.uss");
             
             rootElem.Add(new PropertyField(serializedObject.FindProperty("skip")));
             
@@ -26,8 +26,19 @@ namespace MYTYKit
             targetList.bindItem = (e, i) =>
             {
                 (e as ObjectField).value = targetList.itemsSource[i] as GameObject;
-                (e as ObjectField).AddToClassList("noEditableObjField");
-                (e as ObjectField).AddToClassList("itemSize");
+                if (targetList.itemsSource[i] == null)
+                {
+                    (e as ObjectField).label = "Deleted or modified.";
+                    (e as ObjectField).AddToClassList("deletedObjField");
+                    (e as ObjectField).RemoveFromClassList("noEditableObjField");
+                }
+                else
+                {
+                    (e as ObjectField).label = "";
+                    (e as ObjectField).AddToClassList("noEditableObjField");
+                    (e as ObjectField).RemoveFromClassList("deletedObjField");
+                    (e as ObjectField).AddToClassList("itemSize");
+                }
 
             };
 
