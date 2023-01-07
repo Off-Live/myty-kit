@@ -35,6 +35,7 @@ namespace MYTYKit.Controllers
 #if UNITY_EDITOR
             for (int i = 0; i < rigTarget.Count; i++)
             {
+                if (rigTarget[i] == null) continue;
                 rigTarget[i] = PrefabUtility.GetCorrespondingObjectFromSource(rigTarget[i]);
             }
 #endif
@@ -44,6 +45,7 @@ namespace MYTYKit.Controllers
         {
             for (int i = 0; i < rigTarget.Count; i++)
             {
+                if (rigTarget[i] == null) continue;
                 rigTarget[i] = objMap[rigTarget[i]];
             }
 #if UNITY_EDITOR
@@ -52,6 +54,7 @@ namespace MYTYKit.Controllers
                 var so = new SerializedObject(this);
                 for (int i = 0; i < rigTarget.Count; i++)
                 {
+                    if (rigTarget[i] == null) continue;
                     so.FindProperty("rigTarget").GetArrayElementAtIndex(i).objectReferenceValue = rigTarget[i];
                 }
 

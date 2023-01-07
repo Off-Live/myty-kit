@@ -16,6 +16,7 @@ namespace MYTYKit
         {
             Debug.Log("MYTYKit Start Up");
             UnityEditor.SceneManagement.EditorSceneManager.sceneOpened += SceneOpenedCallback;
+            UnityEditor.SceneManagement.EditorSceneManager.activeSceneChangedInEditMode += SceneLoadedCallback;
             var kitFullPath = Path.GetFullPath(KitPath);
             if (!Directory.Exists(kitFullPath)) return;
             CopyKitFiles();
@@ -28,6 +29,13 @@ namespace MYTYKit
             UnityEditor.SceneManagement.OpenSceneMode _mode)
         {
             BoneControllerStorage.Save();
+            Debug.Log("Rig storage save called for scene opened event");
+        }
+
+        static void SceneLoadedCallback(Scene scene, Scene mode)
+        {
+            BoneControllerStorage.Save();
+            Debug.Log("Rig storage save called far scene loaded event");
         }
         static void CopyKitFiles()
         {

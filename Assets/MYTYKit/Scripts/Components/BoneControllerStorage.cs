@@ -76,6 +76,12 @@ namespace MYTYKit.Components
             }
             if (selector == null) return;
 
+            if (storage.controllerStateMap == null)
+            {
+                Debug.LogWarning("No valid rigging info in storage");
+                return;
+            }
+
             foreach (var pair in storage.controllerStateMap)
             {
                 var so = new SerializedObject(pair.Key);
