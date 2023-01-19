@@ -61,6 +61,7 @@ namespace MYTYKit.Components
                 }
                 storage.controllerStateMap[boneController] = state;
             }
+            EditorUtility.SetDirty(storage);
 #endif
         }
 

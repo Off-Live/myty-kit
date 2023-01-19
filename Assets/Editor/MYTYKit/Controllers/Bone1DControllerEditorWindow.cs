@@ -31,6 +31,7 @@ namespace MYTYKit
             var addBtn = rootVisualElement.Q<Button>("BTNAdd");
             var removeBtn = rootVisualElement.Q<Button>("BTNRemove");
             var removeAllBtn = rootVisualElement.Q<Button>("BTNRemoveAll");
+            var resetBtn = rootVisualElement.Q<Button>("BTNReset");
             var valueSlider = rootVisualElement.Q<Slider>("SLDValue");
             var maxVE = rootVisualElement.Q<FloatField>("FLTMax");
             var minVE = rootVisualElement.Q<FloatField>("FLTMin");
@@ -38,6 +39,7 @@ namespace MYTYKit
             addBtn.clicked += AddSelections;
             removeBtn.clicked += Remove;
             removeAllBtn.clicked += RemoveAll;
+            resetBtn.clicked += ResetPos;
 
             conVE.objectType = typeof(Bone1DController);
             listView.makeItem = () => { return new ObjectField(); };
@@ -323,6 +325,13 @@ namespace MYTYKit
             listView.Rebuild();
             _conSO.ApplyModifiedProperties();
             BoneControllerStorage.Save();
+        }
+
+        void ResetPos()
+        {
+            if (_conSO == null) return;
+            var target = _conSO.targetObject as Bone1DController;
+            target.ToOrigin();
         }
 
         void DeleteRiggingEntityWithIndices(SerializedProperty prop, List<int> indices)
