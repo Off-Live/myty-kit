@@ -19,6 +19,8 @@ namespace MYTYKit
 
             for (int i = 0; i < PSB.transform.childCount; i++)
             {
+                if (PSB.transform.GetChild(i).name.ToUpper().StartsWith("BONE") &&
+                    i == PSB.transform.childCount - 1) continue;
                 Traverse(spriteLibrary, PSB.transform.GetChild(i).gameObject, new List<string>());
             }
 

@@ -82,24 +82,29 @@ namespace MYTYKit.MotionAdapters
             }
         }
 
-        public GameObject GetSerializedClone(Dictionary<GameObject, GameObject> prefabMapping)
+        public void SerializeIntoNewObject(GameObject target, Dictionary<GameObject, GameObject> prefabMapping)
         {
-            var motionAdapterClone = GameObject.Instantiate(gameObject);
+            var newAdapter = target.AddComponent<PointsReducer>();
             var mtGo = template.gameObject;
             var prefabGo = prefabMapping[mtGo];
-            var clonedAdapter = motionAdapterClone.GetComponent<PointsReducer>();
-            motionAdapterClone.name = gameObject.name;
-            clonedAdapter.template = prefabGo.GetComponent<PointsTemplate>();
+            newAdapter.template = prefabGo.GetComponent<PointsTemplate>();
+            newAdapter.indices = new List<int>(indices);
 
+            var serializableReducer = reducer as ISerializableOperator;
+            if(serializableReducer!=null) newAdapter.reducer = serializableReducer.SerializeIntoNewObject(target, prefabMapping);
+            newAdapter.configuration = new();
             for (var i = 0; i < configuration.Count; i++)
             {
+                var newItem = new MapItem();
+                newItem.sourceComponent = configuration[i].sourceComponent;
+                newItem.targetComponent = configuration[i].targetComponent;
                 var conGo = configuration[i].targetController.gameObject;
                 var prefabConGo = prefabMapping[conGo];
-                clonedAdapter.configuration[i].targetController = prefabConGo.GetComponent<MYTYController>();
+                newItem.targetController = prefabConGo.GetComponent<MYTYController>();
+                newAdapter.configuration.Add(newItem);
             }
-
-            return motionAdapterClone;
         }
+        
 
         public void Deserialize(Dictionary<GameObject, GameObject> prefabMapping)
         {

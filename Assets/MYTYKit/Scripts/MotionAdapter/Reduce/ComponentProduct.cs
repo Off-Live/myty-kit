@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace MYTYKit.MotionAdapters.Reduce
 {
-    public class ComponentProduct : ReduceOperator
+    public class ComponentProduct : ReduceOperator, ISerializableOperator
     {
         public List<float> exponents;
         public Vector3 scale = Vector3.one;
@@ -31,6 +31,15 @@ namespace MYTYKit.MotionAdapters.Reduce
             
             prod.Scale(scale);
             return prod;
+        }
+
+
+        public ReduceOperator SerializeIntoNewObject(GameObject target, Dictionary<GameObject, GameObject> prefabMapping)
+        {
+            var newOperator = target.AddComponent<ComponentProduct>();
+            newOperator.scale = scale;
+            newOperator.exponents = new List<float>(exponents);
+            return newOperator;
         }
     }
 }

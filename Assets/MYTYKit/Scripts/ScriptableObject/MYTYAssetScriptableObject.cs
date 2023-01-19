@@ -17,6 +17,7 @@ namespace MYTYKit
     {
         public string filename;
         public int id;
+        public string tokenId;
         public List<string> traits;
     }
 

@@ -7,7 +7,9 @@ namespace MYTYKit.MotionAdapters
 {
     public interface ISerializableAdapter
     {
-        public GameObject GetSerializedClone(Dictionary<GameObject, GameObject> prefabMapping);
+        
         public void Deserialize(Dictionary<GameObject, GameObject> prefabMapping);
+
+        public void SerializeIntoNewObject(GameObject target, Dictionary<GameObject, GameObject> prefabMapping);
     }
 }

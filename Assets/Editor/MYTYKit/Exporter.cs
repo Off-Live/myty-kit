@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -24,7 +25,7 @@ namespace MYTYKit
             { BuildTarget.StandaloneOSX, BuildTarget.iOS, BuildTarget.Android, BuildTarget.WebGL };
 
         readonly string[] m_platforms = { "Standalone(Mac/Win)", "iOS", "Android", "WebGL" };
-        readonly string[] m_bundleSurfix = { "", "_ios", "_android", "_webgl" };
+        readonly string[] m_bundleSurfix = { "_standalone", "_ios", "_android", "_webgl" };
 
         const string ImportSig= "MYTYAvatarImporterV2";
 
@@ -228,16 +229,21 @@ namespace MYTYKit
                 m_buildPlatform[0] = BuildTarget.StandaloneWindows;
             }
 
-            for (int i = 0; i < platformSelection.Length; i++)
+            using (ZipArchive zip = ZipFile.Open(MYTYUtil.BundlePath+ "/"+ filename + ".zip", ZipArchiveMode.Create))
             {
-                if (platformSelection[i])
+                for (int i = 0; i < platformSelection.Length; i++)
                 {
-                    buildMap[0].assetBundleName = filename + m_bundleSurfix[i];
-                    BuildPipeline.BuildAssetBundles(MYTYUtil.BundlePath, buildMap, BuildAssetBundleOptions.None,
-                        m_buildPlatform[i]);
+                    if (platformSelection[i])
+                    {
+                        buildMap[0].assetBundleName = filename + m_bundleSurfix[i];
+                        BuildPipeline.BuildAssetBundles(MYTYUtil.BundlePath, buildMap, BuildAssetBundleOptions.None,
+                            m_buildPlatform[i]);
+                        zip.CreateEntryFromFile(MYTYUtil.BundlePath + "/" + filename + m_bundleSurfix[i], filename+m_bundleSurfix[i]);
+                    }
                 }
             }
-        
+
+
             Close();
         }
 
@@ -368,16 +374,23 @@ namespace MYTYKit
             foreach (var elem in motionAdapters)
             {
                 var motionAdapterGo = elem as GameObject;
-                var serializableAdapter = motionAdapterGo.GetComponent<NativeAdapter>() as ISerializableAdapter;
-                if (serializableAdapter == null) continue;
 
-                var cloneObj = serializableAdapter.GetSerializedClone(m_objectMap);
-            
+                var adapterArrayforGo = motionAdapterGo.GetComponents<NativeAdapter>();
+                var cloningTargetGo = new GameObject();
+                cloningTargetGo.name = motionAdapterGo.name;
+                
+                foreach (var item in adapterArrayforGo)
+                {
+                    var serializableAdapter = item as ISerializableAdapter;
+                    if (serializableAdapter == null) continue;
+                    serializableAdapter.SerializeIntoNewObject(cloningTargetGo, m_objectMap);
+                }
                 var path = AssetDatabase.GenerateUniqueAssetPath(MYTYUtil.PrefabPath + "/" + motionAdapterGo.name + ".prefab");
-                var savedPrefab = PrefabUtility.SaveAsPrefabAsset(cloneObj, path);
+                var savedPrefab = PrefabUtility.SaveAsPrefabAsset(cloningTargetGo, path);
                 assetName.Add(path);
                 mytyAsset.motionAdapters.Add(path);
-                DestroyImmediate(cloneObj);
+                DestroyImmediate(cloningTargetGo);
+                
             }
 
             return true;

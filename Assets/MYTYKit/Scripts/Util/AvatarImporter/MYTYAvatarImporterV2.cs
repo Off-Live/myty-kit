@@ -90,9 +90,13 @@ namespace MYTYKit.AvatarImporter
 
         void SetupMotionAdapter(GameObject root, GameObject motionAdapterGO, GameObject motionTemplateGO)
         {
-            var nativeAdapter = motionAdapterGO.GetComponent<NativeAdapter>() as ISerializableAdapter;
-            if (nativeAdapter == null) return;
-            nativeAdapter.Deserialize(goMap);
+            var nativeAdapters = motionAdapterGO.GetComponents<NativeAdapter>();
+            foreach (var item in nativeAdapters)
+            {
+                var nativeAdapter = item as ISerializableAdapter;
+                if (nativeAdapter == null) return;
+                nativeAdapter.Deserialize(goMap);
+            }
         }
 
         public (bool isSupported, bool isAROnly) IsARFaceSupported(AssetBundle bundle)

@@ -84,7 +84,7 @@ namespace MYTYKit.AvatarImporter
             }
 
 
-            selector.id = 0;
+            selector.id = "";
             selector.Configure();
         }
 

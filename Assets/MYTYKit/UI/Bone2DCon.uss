@@ -94,6 +94,15 @@
     display: none;
 }
 
+
+.deletedObjField ObjectFieldSelector{
+    display: none;
+}
+
+.deletedObjField VisualElement {
+    display: none;
+}
+
 .itemSize {
     width: 95%;
 }

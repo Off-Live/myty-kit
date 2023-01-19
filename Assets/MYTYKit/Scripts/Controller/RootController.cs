@@ -24,6 +24,7 @@ namespace MYTYKit.Controllers
 
                 for (int i = 0; i < con.rigTarget.Count; i++)
                 {
+                    if(con.rigTarget[i]==null) continue;
                     con.rigTarget[i].transform.localPosition = con.orgRig[i].position;
                     con.rigTarget[i].transform.localScale = con.orgRig[i].scale;
                     con.rigTarget[i].transform.localRotation = con.orgRig[i].rotation;

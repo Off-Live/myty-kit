@@ -12,7 +12,16 @@ namespace MYTYKit.Components
             var index = -1;
             for (int i = 0; i < selector.mytyAssetStorage.traits.Count; i++)
             {
-                if (selector.id == selector.mytyAssetStorage.traits[i].id) index = i;
+                var searchId = "";
+                if (string.IsNullOrEmpty(selector.mytyAssetStorage.traits[i].tokenId))
+                {
+                    searchId = "" + selector.mytyAssetStorage.traits[i].id;
+                }
+                else
+                {
+                    searchId = selector.mytyAssetStorage.traits[i].tokenId;
+                }
+                if (selector.id == searchId) index = i;
             }
         
             var traitItem = selector.mytyAssetStorage.traits[index];

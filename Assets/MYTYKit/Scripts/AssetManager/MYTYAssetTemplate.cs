@@ -40,7 +40,7 @@ namespace MYTYKit
             SpriteLibraryFactory.CreateLibrary(go, GetSpriteLibraryAssetPath(path));
             UpdateAvatarSelector();
             cmdTool.ExecuteLayerTool(path, go);
-        
+            BoneControllerStorage.Restore();
         }
     
 
@@ -120,7 +120,7 @@ namespace MYTYKit
 
         public void UpdateAvatarSelector()
         {
-            var old_id = 0;
+            var old_id = "";
             if (m_avatarSelector != null)
             {
                 old_id = m_avatarSelector.id;
@@ -162,7 +162,7 @@ namespace MYTYKit
             }
 
 
-            so.FindProperty("mytyAssetStorage").objectReferenceValue = AssetDatabase.LoadAssetAtPath<MYTYAssetScriptableObject>(
+            so.FindProperty("m_mytyAssetStorage").objectReferenceValue = AssetDatabase.LoadAssetAtPath<MYTYAssetScriptableObject>(
                 MYTYUtil.AssetPath + "/MYTYAssetData.asset");
             so.ApplyModifiedProperties();
             m_avatarSelector.id = old_id;

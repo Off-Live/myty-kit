@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MYTYKit.Components;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -59,7 +60,18 @@ namespace MYTYKit
             listView.bindItem = (e, i) =>
             {
                 (e as ObjectField).value = listView.itemsSource[i] as GameObject;
-                (e as ObjectField).AddToClassList("noEditableObjField");
+                if (listView.itemsSource[i] == null)
+                {
+                    (e as ObjectField).label = "Deleted or modified.";
+                    (e as ObjectField).AddToClassList("deletedObjField");
+                    (e as ObjectField).RemoveFromClassList("noEditableObjField");
+                }
+                else
+                {
+                    (e as ObjectField).label = "";
+                    (e as ObjectField).AddToClassList("noEditableObjField");
+                    (e as ObjectField).RemoveFromClassList("deletedObjField");
+                }
             };
         
             conVE.RegisterValueChangedCallback((ChangeEvent<Object> e) =>
@@ -269,6 +281,7 @@ namespace MYTYKit
             m_conSO.FindProperty("orgRig").arraySize = 0;
 
             m_conSO.ApplyModifiedProperties();
+            BoneControllerStorage.Save();
         }
 
         void OnRemove()
@@ -301,6 +314,7 @@ namespace MYTYKit
             m_conSO.FindProperty("orgRig").arraySize = 0;
 
             m_conSO.ApplyModifiedProperties();
+            BoneControllerStorage.Save();
         }
 
         void OnRemoveAll()
@@ -317,6 +331,7 @@ namespace MYTYKit
             listView.Rebuild();
             m_conSO.FindProperty("orgRig").arraySize = 0;
             m_conSO.ApplyModifiedProperties();
+            BoneControllerStorage.Save();
         }
 
         void OnRemovePivot()

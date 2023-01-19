@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Reflection.Emit;
 
 
 namespace MYTYKit.Controllers
@@ -22,15 +23,11 @@ namespace MYTYKit.Controllers
 
         [SerializeField] private string currentLabel;
 
+        string m_lastLabel="";
         void Update()
         {
             if (spriteObjects == null || labels == null) return;
-            UpdateLabel();
-        }
-
-        public void UpdateLabel()
-        {
-
+            
             var selected = "";
             var minDist = float.MaxValue;
             if (labels == null || labels.Count == 0) return;
@@ -44,16 +41,25 @@ namespace MYTYKit.Controllers
                 }
             }
 
-            if (selected.Length > 0)
+            if (m_lastLabel != selected)
+            {
+                m_lastLabel = selected;
+                UpdateLabel();
+            }
+        }
+
+        public void UpdateLabel()
+        {
+            if (m_lastLabel.Length > 0)
             {
                 foreach (var spriteResolver in spriteObjects)
                 {
                     if (spriteResolver == null) continue;
                     var catName = spriteResolver.GetCategory();
 
-                    spriteResolver.SetCategoryAndLabel(catName, selected);
+                    spriteResolver.SetCategoryAndLabel(catName, m_lastLabel);
 
-                    currentLabel = selected;
+                    currentLabel = m_lastLabel;
                 }
             }
         }
