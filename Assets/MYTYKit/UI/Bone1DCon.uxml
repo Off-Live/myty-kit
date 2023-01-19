@@ -12,6 +12,7 @@
     <uie:FloatField label="Current value" value="0" name="FLTValue" />
     <ui:Slider picking-mode="Ignore" label="Slider Control" value="0.2" high-value="1" name="SLDValue" />
     <ui:Toggle label="Keep pivot position" value="true" name="TGLPivotPos" />
+    <ui:Button text="Reset" display-tooltip-when-elided="true" name="BTNReset" />
     <ui:VisualElement style="margin-top: 20px;">
         <ui:Label text="Pivots" display-tooltip-when-elided="true" style="-unity-text-align: upper-center;" />
         <ui:VisualElement style="flex-direction: row; justify-content: center;">
