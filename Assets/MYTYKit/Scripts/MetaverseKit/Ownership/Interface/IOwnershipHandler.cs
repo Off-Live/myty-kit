@@ -5,6 +5,6 @@ namespace MYTYKit.Scripts.MetaverseKit.Ownership.Interface
 {
     public interface IOwnershipHandler
     {
-        public List<OwnershipInfo> GetOwnerships(string collectionAddress);
+        public List<OwnershipInfo> GetOwnerships(string walletAddress);
     }
 }

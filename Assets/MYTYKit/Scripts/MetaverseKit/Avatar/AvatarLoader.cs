@@ -20,15 +20,14 @@ public class AvatarLoader : MonoBehaviour
         bool loadVR,
         AssetBundle bundle,
         string assetName,
-        Vector3 arLocation,
-        Vector3 vrLocation,
-        RenderTexture arFaceTexture,
+        Action<GameObject> vrPostProcess = null,
+        Action<GameObject, RenderTexture> arPostProcess = null,
         Action<Exception> exceptionHandler = null)
     {
         StartCoroutine(
             CoroutineUtil.RunThrowingIterator(
                 LoadAvatarImpl(
-                    loadAR, loadVR, bundle, assetName, arLocation, vrLocation, arFaceTexture), exceptionHandler));
+                    loadAR, loadVR, bundle, assetName, vrPostProcess, arPostProcess), exceptionHandler));
     }
 
     private IEnumerator LoadAvatarImpl(
@@ -36,9 +35,8 @@ public class AvatarLoader : MonoBehaviour
         bool loadVR, 
         AssetBundle bundle,
         string assetName,
-        Vector3 arLocation,
-        Vector3 vrLocation,
-        RenderTexture arFaceTexture)
+        Action<GameObject> vrPostProcess,
+        Action<GameObject, RenderTexture> arPostProcess)
     {
         if (bundle == null)
         {
@@ -54,13 +52,8 @@ public class AvatarLoader : MonoBehaviour
         loadAR = loadAR && hasARMode;
         loadVR = loadVR && !onlyARMode;
 
-        if (loadAR && arFaceTexture == null)
-        {
-            Debug.Log($"Asset with {assetName} has error to load AR Mode");
-            Debug.Log($"AR Face texture should be given to load AR Mode");
-            throw new NullReferenceException();
-        }
-        
+        var arFaceTexture = new RenderTexture(512, 512, 1, RenderTextureFormat.ARGB32);
+
         var traits = bundle.LoadAsset<MYTYAssetScriptableObject>("MYTYAssetData").traits;
         var idList = traits.Select(_ => _.tokenId).ToList();
         idList.Sort(ComparisonUtil.CompareStrings);
@@ -69,16 +62,16 @@ public class AvatarLoader : MonoBehaviour
 
         if (loadAR && loadVR)
         {
-            yield return LoadVRAvatar(bundle, assetName, vrLocation, minId);
-            yield return LoadARAvatar(bundle, assetName, arLocation, minId, arFaceTexture);
+            yield return LoadVRAvatar(bundle, assetName, minId, vrPostProcess);
+            yield return LoadARAvatar(bundle, assetName, minId, arFaceTexture, arPostProcess);
         }
         else if (loadAR)
         {
-            yield return LoadARAvatar(bundle, assetName, arLocation, minId, arFaceTexture);
+            yield return LoadARAvatar(bundle, assetName, minId, arFaceTexture, arPostProcess);
         }
         else if (loadVR)
         {
-            yield return LoadVRAvatar(bundle, assetName, vrLocation, minId);
+            yield return LoadVRAvatar(bundle, assetName, minId, vrPostProcess);
         }
         else
         {
@@ -92,17 +85,11 @@ public class AvatarLoader : MonoBehaviour
     private IEnumerator LoadARAvatar(
         AssetBundle bundle,
         string assetName,
-        Vector3 location,
         string minId,
-        RenderTexture arFaceTexture)
+        RenderTexture arFaceTexture,
+        Action<GameObject, RenderTexture> postProcess)
     {
-        var arAvatar = new GameObject(assetName + "AR")
-        {
-            transform =
-            {
-                localPosition = location
-            }
-        };
+        var arAvatar = new GameObject(assetName + "AR");
             
         yield return m_importer.LoadMYTYAvatarAsync(m_motionSource, bundle, arAvatar);
         
@@ -132,26 +119,23 @@ public class AvatarLoader : MonoBehaviour
 
         arSelector.id = minId;
         arSelector.ConfigureARFeature(arFaceItems);
+        
+        postProcess.Invoke(arAvatar, arFaceTexture);
     }
 
     private IEnumerator LoadVRAvatar(
         AssetBundle bundle,
         string assetName,
-        Vector3 location,
-        string minId)
+        string minId,
+        Action<GameObject> postProcess)
     {
-        var vrAvatar = new GameObject(assetName)
-        {
-            transform =
-            {
-                localPosition = location
-            }
-        };
+        var vrAvatar = new GameObject(assetName);
             
         yield return m_importer.LoadMYTYAvatarAsync(m_motionSource, bundle, vrAvatar);
 
         var vrSelector = vrAvatar.GetComponentInChildren<AvatarSelector>(); 
         vrSelector.id = minId;
         vrSelector.Configure();
+        postProcess.Invoke(vrAvatar);
     }
 }

@@ -14,7 +14,8 @@ namespace MYTYKit.Scripts.MetaverseKit.Example
         MYTYAssetInfoHandler m_assetInfoHandler;
         [SerializeField]
         AvatarLoader m_avatarLoader;
-        RenderTexture m_arFaceTexture;
+        [SerializeField]
+        Material m_arFaceMaterial;
 
         public string targetCollectionAddress;
         void Start()
@@ -25,8 +26,7 @@ namespace MYTYKit.Scripts.MetaverseKit.Example
                 _ => _.platform == AvatarPlatform.Standalone.ToString());
             
             var selected = assetInfos.OrderBy(_ => DateTime.Parse(_.updatedAt)).Last();
-            
-            m_arFaceTexture = new RenderTexture(512, 512, 1, RenderTextureFormat.ARGB32);
+
             StartCoroutine(CallLoadAvatar(selected));
         }
 
@@ -43,11 +43,20 @@ namespace MYTYKit.Scripts.MetaverseKit.Example
                 {
                     var bundle = DownloadHandlerAssetBundle.GetContent(uwr);
                     m_avatarLoader.LoadAvatar(
-                        true, true, bundle, "test",
-                        new Vector3(-10, 10, 0), new Vector3(-10, 0, 0),
-                        m_arFaceTexture);
+                        true, true, bundle, asset.avatarName, OnVRAvatarLoaded, OnARAvatarLoaded);
                 }
             }
+        }
+
+        private void OnVRAvatarLoaded(GameObject vrAvatar)
+        {
+            vrAvatar.transform.localPosition = new Vector3(0, 0, 0);
+        }
+
+        private void OnARAvatarLoaded(GameObject arAvatar, RenderTexture arFaceTexture)
+        {
+            arAvatar.transform.localPosition = new Vector3(0, 50, 0);
+            m_arFaceMaterial.mainTexture = arFaceTexture;
         }
     }
 }
