@@ -178,6 +178,7 @@ namespace MYTYKit.Controllers
 #if UNITY_EDITOR
             for (int i = 0; i < spriteObjects.Count; i++)
             {
+                if(spriteObjects[i]==null) continue;
                 spriteObjects[i] = PrefabUtility.GetCorrespondingObjectFromSource(spriteObjects[i]);
             }
 #endif
@@ -187,6 +188,7 @@ namespace MYTYKit.Controllers
         {
             for (int i = 0; i < spriteObjects.Count; i++)
             {
+                if(spriteObjects[i]==null) continue;
                 spriteObjects[i] = objMap[spriteObjects[i].gameObject].GetComponent<MYTYSpriteResolver>();
             }
 #if UNITY_EDITOR
@@ -195,6 +197,7 @@ namespace MYTYKit.Controllers
                 var so = new SerializedObject(this);
                 for (int i = 0; i < spriteObjects.Count; i++)
                 {
+                    if(spriteObjects[i]==null) continue;
                     so.FindProperty("spriteObjects").GetArrayElementAtIndex(i).objectReferenceValue = spriteObjects[i];
                 }
 
