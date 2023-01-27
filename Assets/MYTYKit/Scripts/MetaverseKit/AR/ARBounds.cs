@@ -1,11 +1,10 @@
-using System;
 using UnityEngine;
 
 namespace MYTYCamera.AR
 {
     public class ARBounds : MonoBehaviour
     {
-        public MeshRenderer renderer;
+        public MeshRenderer referenceRenderer;
         
         private MeshRenderer m_renderer;
         private bool m_assigned = false;
@@ -20,7 +19,7 @@ namespace MYTYCamera.AR
             if (!m_assigned)
             {
                 if (m_renderer.material.mainTexture != null) return;
-                m_renderer.material.mainTexture = renderer.material.mainTexture;
+                m_renderer.material.mainTexture = referenceRenderer.material.mainTexture;
                 m_assigned = true;
             }
         }
