@@ -39,6 +39,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe
         Stopwatch m_stopwatch;
         CalculatorGraph m_graph;
 
+        UnityEvent<LandmarkList> m_poseWorldEvent = new();
         UnityEvent<NormalizedLandmarkList> m_poseEvent = new();
         UnityEvent<NormalizedLandmarkList> m_faceEvent = new();
         UnityEvent<NormalizedLandmarkList> m_LHEvent = new();
@@ -110,6 +111,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe
             sidePacket.Emplace("model_complexity", new IntPacket((int)0));
 
             m_graph.ObserveOutputStream("pose_landmarks", m_id, PoseCallback, true).AssertOk();
+            m_graph.ObserveOutputStream("pose_world_landmarks",m_id, PoseWorldCallback, true ).AssertOk();
             m_graph.ObserveOutputStream("face_landmarks", m_id, FaceCallback, true).AssertOk();
             if (hands)
             {
@@ -120,6 +122,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe
             m_graph.ObserveOutputStream("face_emotions", m_id, EmotionCallback, true).AssertOk();
 
             m_poseEvent.AddListener(ProcessPose);
+            m_poseWorldEvent.AddListener(ProcessPoseWorld);
             m_faceEvent.AddListener(ProcessFace);
             m_LHEvent.AddListener(ProcessLH);
             m_RHEvent.AddListener(ProcessRH);
@@ -184,6 +187,26 @@ namespace MYTYKit.MotionTemplates.Mediapipe
                 .AssertOk();
         }
 
+        [AOT.MonoPInvokeCallback(typeof(CalculatorGraph.NativePacketCallback))]
+        static IntPtr PoseWorldCallback(IntPtr graphPtr, int streamId, IntPtr packetPtr)
+        {
+            var isFound = _InstanceTable.TryGetValue(streamId, out var holistic);
+            if (!isFound)
+            {
+                return Status.FailedPrecondition("Invalid stream id").mpPtr;
+            }
+            
+            using (var packet = new LandmarkListPacket(packetPtr, false))
+            {
+                if (!packet.IsEmpty())
+                {
+                    var poseWorld = packet.Get();
+                    UnityMainThreadDispatcher.Instance().Enqueue(() => holistic.m_poseWorldEvent.Invoke(poseWorld));
+                }
+            }
+            
+            return Status.Ok().mpPtr;
+        }
 
         [AOT.MonoPInvokeCallback(typeof(CalculatorGraph.NativePacketCallback))]
         private static IntPtr PoseCallback(IntPtr graphPtr, int streamId, IntPtr packetPtr)
@@ -336,6 +359,34 @@ namespace MYTYKit.MotionTemplates.Mediapipe
             }
 
         }
+
+        void ProcessPoseWorld(LandmarkList pose)
+        {
+            var poseWorldBridges = motionSource.GetBridgesInCategory("PoseWorldLandmark");
+            if (pose.Landmark == null) return;
+            poseWorldBridges.ForEach(bridge =>
+            {
+                var model = bridge as MPBaseModel;
+                
+                if (model == null) return;
+
+                if (model.GetNumPoints() != pose.Landmark.Count)
+                {
+                    model.Alloc(pose.Landmark.Count);
+                }
+
+                int index = 0;
+
+                foreach (var elem in pose.Landmark)
+                {
+                    model.SetPoint(index,
+                        new Vector3(elem.X , elem.Y , elem.Z ));
+                    index++;
+                }
+                model.Flush();
+            });
+        }
+        
         void ProcessFace(NormalizedLandmarkList faceLM)
         {
             var faceRig = motionSource.GetBridgesInCategory("FaceLandmark");
