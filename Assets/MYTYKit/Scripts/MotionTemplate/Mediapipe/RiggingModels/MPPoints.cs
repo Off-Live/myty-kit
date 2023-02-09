@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 
 namespace MYTYKit.MotionTemplates.Mediapipe.Model
@@ -23,11 +24,20 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
                     pointsTemplate.points = new Vector3[rawPoints.Length];
                 }
 
-                for (int i = 0; i < pointsTemplate.points.Length; i++)
+                if (pointsTemplate.visibilities == null ||
+                    pointsTemplate.visibilities.Length != visibilities.Length)
                 {
-                    pointsTemplate.points[i] = rawPoints[i];
+                    pointsTemplate.visibilities = new float[visibilities.Length];
                 }
-                motionTemplate.NotifyUpdate();
+                
+                Debug.Assert(pointsTemplate.points.Length==pointsTemplate.visibilities.Length);
+                
+                Enumerable.Range(0, pointsTemplate.points.Length).ToList().ForEach(idx =>
+                {
+                    pointsTemplate.points[idx] = rawPoints[idx];
+                    pointsTemplate.visibilities[idx] = visibilities[idx];
+                });
+
             }
         }
     }

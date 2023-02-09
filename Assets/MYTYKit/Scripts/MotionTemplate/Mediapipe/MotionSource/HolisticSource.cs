@@ -380,7 +380,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe
                 foreach (var elem in pose.Landmark)
                 {
                     model.SetPoint(index,
-                        new Vector3(elem.X , elem.Y , elem.Z ));
+                        new Vector3(elem.X , elem.Y , elem.Z ), elem.Visibility);
                     index++;
                 }
                 model.Flush();
@@ -439,7 +439,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe
             foreach (var elem in landmarkList)
             {
                 model.SetPoint(index,
-                    new Vector3(elem.X , elem.Y , elem.Z ));
+                    new Vector3(elem.X , elem.Y , elem.Z ), elem.Visibility);
                 index++;
             }
             model.Flush();
