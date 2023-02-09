@@ -37,7 +37,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
                     pointsTemplate.points[idx] = rawPoints[idx];
                     pointsTemplate.visibilities[idx] = visibilities[idx];
                 });
-
+                pointsTemplate.NotifyUpdate();
             }
         }
     }
