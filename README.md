@@ -78,4 +78,4 @@ We do not want to limit your imagination. Any social activities in the physical 
 - [Website](http://myty.space)
 - [Twitter](https://mobile.twitter.com/myty_official)
 - [Discord](https://discord.gg/myty)
-- [Medium](https://myty-official.medium.com/)
+- [Mirror](https://mirror.xyz/0xC6c94185aB29aaa91A6CAc94a1b06cd41bf7d278)
