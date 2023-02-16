@@ -22,6 +22,7 @@ namespace MYTYKit.MotionAdapters
         public float visibleThreshold = 0.75f;
         public float lookAtOffset = 0.0f;
         
+        public bool isStartAuto = false;
         
         public Transform leftHandTf;
         public Transform rightHandTf;
@@ -49,7 +50,17 @@ namespace MYTYKit.MotionAdapters
         HumanPoseHandler m_humanPoseHandler;
         HumanPose m_humanPose;
 
-        protected override void Start()
+        bool m_isInitialized = false;
+
+
+        void Start()
+        {
+            if(isStartAuto) Initialize();
+            
+        }
+        
+        
+        public void Initialize()
         {
             base.Start();
             SetNumInterpolationSlot(35); //33 for pose, 2 for head
@@ -60,17 +71,12 @@ namespace MYTYKit.MotionAdapters
             Enumerable.Range(0,35).ToList().ForEach(idx => m_filters[idx] = new KalmanFilterVec3());
 
             m_anim = GetComponent<Animator>();
-            if(m_anim==null) CreateAnimator();
 
             m_humanPoseHandler = new HumanPoseHandler(m_anim.avatar, humanoidAvatarRoot);
             m_humanPose = new HumanPose();
-            
+            m_isInitialized = true;
         }
-
-        void CreateAnimator()
-        {
-            
-        }
+        
         
         void UpdateHead()
         {
@@ -98,6 +104,7 @@ namespace MYTYKit.MotionAdapters
         
         void FixedUpdate()
         {
+            if (!m_isInitialized) return;
             leftHandTarget.transform.localPosition = GetResult(15);
             rightHandTarget.transform.localPosition = GetResult(16);
 
@@ -126,6 +133,7 @@ namespace MYTYKit.MotionAdapters
 
         void OnAnimatorIK(int layerIndex)
         {
+            if (!m_isInitialized) return;
             var leftUpperArmVector = (m_leftElbowHint - m_leftShoulder).normalized;
             var leftUpperArmLength = (m_anim.GetBoneTransform(HumanBodyBones.LeftUpperArm).position -
                                   m_anim.GetBoneTransform(HumanBodyBones.LeftLowerArm).position).magnitude;
@@ -174,6 +182,7 @@ namespace MYTYKit.MotionAdapters
         
         void LateUpdate()
         {
+            if (!m_isInitialized) return;
             m_humanPoseHandler.GetHumanPose(ref m_humanPose);
             
             
