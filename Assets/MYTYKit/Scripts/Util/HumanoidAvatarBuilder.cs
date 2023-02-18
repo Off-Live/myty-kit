@@ -1,35 +1,19 @@
 using System.Collections.Generic;
 using System.Linq;
-
+using log4net.Repository.Hierarchy;
 using UnityEngine;
 
 namespace MYTYKit
 {
 	public class HumanoidAvatarBuilder : MonoBehaviour
 	{
-		public static readonly string[] FINGER_NAME = new string[]
-		{
+		public static readonly string[] FingerName = {
 			"Thumb Proximal", "Thumb Intermediate","Thumb Distal",
 			"Index Proximal", "Index Intermediate","Index Distal",
 			"Middle Proximal", "Middle Intermediate","Middle Distal",
 			"Ring Proximal", "Ring Intermediate","Ring Distal",
 			"Little Proximal", "Little Intermediate","Little Distal"
 		};
-
-		//
-		// { "Bip001 L Finger42", "Left Little Distal" },
-		// { "Bip001 L Finger41", "Left Little Intermediate" },
-		// { "Bip001 L Finger4", "Left Little Proximal" },
-		// { "Bip001 L Finger22", "Left Middle Distal" },
-		// { "Bip001 L Finger21", "Left Middle Intermediate" },
-		// { "Bip001 L Finger2", "Left Middle Proximal" },
-		// { "Bip001 L Finger32", "Left Ring Distal" },
-		// { "Bip001 L Finger31", "Left Ring Intermediate" },
-		// { "Bip001 L Finger3", "Left Ring Proximal" },
-		// { "Bip001 L Finger02", "Left Thumb Distal" },
-		// { "Bip001 L Finger01", "Left Thumb Intermediate" },
-		// { "Bip001 L Finger0", "Left Thumb Proximal" },
-		//
 
 		public Transform avatarRoot;
 		
@@ -66,8 +50,8 @@ namespace MYTYKit
 
 		Mesh m_mesh;
 
-		Transform[][] leftFingerArray;
-		Transform[][] rightFingerArray;
+		Transform[][] m_leftFingerArray;
+		Transform[][] m_rightFingerArray;
 		public Avatar BuildAvatar()
 		{
 			var desc = CreateDescription(avatarRoot.gameObject, BuildBoneMap());
@@ -89,7 +73,6 @@ namespace MYTYKit
 				return;
 			}
 			
-
 			neck = head.parent;
 			upperChest = neck.parent;
 			chest = upperChest.parent;
@@ -110,32 +93,43 @@ namespace MYTYKit
 			rightFoot = rightLowerLeg.GetChild(0);
 			if (rightFoot.childCount > 0) rightToe = rightFoot.GetChild(0);
 		
+			
 		}
 
 		public void TPose() //Only Arms.
 		{
-			var leftChain = new Transform[] { leftShoulder, leftUpperArm, leftLowerArm, leftHand };
-			var rightChain = new Transform[] { rightShoulder, rightUpperArm, rightLowerArm, rightHand };
+			var leftChain = new[] { leftShoulder, leftUpperArm, leftLowerArm, leftHand };
+			var rightChain = new[] { rightShoulder, rightUpperArm, rightLowerArm, rightHand };
 			FlattenChainInDirection(leftChain, Vector3.left);
 			FlattenChainInDirection(rightChain, Vector3.right);
 
 			if (CheckValidityOfFingers(leftFingers, leftHand))
 			{
-				BuildFingers(leftFingers, ref leftFingerArray);
+				m_leftFingerArray = BuildFingers(leftFingers);
 				Enumerable.Range(1, 4).ToList().ForEach(idx =>
 				{
-					FlattenChainInDirection(leftFingerArray[idx],Vector3.left);
+					FlattenChainInDirection(m_leftFingerArray[idx],Vector3.left);
 				});
 			}
 			if (CheckValidityOfFingers(rightFingers, rightHand))
 			{
-				BuildFingers(rightFingers, ref rightFingerArray);
+				m_rightFingerArray = BuildFingers(rightFingers);
 				Enumerable.Range(1, 4).ToList().ForEach(idx =>
 				{
-					FlattenChainInDirection(rightFingerArray[idx],Vector3.right);
+					FlattenChainInDirection(m_rightFingerArray[idx],Vector3.right);
 				});
 			}
 			
+		}
+
+		void FindLeafNode(Transform root, ref List<Transform> leafList)
+		{
+			var list = leafList;
+			Enumerable.Range(0, root.childCount).Select(idx => root.GetChild(idx)).ToList().ForEach(child =>
+			{
+				if(child.childCount==0) list.Add(child);
+				FindLeafNode(child,ref list);
+			});
 		}
 
 		void FlattenChainInDirection(Transform[] chain, Vector3 alignDirection)
@@ -172,19 +166,20 @@ namespace MYTYKit
 			return nodeCount.Count(count => count != 2) == 0;
 		}
 
-		void BuildFingers(Transform[] fingers,ref Transform[][] fingerArray)
+		static Transform[][] BuildFingers(Transform[] fingers)
 		{
-			fingerArray = new Transform[5][];
+			var fingerArray = new Transform[5][];
 			var array = fingerArray;
 			Enumerable.Range(0,5).ToList().ForEach(idx =>
 			{
-				array[idx] = new Transform[]
+				array[idx] = new[]
 				{
 					fingers[idx].parent.parent,
 					fingers[idx].parent,
 					fingers[idx]
 				};
 			});
+			return fingerArray;
 		}
 
 		Dictionary<string, string> BuildBoneMap()
@@ -221,18 +216,18 @@ namespace MYTYKit
 			
 			if (CheckValidityOfFingers(leftFingers, leftHand))
 			{
-				BuildFingers(leftFingers, ref leftFingerArray);
+				m_leftFingerArray = BuildFingers(leftFingers);
 				Enumerable.Range(0,15).ToList().ForEach(idx =>
 				{
-					reverseDict["Left " + FINGER_NAME[idx]] = leftFingerArray[idx / 3][idx % 3];
+					reverseDict["Left " + FingerName[idx]] = m_leftFingerArray[idx / 3][idx % 3];
 				});
 			}
 			if (CheckValidityOfFingers(rightFingers, rightHand))
 			{
-				BuildFingers(rightFingers, ref rightFingerArray);
+				m_rightFingerArray = BuildFingers(rightFingers);
 				Enumerable.Range(0,15).ToList().ForEach(idx =>
 				{
-					reverseDict["Right " + FINGER_NAME[idx]] = rightFingerArray[idx / 3][idx % 3];
+					reverseDict["Right " + FingerName[idx]] = m_rightFingerArray[idx / 3][idx % 3];
 				});
 			}
 			
@@ -305,10 +300,10 @@ namespace MYTYKit
 			return human.ToArray();
 		}
 
-		public void InitMesh()
+		void InitMesh()
 		{
 			m_mesh = new Mesh();
-			m_mesh.vertices = new Vector3[]
+			m_mesh.vertices = new[]
 			{
 				new Vector3(-0.5f, -Mathf.Sqrt(3) / 6, 0),
 				new Vector3(0.5f, -Mathf.Sqrt(3) / 6, 0),
@@ -316,12 +311,12 @@ namespace MYTYKit
 				new Vector3(0, 0 , 10)
 			};
 
-			m_mesh.triangles = new int[]
+			m_mesh.triangles = new[]
 			{
 				0, 2, 1,
 				0, 1, 3,
-				2,0,3,
-				1,2,3,
+				2, 0, 3,
+				1, 2, 3,
 			};
 
 			m_mesh.RecalculateNormals();

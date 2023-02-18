@@ -16,27 +16,30 @@ namespace MYTYKit.MotionAdapters
 
         public MYTYIKTarget leftHandTarget;
         public MYTYIKTarget rightHandTarget;
-
-        public Transform humanoidAvatarRoot;
         
         public float visibleThreshold = 0.75f;
         public float lookAtOffset = 0.0f;
         
         public bool isStartAuto = false;
-        
+        public MuscleSetting muscleSetting;
+
         public Transform leftHandTf;
         public Transform rightHandTf;
         public Transform leftElbowTf;
         public Transform rightElbowTf;
         public Transform leftShoulderTf;
         public Transform rightShoulderTf;
-        public MuscleSetting muscleSetting;
+    
+        public Transform humanoidAvatarRoot
+        {
+            set => m_humanoidAvatarRoot = value;
+        }
         
         KalmanFilterVec3[] m_filters;
         
         
-        float m_chestTwist = 0.0f;
-        float m_chestLR = 0.0f;
+        public float m_chestTwist = 0.0f;
+        public float m_chestLR = 0.0f;
         float m_headLR = 0.0f;
         Vector3 m_lookAt;
         Vector3 m_headUp;
@@ -47,12 +50,16 @@ namespace MYTYKit.MotionAdapters
 
         Animator m_anim;
 
+        Transform m_humanoidAvatarRoot;
         HumanPoseHandler m_humanPoseHandler;
         HumanPose m_humanPose;
 
         bool m_isInitialized = false;
 
+        Vector3 m_initialHipPosition;
+        Quaternion m_initialHipRotation;
 
+       
         void Start()
         {
             if(isStartAuto) Initialize();
@@ -71,10 +78,14 @@ namespace MYTYKit.MotionAdapters
             Enumerable.Range(0,35).ToList().ForEach(idx => m_filters[idx] = new KalmanFilterVec3());
 
             m_anim = GetComponent<Animator>();
-
-            m_humanPoseHandler = new HumanPoseHandler(m_anim.avatar, humanoidAvatarRoot);
+            m_humanPoseHandler = new HumanPoseHandler(m_anim.avatar, m_humanoidAvatarRoot);
             m_humanPose = new HumanPose();
+            
+            var hipTf = m_anim.GetBoneTransform(HumanBodyBones.Hips);
+            m_initialHipPosition = hipTf.position;
+            m_initialHipRotation = hipTf.rotation;
             m_isInitialized = true;
+
         }
         
         
@@ -114,7 +125,7 @@ namespace MYTYKit.MotionAdapters
             var shoulderLR = (m_leftShoulder - m_rightShoulder).normalized;
             var shoulderLRTwist = (shoulderLR - Vector3.up * Vector3.Dot(shoulderLR, Vector3.up)).normalized;
         
-            m_chestLR =- Mathf.Rad2Deg * Mathf.Asin(Vector3.Cross(shoulderLRTwist, shoulderLR).magnitude) *
+            m_chestLR = Mathf.Rad2Deg * Mathf.Asin(Vector3.Cross(shoulderLRTwist, shoulderLR).magnitude) *
                      Mathf.Sign(m_leftShoulder.y - m_rightShoulder.y);
             m_chestTwist = -Mathf.Rad2Deg * Mathf.Asin(Vector3.Cross(shoulderLRTwist, Vector3.left).y);
         
@@ -127,7 +138,7 @@ namespace MYTYKit.MotionAdapters
             m_headUp = GetResult(34).normalized;
 
             var headLRPlaneVector = m_headUp - lookAtVector * Vector3.Dot(m_headUp, lookAtVector);
-            m_headLR = - Mathf.Rad2Deg *
+            m_headLR = Mathf.Rad2Deg *
                      Mathf.Asin(Vector3.Dot(Vector3.Cross(headLRPlaneVector, Vector3.up), lookAtVector));
         }
 
@@ -157,7 +168,7 @@ namespace MYTYKit.MotionAdapters
 
             m_anim.SetIKPositionWeight(AvatarIKGoal.LeftHand, leftHandTarget.weight);
             //m_anim.SetIKRotationWeight(AvatarIKGoal.LeftHand, weight);
-           
+            
             m_anim.SetIKPosition(AvatarIKGoal.LeftHand, leftHandPos);
             m_anim.SetIKHintPosition(AvatarIKHint.LeftElbow, leftElbowPos);
             m_anim.SetIKHintPositionWeight(AvatarIKHint.LeftElbow, leftHandTarget.weight);
@@ -171,13 +182,11 @@ namespace MYTYKit.MotionAdapters
             m_anim.SetIKHintPosition(AvatarIKHint.RightElbow, rightElbowPos);
             m_anim.SetIKHintPositionWeight(AvatarIKHint.RightElbow, rightHandTarget.weight);
             //m_anim.SetIKRotation(AvatarIKGoal.LeftHand, lhIkTarget.rotation);
-
-            m_anim.SetLookAtWeight(1.0f);
             
+            
+            m_anim.SetLookAtWeight(1.0f);
             m_anim.SetLookAtPosition(m_anim.GetBoneTransform(HumanBodyBones.Head).position+m_lookAt);
-            m_anim.SetBoneLocalRotation(HumanBodyBones.Chest, Quaternion.AngleAxis(m_chestTwist, Vector3.up)* Quaternion.AngleAxis(m_chestLR,Vector3.forward) );
-            m_anim.SetBoneLocalRotation(HumanBodyBones.Head, Quaternion.AngleAxis(m_headLR/2,Vector3.forward));
-            m_anim.SetBoneLocalRotation(HumanBodyBones.Neck, Quaternion.AngleAxis(m_headLR/2,Vector3.forward));
+            
         }
         
         void LateUpdate()
@@ -186,12 +195,60 @@ namespace MYTYKit.MotionAdapters
             m_humanPoseHandler.GetHumanPose(ref m_humanPose);
             
             
-            Enumerable.Range(0,m_humanPose.muscles.Length).ToList().ForEach(idx => 
-                Mathf.Clamp(m_humanPose.muscles[idx], muscleSetting.muscleLimits[idx].min, muscleSetting.muscleLimits[idx].max));
+            Enumerable.Range(0,m_humanPose.muscles.Length).ToList().ForEach(idx =>
+            {
+                if (m_humanPose.muscles[idx] < 0) m_humanPose.muscles[idx] *= muscleSetting.muscleLimits[idx].minScale;
+                else m_humanPose.muscles[idx] *= muscleSetting.muscleLimits[idx].maxScale; 
+            });
+
+            //if(m_humanPose.muscles[39]>0) m_humanPose.muscles[37] = m_humanPose.muscles[39];
+            // 1 2   4 5  7 8  
+            var twistLimit = 0.0f;
+            if (m_chestTwist > 0)
+            {
+                twistLimit = HumanTrait.GetMuscleDefaultMax(5) * muscleSetting.muscleLimits[5].maxScale;
+            }
+            else
+            {
+                twistLimit = HumanTrait.GetMuscleDefaultMin(5) * muscleSetting.muscleLimits[5].minScale;
+            }
+
+            m_humanPose.muscles[5] = m_chestTwist/Mathf.Abs(twistLimit);
+
+            var lrLimit = 0.0f;
+            if (m_chestLR > 0) lrLimit = HumanTrait.GetMuscleDefaultMax(4) * muscleSetting.muscleLimits[4].maxScale;
+            else lrLimit = HumanTrait.GetMuscleDefaultMin(4) * muscleSetting.muscleLimits[4].minScale;
+            m_humanPose.muscles[4] = m_chestLR/Mathf.Abs(lrLimit);
+            
+            //10 13
+
+            var neckLimit= 0.0f;
+            var headLimit = 0.0f;
+            if (m_headLR > 0)
+            {
+                neckLimit = HumanTrait.GetMuscleDefaultMax(10) * muscleSetting.muscleLimits[10].maxScale;
+                headLimit = HumanTrait.GetMuscleDefaultMax(13) * muscleSetting.muscleLimits[13].maxScale;
+            }
+            else
+            {
+                neckLimit = HumanTrait.GetMuscleDefaultMin(10) * muscleSetting.muscleLimits[10].minScale;
+                headLimit = HumanTrait.GetMuscleDefaultMin(13) * muscleSetting.muscleLimits[13].minScale;
+            }
+
+            m_humanPose.muscles[10] = m_headLR / Mathf.Abs(neckLimit) / 2;
+            m_humanPose.muscles[13] = m_headLR / Mathf.Abs(headLimit) / 2;
 
             
-            //m_humanPose.muscles[37] = m_humanPose.muscles[39]*0.5f;
+            Enumerable.Range(0,m_humanPose.muscles.Length).ToList().ForEach(idx =>
+            {
+                m_humanPose.muscles[idx] = Mathf.Clamp(m_humanPose.muscles[idx], -1, 1);
+            });
+
             m_humanPoseHandler.SetHumanPose(ref m_humanPose);
+            var tf = m_anim.GetBoneTransform(HumanBodyBones.Hips);
+            tf.position = m_initialHipPosition;
+            tf.rotation = m_initialHipRotation;
+
         }
         
     }

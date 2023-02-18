@@ -77,7 +77,6 @@ namespace MYTYKit.AvatarImporter
             }
 
             var rootBoneName = m_mainSmr.rootBone.name;
-            //m_avatarRoot = m_mainSmr.rootBone.parent.gameObject;
             m_avatarRoot = m_instances.First(instance =>
                 instance.GetComponentsInChildren<SkinnedMeshRenderer>().Contains(m_mainSmr)).gameObject;
             m_instances.ForEach(instance =>
