@@ -8,6 +8,7 @@ namespace MYTYKit.Components
     public class MYTYAvatarDesc : MonoBehaviour
     {
         public SkinnedMeshRenderer mainBody;
+        public Transform rootBone;
         public HumanoidAvatarBuilder avatarBuilder;
 
         void Start()
@@ -15,10 +16,12 @@ namespace MYTYKit.Components
             var binder = GetComponent<MYTYAvatarBinder>();
             var driver = GetComponent<MYTY3DAvatarDriver>();
 
-            if (mainBody == null) return;
-            
-            FixRootBone();
-            if (binder != null)
+            if (mainBody != null)
+            {
+                FixRootBone();
+            }
+
+            if (binder != null && mainBody!=null)
             {
                 binder.mainBodies = new();
                 binder.mainBodies.Add(mainBody);
@@ -36,8 +39,7 @@ namespace MYTYKit.Components
         
         void FixRootBone()
         {
-            var smrs = GetComponentsInChildren<SkinnedMeshRenderer>().ToList();
-          
+            if (mainBody.rootBone == null) mainBody.rootBone = rootBone;
             var rootBoneName = mainBody.rootBone.name;
             
             transform.GetChildrenList().ForEach(modelRoot =>

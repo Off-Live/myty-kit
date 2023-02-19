@@ -21,7 +21,5 @@ namespace MYTYKit.Components
         {
             if(muscleLimits==null || muscleLimits.Count==0) muscleLimits = HumanTrait.MuscleName.ToList().Select(name => new MuscleLimit() { name = name }).ToList();
         }
-        
-        
     }
 }

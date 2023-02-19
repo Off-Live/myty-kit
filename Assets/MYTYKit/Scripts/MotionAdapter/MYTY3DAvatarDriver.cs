@@ -13,7 +13,8 @@ namespace MYTYKit.MotionAdapters
     {
         public PointsTemplate poseWorldPoints; // the current version supports mediapipe pose module only 
         public AnchorTemplate head;
-
+        public ParametricTemplate blendshape;
+        
         public MYTYIKTarget leftHandTarget;
         public MYTYIKTarget rightHandTarget;
         
@@ -22,6 +23,7 @@ namespace MYTYKit.MotionAdapters
         
         public bool isStartAuto = false;
         public MuscleSetting muscleSetting;
+        public List<BlendShapeSetting> blendShapeSetting;
 
         public Transform leftHandTf;
         public Transform rightHandTf;
@@ -32,7 +34,11 @@ namespace MYTYKit.MotionAdapters
     
         public Transform humanoidAvatarRoot
         {
-            set => m_humanoidAvatarRoot = value;
+            set
+            {
+                m_humanoidAvatarRoot = value;
+                
+            }
         }
         
         KalmanFilterVec3[] m_filters;
@@ -59,12 +65,13 @@ namespace MYTYKit.MotionAdapters
         Vector3 m_initialHipPosition;
         Quaternion m_initialHipRotation;
 
-        MYTYAvatarBinder binder;
-       
+        MYTYAvatarBinder m_binder;
+        
+        
         void Start()
         {
             if(isStartAuto) Initialize();
-            binder = GetComponent<MYTYAvatarBinder>();
+            m_binder = GetComponent<MYTYAvatarBinder>();
         }
         
         
@@ -189,8 +196,32 @@ namespace MYTYKit.MotionAdapters
             m_anim.SetLookAtWeight(1.0f);
             m_anim.SetLookAtPosition(m_anim.GetBoneTransform(HumanBodyBones.Head).position+m_lookAt);
             
+            ApplyBlendshape();
+            
         }
 
+        void ApplyBlendshape()
+        {
+            if (blendshape == null) return;
+            if (blendShapeSetting == null) return;
+            var bsNames = BlendShapeSetting.GetAllBlendShapeNames();
+            
+            blendShapeSetting.ForEach(setting =>
+            {
+                bsNames.ForEach(name =>
+                {
+                    var val = blendshape.GetValue(name);
+                    var index = setting.mesh.sharedMesh.GetBlendShapeIndex(setting.GetMappedBSName(name));
+                 
+                    if (index >= 0)
+                    {
+                        setting.mesh.SetBlendShapeWeight(index, val*100);
+                    }
+                });
+            });
+            
+        }
+        
         float CalculateMuscleValue(ref HumanPose pose, int muscleIdx, float angle)
         {
             var limit = 0.0f;
@@ -223,7 +254,7 @@ namespace MYTYKit.MotionAdapters
             var tf = m_anim.GetBoneTransform(HumanBodyBones.Hips);
             tf.position = m_initialHipPosition;
             tf.rotation = m_initialHipRotation;
-            if(binder!=null) binder.Apply();
+            if(m_binder!=null) m_binder.Apply();
             
         }
         
