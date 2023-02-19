@@ -190,62 +190,35 @@ namespace MYTYKit.MotionAdapters
             m_anim.SetLookAtPosition(m_anim.GetBoneTransform(HumanBodyBones.Head).position+m_lookAt);
             
         }
+
+        float CalculateMuscleValue(ref HumanPose pose, int muscleIdx, float angle)
+        {
+            var limit = 0.0f;
+            if (angle > 0) limit = HumanTrait.GetMuscleDefaultMax(muscleIdx);
+            else limit = HumanTrait.GetMuscleDefaultMin(muscleIdx);
+            return angle / Mathf.Abs(limit);
+        }
         
         void LateUpdate()
         {
             if (!m_isInitialized) return;
             m_humanPoseHandler.GetHumanPose(ref m_humanPose);
+
+            //chest
+            m_humanPose.muscles[5] = CalculateMuscleValue(ref m_humanPose, 5, m_chestTwist);
+            m_humanPose.muscles[4] = CalculateMuscleValue(ref m_humanPose, 4, m_chestLR);
             
-            
-            Enumerable.Range(0,m_humanPose.muscles.Length).ToList().ForEach(idx =>
-            {
-                if (m_humanPose.muscles[idx] < 0) m_humanPose.muscles[idx] *= muscleSetting.muscleLimits[idx].minScale;
-                else m_humanPose.muscles[idx] *= muscleSetting.muscleLimits[idx].maxScale; 
-            });
-
-            //if(m_humanPose.muscles[39]>0) m_humanPose.muscles[37] = m_humanPose.muscles[39];
-            // 1 2   4 5  7 8  
-            var twistLimit = 0.0f;
-            if (m_chestTwist > 0)
-            {
-                twistLimit = HumanTrait.GetMuscleDefaultMax(5) * muscleSetting.muscleLimits[5].maxScale;
-            }
-            else
-            {
-                twistLimit = HumanTrait.GetMuscleDefaultMin(5) * muscleSetting.muscleLimits[5].minScale;
-            }
-
-            m_humanPose.muscles[5] = m_chestTwist/Mathf.Abs(twistLimit);
-
-            var lrLimit = 0.0f;
-            if (m_chestLR > 0) lrLimit = HumanTrait.GetMuscleDefaultMax(4) * muscleSetting.muscleLimits[4].maxScale;
-            else lrLimit = HumanTrait.GetMuscleDefaultMin(4) * muscleSetting.muscleLimits[4].minScale;
-            m_humanPose.muscles[4] = m_chestLR/Mathf.Abs(lrLimit);
-            
-            //10 13
-
-            var neckLimit= 0.0f;
-            var headLimit = 0.0f;
-            if (m_headLR > 0)
-            {
-                neckLimit = HumanTrait.GetMuscleDefaultMax(10) * muscleSetting.muscleLimits[10].maxScale;
-                headLimit = HumanTrait.GetMuscleDefaultMax(13) * muscleSetting.muscleLimits[13].maxScale;
-            }
-            else
-            {
-                neckLimit = HumanTrait.GetMuscleDefaultMin(10) * muscleSetting.muscleLimits[10].minScale;
-                headLimit = HumanTrait.GetMuscleDefaultMin(13) * muscleSetting.muscleLimits[13].minScale;
-            }
-
-            m_humanPose.muscles[10] = m_headLR / Mathf.Abs(neckLimit) / 2;
-            m_humanPose.muscles[13] = m_headLR / Mathf.Abs(headLimit) / 2;
-
+            //head
+            m_humanPose.muscles[10] = CalculateMuscleValue(ref m_humanPose, 10, m_headLR/2);
+            m_humanPose.muscles[13] = CalculateMuscleValue(ref m_humanPose, 13, m_headLR/2);
             
             Enumerable.Range(0,m_humanPose.muscles.Length).ToList().ForEach(idx =>
             {
                 m_humanPose.muscles[idx] = Mathf.Clamp(m_humanPose.muscles[idx], -1, 1);
+                if (m_humanPose.muscles[idx] < 0) m_humanPose.muscles[idx] *= muscleSetting.muscleLimits[idx].minScale;
+                else m_humanPose.muscles[idx] *= muscleSetting.muscleLimits[idx].maxScale; 
             });
-
+            
             m_humanPoseHandler.SetHumanPose(ref m_humanPose);
             var tf = m_anim.GetBoneTransform(HumanBodyBones.Hips);
             tf.position = m_initialHipPosition;
