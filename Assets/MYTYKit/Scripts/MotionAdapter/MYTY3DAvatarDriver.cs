@@ -59,11 +59,12 @@ namespace MYTYKit.MotionAdapters
         Vector3 m_initialHipPosition;
         Quaternion m_initialHipRotation;
 
+        MYTYAvatarBinder binder;
        
         void Start()
         {
             if(isStartAuto) Initialize();
-            
+            binder = GetComponent<MYTYAvatarBinder>();
         }
         
         
@@ -78,6 +79,7 @@ namespace MYTYKit.MotionAdapters
             Enumerable.Range(0,35).ToList().ForEach(idx => m_filters[idx] = new KalmanFilterVec3());
 
             m_anim = GetComponent<Animator>();
+            
             m_humanPoseHandler = new HumanPoseHandler(m_anim.avatar, m_humanoidAvatarRoot);
             m_humanPose = new HumanPose();
             
@@ -248,7 +250,8 @@ namespace MYTYKit.MotionAdapters
             var tf = m_anim.GetBoneTransform(HumanBodyBones.Hips);
             tf.position = m_initialHipPosition;
             tf.rotation = m_initialHipRotation;
-
+            if(binder!=null) binder.Apply();
+            
         }
         
     }

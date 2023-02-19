@@ -92,9 +92,10 @@ namespace MYTYKit
 			rightLowerLeg = rightUpperLeg.GetChild(0);
 			rightFoot = rightLowerLeg.GetChild(0);
 			if (rightFoot.childCount > 0) rightToe = rightFoot.GetChild(0);
-		
 			
+			AutoSetupFingers();
 		}
+		
 
 		public void TPose() //Only Arms.
 		{
@@ -120,6 +121,26 @@ namespace MYTYKit
 				});
 			}
 			
+		}
+
+		void AutoSetupFingers()
+		{
+			
+			var leftFingersTmp = new List<Transform>();
+			var rightFingersTmp = new List<Transform>();
+			FindLeafNode(leftShoulder, ref leftFingersTmp);
+			FindLeafNode(rightShoulder, ref rightFingersTmp);
+
+			leftFingersTmp = leftFingersTmp.Where(fingerTip => CountOfFingerNode(fingerTip,leftHand) == 2).ToList();
+			rightFingersTmp = rightFingersTmp.Where(fingerTip => CountOfFingerNode(fingerTip, rightHand) == 2).ToList();
+			
+			if (CheckValidityOfFingers(leftFingersTmp.ToArray(), leftHand) &&
+			    CheckValidityOfFingers(rightFingersTmp.ToArray(), rightHand))
+			{
+				leftFingers = leftFingersTmp.ToArray();
+				rightFingers = rightFingersTmp.ToArray();
+			}
+
 		}
 
 		void FindLeafNode(Transform root, ref List<Transform> leafList)
@@ -151,19 +172,21 @@ namespace MYTYKit
 			if (fingers == null) return false;
 			if (fingers.Length != 5) return false;
 
-			var nodeCount = fingers.Select(fingerTip =>
-			{
-				var cnt = 0;
-				do
-				{
-					if (fingerTip == null) break;
-					fingerTip = fingerTip.parent;
-					
-				} while (fingerTip != hand && ++cnt<2);
-				return cnt;
-			}).ToList();
+			var nodeCount = fingers.Select(fingerTip => CountOfFingerNode(fingerTip,hand)).ToList();
 
 			return nodeCount.Count(count => count != 2) == 0;
+		}
+
+		int CountOfFingerNode(Transform fingerTip, Transform hand)
+		{
+			var cnt = 0;
+			do
+			{
+				if (fingerTip == null) break;
+				fingerTip = fingerTip.parent;
+					
+			} while (fingerTip != hand && ++cnt<2);
+			return cnt;
 		}
 
 		static Transform[][] BuildFingers(Transform[] fingers)

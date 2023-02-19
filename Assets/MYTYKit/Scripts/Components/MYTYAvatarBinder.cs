@@ -26,6 +26,8 @@ namespace MYTYKit.Components
         Dictionary<string, List<DiffItem>> m_rotationDiffMap = new();
         Dictionary<string, RootDisplacement> m_rootDispMap = new();
 
+        bool m_isApplied = false;
+        
         public void Bind()
         {
             var childrenSmrs = GetComponentsInChildren<SkinnedMeshRenderer>();
@@ -68,6 +70,21 @@ namespace MYTYKit.Components
 
         }
 
+        public void Apply()
+        {
+            m_rootDispMap.Keys.ToList().ForEach(key =>{
+                var disp =m_rootDispMap[key];
+                disp.targetRootBone.position = disp.sourceRootBone.position;
+            });
+            m_rotationDiffMap.Keys.ToList().ForEach( key => 
+                m_rotationDiffMap[key].ForEach( item => 
+                    // item.targetTransform.rotation = item.rotDiff* item.sourceTransform.rotation
+                    item.targetTransform.rotation = item.sourceTransform.rotation * item.sourceQuaternion.GetConjugate()*item.targetQuaternion
+                ));
+
+            m_isApplied = true;
+        }
+
         List<DiffItem> CalculateDiffList(Transform childRootBone, Transform sourceRootBone)
         {
             var list = new List<DiffItem>();
@@ -105,20 +122,14 @@ namespace MYTYKit.Components
 
         }
 
-        // Update is called once per frame
+        void Update()
+        {
+            m_isApplied = false;
+        }
+        
         void LateUpdate()
         {
-            m_rootDispMap.Keys.ToList().ForEach(key =>{
-                var disp =m_rootDispMap[key];
-                disp.targetRootBone.position = disp.sourceRootBone.position;
-            });
-            m_rotationDiffMap.Keys.ToList().ForEach( key => 
-                m_rotationDiffMap[key].ForEach( item => 
-                    // item.targetTransform.rotation = item.rotDiff* item.sourceTransform.rotation
-                    item.targetTransform.rotation = item.sourceTransform.rotation * item.sourceQuaternion.GetConjugate()*item.targetQuaternion
-                    ));
-        
-            
+           if(!m_isApplied) Apply();
         }
     }
 }

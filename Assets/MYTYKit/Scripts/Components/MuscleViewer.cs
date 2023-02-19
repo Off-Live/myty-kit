@@ -46,14 +46,7 @@ namespace MYTYKit.Components
                 
             });
             
-            //m_humanPoseHandler.SetHumanPose(ref m_humanPose);
-            // var tf = m_anim.GetBoneTransform(HumanBodyBones.Hips);
-            // rootpos = m_anim.GetBoneTransform(HumanBodyBones.Hips).position;
-            // rootrot = m_anim.GetBoneTransform(HumanBodyBones.Hips).rotation;
-            // m_posDiff = rootpos- m_initialHipPosition;
-            // m_rotDiff = m_initialHipRotation * rootrot.GetConjugate() ;
-            // tf.rotation = m_rotDiff * rootrot;
-            // tf.position = m_initialHipPosition;
+       
         }
     }
 }
