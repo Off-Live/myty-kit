@@ -41,7 +41,7 @@ namespace MYTYKit.Components
         {
             if (mainBody.rootBone == null) mainBody.rootBone = rootBone;
             var rootBoneName = mainBody.rootBone.name;
-            
+            mainBody.updateWhenOffscreen = true;
             transform.GetChildrenList().ForEach(modelRoot =>
             {
                 var children = modelRoot.GetComponentsInChildren<Transform>();
@@ -51,7 +51,11 @@ namespace MYTYKit.Components
                     Debug.LogWarning("Cannot find root bone");
                     return;
                 }
-                modelRoot.GetComponentsInChildren<SkinnedMeshRenderer>().ToList().ForEach( smr => smr.rootBone = rootTf);
+                modelRoot.GetComponentsInChildren<SkinnedMeshRenderer>().ToList().ForEach( smr =>
+                {
+                    smr.updateWhenOffscreen = true;
+                    smr.rootBone = rootTf;
+                });
             });
 
         }
