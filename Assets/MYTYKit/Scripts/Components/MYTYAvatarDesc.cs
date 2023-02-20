@@ -15,7 +15,8 @@ namespace MYTYKit.Components
         {
             var binder = GetComponent<MYTYAvatarBinder>();
             var driver = GetComponent<MYTY3DAvatarDriver>();
-
+            var anim = GetComponent<Animator>();
+            if (anim.avatar == null) anim.avatar = avatarBuilder.avatar;
             if (mainBody != null)
             {
                 FixRootBone();
@@ -35,6 +36,7 @@ namespace MYTYKit.Components
                 driver.Initialize();
                
             }
+
         }
         
         void FixRootBone()

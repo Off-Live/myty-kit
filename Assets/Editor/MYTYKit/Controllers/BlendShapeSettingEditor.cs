@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using MYTYKit.Components;
@@ -82,7 +83,7 @@ namespace MYTYKit
             meshBsNames.ForEach(meshBsName =>
             {
                 var lowerName = meshBsName.ToLower().Trim();
-                var bsName = bsNames.First(name => lowerName.Contains(name.ToLower()));
+                var bsName = bsNames.FirstOrDefault(name => lowerName.Contains(name.ToLower()));
                 var index = bsNames.IndexOf(bsName);
                 if (index >= 0)
                 {
@@ -93,13 +94,21 @@ namespace MYTYKit
             
             meshBsNames.Where(meshBsName=> !doneBsNames.Contains(meshBsName)).ToList().ForEach(meshBsName =>
             {
-                var lowerName = meshBsName.ToLower().Trim();
-                var matchWords = bsDict.FindAll(words => words.TrueForAll(word => lowerName.Contains(word.ToLower())))
-                    .Aggregate((max, next)=> max.Count<next.Count? next : max);
-                var bsName = "";
-                matchWords.ForEach(word=> bsName+=word);
-                var index = bsNames.IndexOf(bsName);
-                if (index >= 0) m_bsUIList[index].Q<TextField>().value = meshBsName;
+                try
+                {
+                    var lowerName = meshBsName.ToLower().Trim();
+                    var matchWords = bsDict
+                        .FindAll(words => words.TrueForAll(word => lowerName.Contains(word.ToLower())))
+                        .Aggregate((max, next) => max.Count < next.Count ? next : max);
+                    var bsName = "";
+                    matchWords.ForEach(word => bsName += word);
+                    var index = bsNames.IndexOf(bsName);
+                    if (index >= 0) m_bsUIList[index].Q<TextField>().value = meshBsName;
+                }
+                catch(InvalidOperationException e)
+                {
+                    
+                }
             });
         }
 

@@ -48,6 +48,8 @@ namespace MYTYKit
 		public Transform[] leftFingers;
 		public Transform[] rightFingers;
 
+		public Avatar avatar;
+		
 		Mesh m_mesh;
 
 		Transform[][] m_leftFingerArray;
@@ -57,7 +59,7 @@ namespace MYTYKit
 		public Avatar BuildAvatar()
 		{
 			var desc = CreateDescription(avatarRoot.gameObject, BuildBoneMap());
-			Avatar avatar = AvatarBuilder.BuildHumanAvatar(avatarRoot.gameObject, desc);
+			avatar = AvatarBuilder.BuildHumanAvatar(avatarRoot.gameObject, desc);
 			avatar.name = avatarRoot.name;
 			
 			Debug.Log(avatar.isHuman ? "is human" : "is generic");

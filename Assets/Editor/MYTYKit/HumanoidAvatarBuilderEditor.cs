@@ -58,7 +58,7 @@ namespace MYTYKit
             
             container.Add(essentialBones);
             container.Add(manualsetting);
-            
+
             var builder = (HumanoidAvatarBuilder)target;
             var btnAutoBody = new Button(()=>
             {
@@ -110,7 +110,7 @@ namespace MYTYKit
                 var avatar = builder.BuildAvatar();
                 var path = string.Format(MYTYUtil.AssetPath + "/{0}.ht", avatar.name.Replace(':', '_'));
                 AssetDatabase.CreateAsset(avatar, path);
-                
+                builder.RestorePose();
                 foreach (SceneView sceneView in SceneView.sceneViews)
                 {
                     sceneView.ShowNotification(new GUIContent($"Avatar asset created at {path} "));
