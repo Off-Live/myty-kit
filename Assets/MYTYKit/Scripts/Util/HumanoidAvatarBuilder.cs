@@ -52,6 +52,8 @@ namespace MYTYKit
 
 		Transform[][] m_leftFingerArray;
 		Transform[][] m_rightFingerArray;
+
+		Dictionary<Transform, Quaternion> m_poseCache;
 		public Avatar BuildAvatar()
 		{
 			var desc = CreateDescription(avatarRoot.gameObject, BuildBoneMap());
@@ -121,6 +123,30 @@ namespace MYTYKit
 				});
 			}
 			
+		}
+
+		public bool IsCachedPose()
+		{
+			return m_poseCache != null;
+		}
+		public void SavePose()
+		{
+			if (avatarRoot == null)
+			{
+				Debug.LogWarning("No avatarRoot set");
+				return;
+			}
+			m_poseCache = avatarRoot.GetComponentsInChildren<Transform>().ToDictionary(tf => tf, tf => tf.rotation);
+		}
+
+		public void RestorePose()
+		{
+			if (m_poseCache == null)
+			{
+				Debug.LogWarning("No saved pose");
+				return;
+			}
+			avatarRoot.GetComponentsInChildren<Transform>().Where(tf => m_poseCache.ContainsKey(tf)).ToList().ForEach(tf => tf.rotation = m_poseCache[tf]);
 		}
 
 		void AutoSetupFingers()

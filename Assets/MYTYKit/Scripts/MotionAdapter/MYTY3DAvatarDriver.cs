@@ -34,18 +34,13 @@ namespace MYTYKit.MotionAdapters
     
         public Transform humanoidAvatarRoot
         {
-            set
-            {
-                m_humanoidAvatarRoot = value;
-                
-            }
+            set => m_humanoidAvatarRoot = value;
         }
         
         KalmanFilterVec3[] m_filters;
         
-        
-        public float m_chestTwist = 0.0f;
-        public float m_chestLR = 0.0f;
+        float m_chestTwist = 0.0f;
+        float m_chestLR = 0.0f;
         float m_headLR = 0.0f;
         Vector3 m_lookAt;
         Vector3 m_headUp;

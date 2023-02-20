@@ -65,20 +65,69 @@ namespace MYTYKit
                 builder.AutoBody();
                 boneFolding.value = true;
             });
-            var btnTpose = new Button(() => builder.TPose());
+            
+            
+            var btnTpose = new Button(() =>
+            {
+                if (!builder.IsCachedPose())
+                {
+                    foreach (SceneView sceneView in SceneView.sceneViews)
+                    {
+                        sceneView.ShowNotification(new GUIContent("Please save pose first"));
+                    }
+
+                    return;
+                }
+                builder.TPose();
+            });
+
+            var btnSavePose = new Button(() =>
+            {
+                builder.SavePose();
+                foreach (SceneView sceneView in SceneView.sceneViews)
+                {
+                    sceneView.ShowNotification(new GUIContent("Pose saved"));
+                }
+
+            });
+
+            var btnRestorePose = new Button(() =>
+            {
+                if (!builder.IsCachedPose())
+                {
+                    foreach (SceneView sceneView in SceneView.sceneViews)
+                    {
+                        sceneView.ShowNotification(new GUIContent("No cached pose"));
+                    }
+
+                    return;
+                }
+                builder.RestorePose();
+            });
+            
             var btnAvatar = new Button(() =>
             {
                 var avatar = builder.BuildAvatar();
                 var path = string.Format(MYTYUtil.AssetPath + "/{0}.ht", avatar.name.Replace(':', '_'));
                 AssetDatabase.CreateAsset(avatar, path);
+                
+                foreach (SceneView sceneView in SceneView.sceneViews)
+                {
+                    sceneView.ShowNotification(new GUIContent($"Avatar asset created at {path} "));
+                }
             });
+            
             btnAutoBody.text = "Auto Body";
             btnTpose.text = "T Pose";
-            btnAvatar.text = "Build avatar";
+            btnAvatar.text = "Build Avatar";
+            btnSavePose.text = "Save Pose";
+            btnRestorePose.text = "Restore Pose";
             
             container.Add(btnAutoBody);
+            container.Add(btnSavePose);
             container.Add(btnTpose);
             container.Add(btnAvatar);
+            container.Add(btnRestorePose);
             return container;
         }
 
