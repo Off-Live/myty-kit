@@ -20,7 +20,7 @@ namespace MYTYKit
             var kitFullPath = Path.GetFullPath(KitPath);
             if (!Directory.Exists(kitFullPath)) return;
             CopyKitFiles();
-            CopyStreamingAssets();
+            //CopyStreamingAssets();
             
         }
 
