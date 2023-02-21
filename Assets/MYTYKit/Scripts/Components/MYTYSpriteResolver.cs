@@ -4,6 +4,7 @@ using UnityEngine.U2D.Animation;
 
 namespace MYTYKit.Components
 {
+    [DisallowMultipleComponent]
     public class MYTYSpriteResolver : MonoBehaviour
     {
         // Start is called before the first frame update
