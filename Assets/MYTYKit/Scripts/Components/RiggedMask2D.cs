@@ -4,6 +4,7 @@ using UnityEditor;
 
 namespace MYTYKit.Components
 {
+    [DisallowMultipleComponent]
     public class RiggedMask2D : MonoBehaviour
     {
 

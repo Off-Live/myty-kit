@@ -1,6 +1,9 @@
 using System;
+using System.IO;
 using System.Linq;
 using MYTYKit.MotionAdapters;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace MYTYKit.Components
@@ -60,6 +63,28 @@ namespace MYTYKit.Components
                 });
             });
 
+        }
+
+        public string ExportToJson()
+        {
+            var avatarRoot = avatarBuilder.avatarRoot;
+            var driver = GetComponent<MYTY3DAvatarDriver>();
+            
+            var json = JObject.FromObject(new
+            {
+                mainBody = mainBody.name,
+                rootBoon = rootBone.name,
+                avatarRoot = avatarRoot.name,
+                referenceScale = new
+                {
+                    transform.localScale.x,
+                    transform.localScale.y,
+                    transform.localScale.z  
+                },
+                avatar = avatarBuilder.ExportToJObject(),
+                driver = driver.ExportToJObject()
+            });
+            return json.ToString(Formatting.Indented);
         }
 
     }

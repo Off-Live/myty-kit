@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using log4net.Repository.Hierarchy;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace MYTYKit
@@ -400,6 +401,36 @@ namespace MYTYKit
 			});
 
 
+		}
+
+		public JObject ExportToJObject()
+		{
+			var humanBones = avatar.humanDescription.human.Select(humanBone => JObject.FromObject(new
+			{
+				humanBone.boneName,
+				humanBone.humanName
+			})).ToArray();
+
+			var skeletons = avatar.humanDescription.skeleton.Select(skeleton=> JObject.FromObject(new
+			{
+				skeleton.name,
+				position = JObject.FromObject(new
+				{
+					skeleton.position.x,skeleton.position.y, skeleton.position.z
+				}),
+				rotation = JObject.FromObject(new
+				{
+					skeleton.rotation.x, skeleton.rotation.y, skeleton.rotation.z, skeleton.rotation.w	
+				}),
+				scale = JObject.FromObject(new
+				{
+					skeleton.scale.x, skeleton.scale.y, skeleton.scale.z
+				})
+			}));
+			return JObject.FromObject(new
+			{
+				humanBones,skeletons
+			});
 		}
 	}
 }

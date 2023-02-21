@@ -17,7 +17,7 @@ namespace MYTYKit
         public static readonly string MotionAdaptersJson = "motions.json";
         public static readonly string RootControllers = "rootCons.json";
         public static readonly string AssetPath = "Assets/MYTYAsset/ImportedAvatarAssets";
-
+        public static readonly string MetadataPath = "Assets/MYTYAsset/ExportedMetadata";
 
         public static void BuildAssetPath(string path)
         {

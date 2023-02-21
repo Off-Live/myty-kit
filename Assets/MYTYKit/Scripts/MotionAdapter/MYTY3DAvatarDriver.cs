@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MYTYKit.Components;
 using MYTYKit.MotionTemplates;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 
@@ -252,6 +253,26 @@ namespace MYTYKit.MotionAdapters
             if(m_binder!=null) m_binder.Apply();
             
         }
-        
+
+        public JObject ExportToJObject()
+        {
+            
+            return JObject.FromObject(new
+            {
+                visibleThreshold,
+                lookAtOffset,
+                isDamping,
+                isStabilizing,
+                isUseDampedInputToStabilizer,
+                dampingFactor,
+                dampingWindow,
+                muscleSetting = muscleSetting.muscleLimits,
+                blendShapeSetting = blendShapeSetting.Select( setting=> JObject.FromObject(new
+                {
+                    setting.mesh.name,
+                    setting.blendShapes 
+                }) ).ToArray()
+            });
+        }
     }
 }
