@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MYTYKit.MotionAdapters;
@@ -8,12 +9,14 @@ using UnityEngine;
 
 namespace MYTYKit.Components
 {
+    [DisallowMultipleComponent]
     public class MYTYAvatarDesc : MonoBehaviour
     {
         public SkinnedMeshRenderer mainBody;
         public Transform rootBone;
         public HumanoidAvatarBuilder avatarBuilder;
 
+        List<Transform> m_traitRootBones = new();
         void Start()
         {
             var binder = GetComponent<MYTYAvatarBinder>();
@@ -22,17 +25,16 @@ namespace MYTYKit.Components
             if (anim.avatar == null) anim.avatar = avatarBuilder.avatar;
             if (mainBody != null)
             {
-                FixRootBone();
+                FixAndFindRootBone();
+                if (binder != null )
+                {
+                    binder.SetupRootBody(rootBone);
+                    m_traitRootBones.ForEach(traitRoot=>binder.Bind(traitRoot));
+                }
+
             }
 
-            if (binder != null && mainBody!=null)
-            {
-                binder.mainBodies = new();
-                binder.mainBodies.Add(mainBody);
-                binder.Bind();
-                
-            }
-
+           
             if (driver != null && avatarBuilder!=null)
             {
                 driver.humanoidAvatarRoot = avatarBuilder.avatarRoot;
@@ -42,7 +44,7 @@ namespace MYTYKit.Components
 
         }
         
-        void FixRootBone()
+        void FixAndFindRootBone()
         {
             if (mainBody.rootBone == null) mainBody.rootBone = rootBone;
             var rootBoneName = mainBody.rootBone.name;
@@ -56,6 +58,7 @@ namespace MYTYKit.Components
                     Debug.LogWarning("Cannot find root bone");
                     return;
                 }
+                m_traitRootBones.Add(rootTf);
                 modelRoot.GetComponentsInChildren<SkinnedMeshRenderer>().ToList().ForEach( smr =>
                 {
                     smr.updateWhenOffscreen = true;

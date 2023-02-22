@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace MYTYKit
 {
+	[DisallowMultipleComponent]
 	public class HumanoidAvatarBuilder : MonoBehaviour
 	{
 		public static readonly string[] FingerName = {

@@ -87,8 +87,8 @@ namespace MYTYKit.MotionAdapters
             m_humanPose = new HumanPose();
             
             var hipTf = m_anim.GetBoneTransform(HumanBodyBones.Hips);
-            m_initialHipPosition = hipTf.position;
-            m_initialHipRotation = hipTf.rotation;
+            m_initialHipPosition = hipTf.localPosition;
+            m_initialHipRotation = hipTf.localRotation;
             m_isInitialized = true;
 
         }
@@ -248,8 +248,8 @@ namespace MYTYKit.MotionAdapters
             
             m_humanPoseHandler.SetHumanPose(ref m_humanPose);
             var tf = m_anim.GetBoneTransform(HumanBodyBones.Hips);
-            tf.position = m_initialHipPosition;
-            tf.rotation = m_initialHipRotation;
+            tf.localPosition = m_initialHipPosition;
+            tf.localRotation = m_initialHipRotation;
             if(m_binder!=null) m_binder.Apply();
             
         }
