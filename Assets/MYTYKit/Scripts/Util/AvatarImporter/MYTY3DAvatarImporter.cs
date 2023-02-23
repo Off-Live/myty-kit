@@ -1,13 +1,25 @@
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using MYTYKit.MotionAdapters;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UniGLTF;
+using VRMShaders;
 
 
 namespace MYTYKit.AvatarImporter
 {
+
+    public class MYTYImporterException : Exception
+    {
+        public MYTYImporterException(string reason):base(reason)
+        {
+            
+        }
+    }
     [DisallowMultipleComponent]
     public class MYTY3DAvatarImporter : MonoBehaviour
     {
@@ -21,12 +33,13 @@ namespace MYTYKit.AvatarImporter
 
         Dictionary<Transform, Transform> m_rootBoneMap = new();
 
-        public bool LoadMainbody(byte[] modelData, string jsonString)
+        
+        
+        public void LoadMainbody(byte[] modelData, string jsonString)
         {
             if (driver == null)
             {
-                Debug.LogError("The driver is not setup properly");
-                return false;
+                throw new MYTYImporterException("The driver is not setup properly");
             }
        
             var jObj = JObject.Parse(jsonString);
@@ -34,49 +47,56 @@ namespace MYTYKit.AvatarImporter
             var rootBoneName = (string)jObj["rootBone"];
             var avatarRootName = (string)jObj["avatarRoot"];
             transform.localScale = jObj["referenceScale"].ToObject<Vector3>();
-            var instance = LoadGlb(modelData, avatarRootName);
-
-            m_mainSmr = instance.GetComponentsInChildren<SkinnedMeshRenderer>().FirstOrDefault(smr => smr.name == mainBodyName);
-            if (m_mainSmr == null)
+            LoadGlb(modelData, avatarRootName, instance =>
             {
-                instance.Dispose();
-                return false;
-            }
+                m_mainSmr = instance.GetComponentsInChildren<SkinnedMeshRenderer>().FirstOrDefault(smr => smr.name == mainBodyName);
+                if (m_mainSmr == null)
+                {
+                    instance.Dispose();
+                    throw new MYTYImporterException($"The bodyname {mainBodyName} is not valid ");
+                }
 
-            m_rootBone = instance.GetComponentsInChildren<Transform>()
-                .FirstOrDefault(tf => tf.name == rootBoneName);
-            if (m_rootBone == null)
-            {
-                Debug.LogWarning("No root bone in mainbody");
-                instance.Dispose();
-                return false;
-            }
-            m_avatarRoot = instance.transform;
-            m_avatarRoot.parent = driver.transform;
-            m_instances.Add(instance);
+                m_rootBone = instance.GetComponentsInChildren<Transform>()
+                    .FirstOrDefault(tf => tf.name == rootBoneName);
+                if (m_rootBone == null)
+                {
+                    instance.Dispose();
+                    throw new MYTYImporterException($"No root bone in mainbody");
+                    
+                }
+                m_avatarRoot = instance.transform;
+                m_avatarRoot.parent = driver.transform;
+                m_instances.Add(instance);
             
-            avatar = HumanoidAvatarBuilder.CreateAvatarFromJson(m_avatarRoot.gameObject, (JObject)jObj["avatar"]);
-            driver.GetComponent<Animator>().avatar = avatar;
-            driver.binder.SetupRootBody(m_rootBone);
-            driver.DeserializeFromJObject((JObject)jObj["driver"]);
-            driver.CheckAndSetupBlendShape(m_avatarRoot);
-            driver.humanoidAvatarRoot = m_avatarRoot;
-            driver.Initialize();
-            
-            return true;
+                avatar = HumanoidAvatarBuilder.CreateAvatarFromJson(m_avatarRoot.gameObject, (JObject)jObj["avatar"]);
+                driver.GetComponent<Animator>().avatar = avatar;
+                driver.binder.SetupRootBody(m_rootBone);
+                driver.DeserializeFromJObject((JObject)jObj["driver"]);
+                driver.CheckAndSetupBlendShape(m_avatarRoot);
+                driver.humanoidAvatarRoot = m_avatarRoot;
+                driver.Initialize();
+
+            });
         }
 
-        public bool LoadTrait(byte[] bytes, string loadName)
+        public void LoadTrait(byte[] bytes, string loadName)
         {
-            if (m_avatarRoot == null) return false;
-            var instance = LoadGlb(bytes, loadName);
-            instance.transform.parent = driver.transform;
-            m_instances.Add(instance);
-            var rootBone = FixAndGetRootBone(instance.transform);
-            driver.binder.Bind(rootBone);
-            driver.CheckAndSetupBlendShape(instance.transform);
-            m_rootBoneMap[instance.transform] = rootBone;
-            return true;
+            if (m_avatarRoot == null)
+            {
+                throw new MYTYImporterException("No mainbody is set");
+                
+            }
+            LoadGlb(bytes, loadName, instance =>
+            {
+                instance.transform.parent = driver.transform;
+                m_instances.Add(instance);
+                var rootBone = FixAndGetRootBone(instance.transform);
+                driver.binder.Bind(rootBone);
+                driver.CheckAndSetupBlendShape(instance.transform);
+                m_rootBoneMap[instance.transform] = rootBone;
+            });
+           
+           
         }
 
         public void UnloadTrait(string name)
@@ -88,22 +108,22 @@ namespace MYTYKit.AvatarImporter
             m_rootBoneMap.Remove(traitTf.transform);
             traitTf.Dispose();
         }
-        
-        RuntimeGltfInstance LoadGlb(byte[] bytes, string loadName)
+
+        async void LoadGlb(byte[] bytes, string loadName, Action<RuntimeGltfInstance> action)
         {
             
             using(var glbData = new GlbBinaryParser(bytes, loadName).Parse())
             using (var loader = new ImporterContext(glbData))
             {
                 loader.InvertAxis = Axes.X;
-                var instance = loader.Load();
+                var instance = await loader.LoadAsync(new RuntimeOnlyAwaitCaller());
                 instance.name = loadName;
                 instance.EnableUpdateWhenOffscreen();
                 instance.ShowMeshes();
-                return instance;
+                action(instance);
             }
         }
-
+        
         Transform FixAndGetRootBone(Transform instance)
         {
             var rootBoneName = m_rootBone.name;
@@ -117,6 +137,5 @@ namespace MYTYKit.AvatarImporter
             instance.GetComponentsInChildren<SkinnedMeshRenderer>().ToList().ForEach( smr => smr.rootBone = rootTf);
             return rootTf;
         }
-        
     }
 }
