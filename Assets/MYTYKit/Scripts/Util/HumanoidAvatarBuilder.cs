@@ -132,7 +132,7 @@ namespace MYTYKit
 			var leftDirection = (leftShoulder.position - rightShoulder.position).normalized;
 			if (Vector3.Dot(leftDirection, Vector3.left) < 0)
 			{
-				hips.transform.Rotate(Vector3.up,180);
+				hips.transform.rotation = Quaternion.AngleAxis(180, Vector3.up) * hips.transform.rotation;
 			}
 			
 			FlattenChainInDirection(leftChain, Vector3.left);
