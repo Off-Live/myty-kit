@@ -129,6 +129,12 @@ namespace MYTYKit
 		{
 			var leftChain = new[] { leftShoulder, leftUpperArm, leftLowerArm, leftHand };
 			var rightChain = new[] { rightShoulder, rightUpperArm, rightLowerArm, rightHand };
+			var leftDirection = (leftShoulder.position - rightShoulder.position).normalized;
+			if (Vector3.Dot(leftDirection, Vector3.left) < 0)
+			{
+				hips.transform.Rotate(Vector3.up,180);
+			}
+			
 			FlattenChainInDirection(leftChain, Vector3.left);
 			FlattenChainInDirection(rightChain, Vector3.right);
 
