@@ -67,6 +67,28 @@ namespace MYTYKit
 			Debug.Log(avatar.isHuman ? "is human" : "is generic");
 			return avatar;
 		}
+
+		public static Avatar CreateAvatarFromJson(GameObject root, JObject jObj)
+		{
+			var human = jObj["humanBones"].ToList()
+				.Select(token =>
+				{
+					var humanBone = new HumanBone()
+					{
+						boneName = (string)token["boneName"],
+						humanName = (string)token["humanName"],
+						limit = new HumanLimit()
+					};
+					humanBone.limit.useDefaultValues = true;
+					return humanBone;
+				}).ToArray();
+			var skeleton = jObj["skeletons"].ToObject<List<SkeletonBone>>().ToArray();
+			var desc = CreateDescription(skeleton, human);
+			var avatar = AvatarBuilder.BuildHumanAvatar(root, desc);
+			avatar.name = root.name;
+			Debug.Log(avatar.isHuman ? "is human" : "is generic");
+			return avatar;
+		}
 		
 	
 		public void AutoBody()
@@ -290,6 +312,11 @@ namespace MYTYKit
 
 		static HumanDescription CreateDescription(GameObject avatarRoot, Dictionary<string,string > boneMap)
 		{
+			return CreateDescription(CreateSkeleton(avatarRoot), CreateHuman(avatarRoot, boneMap));
+		}
+
+		static HumanDescription CreateDescription(SkeletonBone[] skeleton, HumanBone[] human)
+		{
 			HumanDescription description = new HumanDescription()
 			{
 				armStretch = 0.05f,
@@ -300,8 +327,8 @@ namespace MYTYKit
 				lowerLegTwist = 0.5f,
 				upperArmTwist = 0.5f,
 				upperLegTwist = 0.5f,
-				skeleton = CreateSkeleton(avatarRoot),
-				human = CreateHuman(avatarRoot, boneMap),
+				skeleton = skeleton,
+				human = human,
 			};
 			return description;
 		}

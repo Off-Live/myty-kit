@@ -76,7 +76,7 @@ namespace MYTYKit.Components
             var json = JObject.FromObject(new
             {
                 mainBody = mainBody.name,
-                rootBoon = rootBone.name,
+                rootBone = rootBone.name,
                 avatarRoot = avatarRoot.name,
                 referenceScale = new
                 {
@@ -85,7 +85,7 @@ namespace MYTYKit.Components
                     transform.localScale.z  
                 },
                 avatar = avatarBuilder.ExportToJObject(),
-                driver = driver.ExportToJObject()
+                driver = driver.SerializeToJObject()
             });
             return json.ToString(Formatting.Indented);
         }

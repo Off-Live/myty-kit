@@ -69,7 +69,7 @@ namespace MYTYKit
             driver.rightHandTarget = rhTarget;
             
             driver.head = mapper.GetTemplate("Head") as AnchorTemplate;
-            driver.blendshape = mapper.GetTemplate("BlendShape") as ParametricTemplate;
+            driver.blendShape = mapper.GetTemplate("BlendShape") as ParametricTemplate;
             driver.poseWorldPoints = mapper.GetTemplate("BodyPoints") as PointsTemplate;
             
         }
