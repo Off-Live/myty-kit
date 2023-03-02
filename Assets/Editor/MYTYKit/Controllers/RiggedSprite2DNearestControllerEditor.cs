@@ -12,12 +12,13 @@ namespace MYTYKit
     [CustomEditor(typeof(RiggedSprite2DNearestController))]
     public class RiggedSprite2DNearestControllerEditor : Editor
     {
-        public StyleSheet styleSheet;
+        
         public override VisualElement CreateInspectorGUI()
         {
             var rootElem = new VisualElement();
             var targetList = new ListView();
-            
+            var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/MYTYKit/UI/Bone2DCon.uss");
+
             targetList.virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight;
             targetList.styleSheets.Add(styleSheet);
 
