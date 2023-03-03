@@ -59,6 +59,7 @@ namespace MYTYKit.Controllers
         {
             return JObject.FromObject(new
             {
+                name,
                 type = GetType().Name,
                 targetObject = tfMap[targetObject.transform],
                 displacement = new
