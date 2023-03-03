@@ -9,8 +9,7 @@ namespace MYTYKit
 {
     public class Migration:EditorWindow
     {
-        [MenuItem("MYTY Kit/Migrate", false, 41)]
-
+        
         public static void ShowGUI()
         {
             var wnd = CreateInstance<Migration>();
