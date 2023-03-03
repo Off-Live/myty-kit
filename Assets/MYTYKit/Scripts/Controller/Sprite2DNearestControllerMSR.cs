@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Linq;
 using System.Reflection.Emit;
+using Newtonsoft.Json.Linq;
 
 
 namespace MYTYKit.Controllers
@@ -75,5 +77,32 @@ namespace MYTYKit.Controllers
             this.value[componentIdx] = value;
         }
 
+        public override JObject SerializeToJObject(Dictionary<Transform, int> tfMap)
+        {
+            var baseJo = base.SerializeToJObject(tfMap);
+            baseJo.Merge(JObject.FromObject(new
+            {
+                bottomLeft = new
+                {
+                    bottomLeft.x,
+                    bottomLeft.y
+                },
+                topRight = new
+                {
+                    topRight.x,
+                    topRight.y
+                },
+                labels = labels.Select(item => JObject.FromObject(new
+                {
+                    item.label,
+                    point = new
+                    {
+                        item.point.x,
+                        item.point.y
+                    }
+                })).ToArray()
+            }));
+            return baseJo;
+        }
     }
 }

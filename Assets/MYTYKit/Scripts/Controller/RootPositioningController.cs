@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEditor;
 
@@ -52,6 +53,20 @@ namespace MYTYKit.Controllers
         public void SetComponent(float value, int componentIdx)
         {
             displacement[componentIdx] = value;
+        }
+
+        public override JObject SerializeToJObject(Dictionary<Transform, int> tfMap)
+        {
+            return JObject.FromObject(new
+            {
+                targetObject = tfMap[targetObject.transform],
+                displacement = new
+                {
+                    displacement.x,
+                    displacement.y,
+                    displacement.z
+                }
+            });
         }
     }
 }

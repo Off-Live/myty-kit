@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace MYTYKit.Controllers
@@ -81,5 +83,36 @@ namespace MYTYKit.Controllers
             controlPosition[componentIdx] = value;
         }
 
+        public override JObject SerializeToJObject(Dictionary<Transform, int> tfMap)
+        {
+            var baseJo = base.SerializeToJObject(tfMap);
+            var jo = JObject.FromObject(new
+            {
+                xScale,
+                yScale,
+                bottomLeft = new
+                {
+                    bottomLeft.x,
+                    bottomLeft.y,
+                },
+                topRight = new
+                {
+                    topRight.x,
+                    topRight.y
+                },
+                pivots = pivots.Select(pivot => JObject.FromObject(new
+                {
+                    pivot.name,
+                    position = new
+                    {
+                        pivot.position.x,
+                        pivot.position.y
+                    },
+                    riggingState = pivot.riggingState.Select(item => item.SerializeToJObject()).ToArray()
+                })).ToArray()
+            });
+            baseJo.Merge(jo);
+            return baseJo;
+        }
     }
 }

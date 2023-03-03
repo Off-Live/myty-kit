@@ -4,6 +4,7 @@ using UnityEditor;
 
 using MYTYKit.Components;
 using System;
+using Newtonsoft.Json.Linq;
 
 namespace MYTYKit.Controllers{
     public class Sprite1DRangeControllerMSR : MSRSpriteController, IFloatInput, IComponentWiseInput
@@ -70,6 +71,18 @@ namespace MYTYKit.Controllers{
         public void SetComponent(float value, int componentIdx)
         {
             this.value = value;
+        }
+
+        public override JObject SerializeToJObject(Dictionary<Transform, int> tfMap)
+        {
+            var baseJo = base.SerializeToJObject(tfMap);
+            baseJo.Merge(JObject.FromObject(new
+            {
+                min,
+                max,
+                intervals
+            }));
+            return baseJo;
         }
     }
 }

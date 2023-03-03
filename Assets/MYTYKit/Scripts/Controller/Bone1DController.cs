@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace MYTYKit.Controllers
@@ -61,6 +63,20 @@ namespace MYTYKit.Controllers
         public void SetComponent(float value, int componentIdx)
         {
             controlValue = value;
+        }
+
+        public override JObject SerializeToJObject(Dictionary<Transform, int> tfMap)
+        {
+            var baseJo =  base.SerializeToJObject(tfMap);
+            var jo = JObject.FromObject(new
+            {
+                minValue,
+                maxValue,
+                xmaxRig = xmaxRig.Select(item => item.SerializeToJObject()).ToArray(),
+                xminRig = xminRig.Select(item => item.SerializeToJObject()).ToArray()
+            });
+            baseJo.Merge(jo);
+            return baseJo;
         }
     }
 }

@@ -2,7 +2,9 @@ using UnityEngine;
 using UnityEditor;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MYTYKit.Components;
+using Newtonsoft.Json.Linq;
 using UnityEngine.U2D.Animation;
 
 namespace MYTYKit.Controllers
@@ -13,13 +15,38 @@ namespace MYTYKit.Controllers
         public Vector3 position;
         public Quaternion rotation;
         public Vector3 scale;
-
+        public JObject SerializeToJObject()
+        {
+            return JObject.FromObject(new
+            {
+                position = new
+                {
+                    position.x,
+                    position.y,
+                    position.z
+                },
+                rotation = new
+                {
+                    rotation.x,
+                    rotation.y,
+                    rotation.z,
+                    rotation.w
+                },
+                scale = new
+                {
+                    scale.x,
+                    scale.y,
+                    scale.z,
+                }
+            });
+        }
     }
 
     public abstract class MYTYController : MonoBehaviour
     {
         public abstract void PrepareToSave();
         public abstract void PostprocessAfterLoad(Dictionary<GameObject, GameObject> objMap);
+        public abstract JObject SerializeToJObject(Dictionary<Transform,int> tfMap);
     }
 
     public abstract class BoneController : MYTYController
@@ -133,6 +160,16 @@ namespace MYTYKit.Controllers
             return diffList;
 
         }
+
+        public override JObject SerializeToJObject(Dictionary<Transform,int> tfMap)
+        {
+            return JObject.FromObject(new
+            {
+                rigTarget = rigTarget.Select(item => tfMap[item.transform]).ToArray(),
+                orgRig = orgRig.Select(item => item.SerializeToJObject()),
+                skip
+            });
+        }
     }
 
     public abstract class SpriteController : MYTYController
@@ -167,6 +204,14 @@ namespace MYTYKit.Controllers
                 so.ApplyModifiedProperties();
             }
 #endif
+        }
+
+        public override JObject SerializeToJObject(Dictionary<Transform, int> tfMap)
+        {
+            return JObject.FromObject(new
+            {
+                spriteObjects = spriteObjects.Select(item => tfMap[item.transform]).ToArray(),
+            });
         }
     }
 
@@ -204,6 +249,13 @@ namespace MYTYKit.Controllers
                 so.ApplyModifiedProperties();
             }
 #endif
+        }
+        public override JObject SerializeToJObject(Dictionary<Transform, int> tfMap)
+        {
+            return JObject.FromObject(new
+            {
+                spriteObjects = spriteObjects.Select(item => tfMap[item.transform]).ToArray(),
+            });
         }
     }
 }

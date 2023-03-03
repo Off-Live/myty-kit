@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -183,6 +185,23 @@ namespace MYTYKit.Controllers
         {
             if (componentIdx >= 2 || componentIdx < 0) return;
             controlPosition[componentIdx] = value;
+        }
+        
+        public override JObject SerializeToJObject(Dictionary<Transform, int> tfMap)
+        {
+            var baseJo =  base.SerializeToJObject(tfMap);
+            var jo = JObject.FromObject(new
+            {
+                xScale,
+                yScale,
+                xmaxRig = xmaxRig.Select(item => item.SerializeToJObject()).ToArray(),
+                xminRig = xminRig.Select(item => item.SerializeToJObject()).ToArray(),
+                ymaxRig = ymaxRig.Select(item => item.SerializeToJObject()).ToArray(),
+                yminRig = yminRig.Select(item => item.SerializeToJObject()).ToArray()
+
+            });
+            baseJo.Merge(jo);
+            return baseJo;
         }
     }
 }
