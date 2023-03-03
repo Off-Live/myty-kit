@@ -88,6 +88,7 @@ namespace MYTYKit.Controllers
             var baseJo = base.SerializeToJObject(tfMap);
             var jo = JObject.FromObject(new
             {
+                type = GetType().Name,
                 xScale,
                 yScale,
                 bottomLeft = new

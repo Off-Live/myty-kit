@@ -70,6 +70,7 @@ namespace MYTYKit.Controllers
             var baseJo =  base.SerializeToJObject(tfMap);
             var jo = JObject.FromObject(new
             {
+                type = GetType().Name,
                 minValue,
                 maxValue,
                 xmaxRig = xmaxRig.Select(item => item.SerializeToJObject()).ToArray(),

@@ -82,6 +82,7 @@ namespace MYTYKit.Controllers
             var baseJo = base.SerializeToJObject(tfMap);
             baseJo.Merge(JObject.FromObject(new
             {
+                type = GetType().Name,
                 bottomLeft = new
                 {
                     bottomLeft.x,
