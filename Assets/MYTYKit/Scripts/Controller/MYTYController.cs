@@ -296,7 +296,12 @@ namespace MYTYKit.Controllers
         public void UpdateRuntimeResolvers(Dictionary<int, Transform> idTransformMap)
         {
             m_spriteResolverRuntimes =
-                m_resolverIds.Select(id => idTransformMap[id].GetComponent<MYTYSpriteResolverRuntime>()).ToList();
+                m_resolverIds.Select(id =>
+                {
+                    if (idTransformMap.ContainsKey(id))
+                        return idTransformMap[id].GetComponent<MYTYSpriteResolverRuntime>();
+                    return null;
+                }).ToList();
             isRuntimeMode = true;
         }
     }
