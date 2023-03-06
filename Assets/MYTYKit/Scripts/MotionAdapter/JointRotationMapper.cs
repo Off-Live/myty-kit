@@ -141,10 +141,10 @@ namespace MYTYKit.MotionAdapters
             var thisJo = JObject.FromObject(new
             {
                 jointName,
+                type = "JointRotationMapper",
                 from = from.ToString(),
                 configuration = configuration.Select(item => JObject.FromObject(new
                 {
-                    type = "JointRotationMapper",
                     item.min,
                     item.max,
                     item.isInverted,
