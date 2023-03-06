@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace MYTYKit.MotionAdapters{
@@ -5,5 +6,4 @@ namespace MYTYKit.MotionAdapters{
     {
         
     }
-
 }

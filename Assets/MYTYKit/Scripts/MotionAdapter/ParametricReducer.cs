@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MYTYKit.Controllers;
 using MYTYKit.MotionAdapters.Reduce;
 using UnityEngine;
 using MYTYKit.MotionTemplates;
+using Newtonsoft.Json.Linq;
 
 namespace MYTYKit.MotionAdapters
 {
@@ -77,7 +79,7 @@ namespace MYTYKit.MotionAdapters
             }
         }
 
-        public void SerializeIntoNewObject(GameObject target, Dictionary<GameObject, GameObject> prefabMapping)
+        public new void SerializeIntoNewObject(GameObject target, Dictionary<GameObject, GameObject> prefabMapping)
         {
             var newAdapter = target.AddComponent<ParametricReducer>();
             var mtGo = template.gameObject;
@@ -100,15 +102,42 @@ namespace MYTYKit.MotionAdapters
             }
         }
         
-        public void Deserialize(Dictionary<GameObject, GameObject> prefabMapping)
+        public new void Deserialize(Dictionary<GameObject, GameObject> prefabMapping)
         {
             template = prefabMapping[template.gameObject].GetComponent<ParametricTemplate>();
             foreach(var item in configuration)
             {
                 item.controller = prefabMapping[item.controller.gameObject].GetComponent<MYTYController>();
             }
+        }
 
+        public new JObject SerializeToJObject(Dictionary<Transform, int> transformMap)
+        {
+            var mapper = FindObjectOfType<MotionTemplateMapper>();
+            if (mapper == null)
+            {
+                throw new MYTYException("MotionTemplateMapper cannot be found.");
+            }
 
+            var templateName = mapper.GetName(template); 
+            Debug.Assert(templateName!=null);
+            var baseJo = base.SerializeToJObject(transformMap);
+            var thisJo = JObject.FromObject(new
+            {
+                type = "ParametricReducer",
+                templateName,
+                configuration = configuration.Select(item => JObject.FromObject(new
+                {
+                    item.paramNames,
+                    reducer = (item.reducer as ISerializableOperator).SerializeToJObject(),
+                    controller = transformMap[item.controller.transform],
+                    component = (int)item.component
+                }))
+            });
+            
+            baseJo.Merge(thisJo);
+
+            return baseJo;
         }
     }
 }

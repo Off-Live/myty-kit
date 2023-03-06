@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace MYTYKit.MotionTemplates
@@ -10,7 +11,7 @@ namespace MYTYKit.MotionTemplates
         public string name;
         public MotionTemplate template;
     }
-
+    [DisallowMultipleComponent]
     public class MotionTemplateMapper : MonoBehaviour
     {
         [SerializeField] List<MTItem> templates;
@@ -55,6 +56,12 @@ namespace MYTYKit.MotionTemplates
             }
 
             return ret;
+        }
+
+        public string GetName(MotionTemplate template)
+        {
+            var item = templates.FirstOrDefault(item => item.template == template);
+            return (item == null) ? "" : item.name;
         }
 
         public void Clear()

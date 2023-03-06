@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using MYTYKit.Controllers;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace MYTYKit.MotionAdapters
@@ -93,6 +94,22 @@ namespace MYTYKit.MotionAdapters
             newAdapter.swing = swing;
             newAdapter.stepCount = stepCount;
             newAdapter.unitTime = unitTime;
+        }
+
+        public JObject SerializeToJObject(Dictionary<Transform, int> transformMap)
+        {
+            return JObject.FromObject(new
+            {
+                type = "FrameSequence1DAdapter",
+                controller = transformMap[controller.transform],
+                start,
+                end,
+                repeat,
+                swing,
+                stepCount,
+                unitTime
+            });
+      
         }
     }
 }

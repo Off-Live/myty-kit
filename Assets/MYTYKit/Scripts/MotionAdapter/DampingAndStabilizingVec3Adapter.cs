@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MYTYKit.MotionAdapters.Interpolation;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace MYTYKit.MotionAdapters
 {
     
-    public abstract class DampingAndStabilizingVec3Adapter : NativeAdapter
+    public abstract class DampingAndStabilizingVec3Adapter : NativeAdapter, ISerializableAdapter
     {
         class HistoryItem
         {
@@ -133,6 +134,29 @@ namespace MYTYKit.MotionAdapters
             var timeDelta = timestamp - lastTime;
             var gap = m_stabilizeHistory[slotIdx][intervalIndex+1].timestamp- m_stabilizeHistory[slotIdx][intervalIndex].timestamp;
             return timeDelta / gap;
+        }
+
+        public void Deserialize(Dictionary<GameObject, GameObject> prefabMapping)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SerializeIntoNewObject(GameObject target, Dictionary<GameObject, GameObject> prefabMapping)
+        {
+            throw new NotImplementedException();
+        }
+
+        public JObject SerializeToJObject(Dictionary<Transform, int> transformMap)
+        {
+            return JObject.FromObject(new
+            {
+                isDamping,
+                isStabilizing,
+                isUseDampedInputToStabilizer,
+                dampingFactor = damplingFactor,
+                dampingWindow,
+                stabilizeMethod = stabilizeMethod.ToString()
+            });
         }
 
     }

@@ -41,7 +41,7 @@ namespace MYTYKit.Controllers
             });
         }
     }
-
+    [DisallowMultipleComponent]
     public abstract class MYTYController : MonoBehaviour
     {
         public abstract void PrepareToSave();

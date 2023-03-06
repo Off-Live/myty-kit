@@ -3,6 +3,7 @@ using UnityEngine.Events;
 
 namespace MYTYKit.MotionTemplates
 {
+    [DisallowMultipleComponent]
     public abstract class MotionTemplate : MonoBehaviour
     {
         UnityEvent m_updateEvent = new ();

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace MYTYKit.MotionAdapters.Reduce
@@ -40,6 +41,21 @@ namespace MYTYKit.MotionAdapters.Reduce
             newOperator.scale = scale;
             newOperator.exponents = new List<float>(exponents);
             return newOperator;
+        }
+        
+        public JObject SerializeToJObject()
+        {
+            return JObject.FromObject(new
+            {
+                type = "ComponentProduct",
+                scale = new
+                {
+                    scale.x,
+                    scale.y,
+                    scale.z
+                },
+                exponents
+            });
         }
     }
 }
