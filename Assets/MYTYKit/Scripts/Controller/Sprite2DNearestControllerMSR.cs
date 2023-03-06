@@ -49,22 +49,29 @@ namespace MYTYKit.Controllers
                 UpdateLabel();
             }
         }
-
+        
         public void UpdateLabel()
         {
-            if (m_lastLabel.Length > 0)
-            {
-                foreach (var spriteResolver in spriteObjects)
-                {
-                    if (spriteResolver == null) continue;
-                    var catName = spriteResolver.GetCategory();
-
-                    spriteResolver.SetCategoryAndLabel(catName, m_lastLabel);
-
-                    currentLabel = m_lastLabel;
-                }
-            }
+            UpdateLabel(m_lastLabel);
+            currentLabel = m_lastLabel;
         }
+
+
+        // public void UpdateLabel()
+        // {
+        //     if (m_lastLabel.Length > 0)
+        //     {
+        //         foreach (var spriteResolver in spriteObjects)
+        //         {
+        //             if (spriteResolver == null) continue;
+        //             var catName = spriteResolver.GetCategory();
+        //
+        //             spriteResolver.SetCategoryAndLabel(catName, m_lastLabel);
+        //
+        //             currentLabel = m_lastLabel;
+        //         }
+        //     }
+        // }
 
         public void SetInput(Vector2 val)
         {
@@ -105,6 +112,14 @@ namespace MYTYKit.Controllers
                 })).ToArray()
             }));
             return baseJo;
+        }
+        public override void DeserializeFromJObject(JObject jObject, Dictionary<int, Transform> idTransformMap)
+        {
+            base.DeserializeFromJObject(jObject, idTransformMap);
+            name = (string)jObject["name"];
+            bottomLeft = jObject["bottomLeft"].ToObject<Vector2>();
+            topRight = jObject["topRight"].ToObject<Vector2>();
+            labels = jObject["labels"].ToObject<List<Label2D>>();
         }
     }
 }

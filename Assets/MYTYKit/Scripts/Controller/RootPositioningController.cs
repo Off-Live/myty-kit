@@ -70,5 +70,12 @@ namespace MYTYKit.Controllers
                 }
             });
         }
+
+        public override void DeserializeFromJObject(JObject jObject, Dictionary<int, Transform> idTransformMap)
+        {
+            name = (string)jObject["name"];
+            targetObject = idTransformMap[(int)jObject["targetObject"]].gameObject;
+            displacement = jObject["displacement"].ToObject<Vector3>();
+        }
     }
 }

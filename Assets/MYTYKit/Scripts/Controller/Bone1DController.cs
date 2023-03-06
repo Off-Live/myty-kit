@@ -80,5 +80,15 @@ namespace MYTYKit.Controllers
             baseJo.Merge(jo);
             return baseJo;
         }
+
+        public override void DeserializeFromJObject(JObject jObject, Dictionary<int, Transform> idTransformMap)
+        {
+            base.DeserializeFromJObject(jObject, idTransformMap);
+            name = (string)jObject["name"];
+            minValue = (float)jObject["minValue"];
+            maxValue = (float)jObject["maxValue"];
+            xmaxRig = jObject["xmaxRig"].ToObject<List<RiggingEntity>>();
+            xminRig = jObject["xminRig"].ToObject<List<RiggingEntity>>();
+        }
     }
 }

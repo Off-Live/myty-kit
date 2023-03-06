@@ -50,19 +50,25 @@ namespace MYTYKit.Controllers{
 
         public void UpdateLabel()
         {
-
-            if (spriteObjects == null) return;
-            foreach (var spriteResolver in spriteObjects)
-            {
-                if (spriteResolver == null) continue;
-                if (m_lastLabel.Length > 0)
-                {
-                    spriteResolver.SetCategoryAndLabel(spriteResolver.GetCategory(), m_lastLabel);
-                    currentLabel = m_lastLabel;
-                }
-
-            }
+            UpdateLabel(m_lastLabel);
+            currentLabel = m_lastLabel;
         }
+
+        // public void UpdateLabel()
+        // {
+        //
+        //     if (spriteObjects == null) return;
+        //     foreach (var spriteResolver in spriteObjects)
+        //     {
+        //         if (spriteResolver == null) continue;
+        //         if (m_lastLabel.Length > 0)
+        //         {
+        //             spriteResolver.SetCategoryAndLabel(spriteResolver.GetCategory(), m_lastLabel);
+        //             currentLabel = m_lastLabel;
+        //         }
+        //
+        //     }
+        // }
 
         public void SetInput(float val)
         {
@@ -85,6 +91,15 @@ namespace MYTYKit.Controllers{
                 intervals
             }));
             return baseJo;
+        }
+
+        public override void DeserializeFromJObject(JObject jObject, Dictionary<int, Transform> idTransformMap)
+        {
+            base.DeserializeFromJObject(jObject, idTransformMap);
+            name = (string)jObject["name"];
+            min = (float)jObject["min"];
+            max = (float)jObject["max"];
+            intervals = jObject["intervals"].ToObject<List<Interval>>();
         }
     }
 }

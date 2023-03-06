@@ -116,5 +116,15 @@ namespace MYTYKit.Controllers
             baseJo.Merge(jo);
             return baseJo;
         }
+
+        public override void DeserializeFromJObject(JObject jObject, Dictionary<int, Transform> idTransformMap)
+        {
+            name = (string)jObject["name"];
+            xScale = (float)jObject["xScale"];
+            yScale = (float)jObject["yScale"];
+            bottomLeft = jObject["bottomLeft"].ToObject<Vector2>();
+            topRight = jObject["topRight"].ToObject<Vector2>();
+            pivots = jObject["pivots"].ToObject<List<RS2DPivot>>();
+        }
     }
 }
