@@ -14,7 +14,7 @@ namespace MYTYKit.MotionTemplates
     [DisallowMultipleComponent]
     public class MotionTemplateMapper : MonoBehaviour
     {
-        [SerializeField] List<MTItem> templates;
+        [SerializeField] List<MTItem> templates = new();
 
         public MotionTemplate GetTemplate(string name)
         {
