@@ -111,5 +111,16 @@ namespace MYTYKit.MotionAdapters
             });
       
         }
+
+        public void DeserializeFromJObject(JObject jObject, Dictionary<int, Transform> idTransformMap)
+        {
+            start = (float) jObject["start"];
+            end = (float)jObject["end"];
+            repeat = (bool)jObject["bool"];
+            swing = (bool)jObject["swing"];
+            stepCount = (int)jObject["stepCount"];
+            unitTime = (float)jObject["unitTime"];
+            controller = idTransformMap[(int)jObject["controller"]].GetComponent<MYTYController>();
+        }
     }
 }

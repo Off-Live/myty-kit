@@ -9,5 +9,6 @@ namespace MYTYKit.MotionAdapters.Reduce
         public ReduceOperator SerializeIntoNewObject(GameObject target, Dictionary<GameObject, GameObject> prefabMapping);
 
         public JObject SerializeToJObject();
+        public void DeserializeFromJObject(JObject jObject);
     }
 }

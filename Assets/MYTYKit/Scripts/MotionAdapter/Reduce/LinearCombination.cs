@@ -59,6 +59,13 @@ namespace MYTYKit.MotionAdapters.Reduce
                 weights
             });
         }
+
+        public void DeserializeFromJObject(JObject jObject)
+        {
+            scale = jObject["scale"].ToObject<Vector3>();
+            offset = jObject["offset"].ToObject<Vector3>();
+            weights = jObject["weights"].ToObject<List<float>>();
+        }
     }
 
 }

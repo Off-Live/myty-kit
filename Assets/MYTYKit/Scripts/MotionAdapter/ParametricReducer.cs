@@ -139,5 +139,33 @@ namespace MYTYKit.MotionAdapters
 
             return baseJo;
         }
+
+        
+        public new void DeserializeFromJObject(JObject jObject, Dictionary<int, Transform> idTransformMap)
+        {
+            if (motionTemplateMapper == null)
+            {
+                throw new MYTYException("MotionTemplateMapper should be set up first.");
+            }
+            base.DeserializeFromJObject(jObject, idTransformMap);
+            template = motionTemplateMapper.GetTemplate((string)jObject["templateName"]) as ParametricTemplate;
+            configuration = jObject["configuration"].ToArray().Select(token =>
+            {
+                var reducerJo = token["reducer"] as JObject;
+                var typeName = typeof(ISerializableOperator).Namespace + "." + (string)reducerJo["type"] + ", "
+                               + typeof(ISerializableOperator).Assembly.GetName().Name;
+                var reducerComponent = (ReduceOperator) gameObject.AddComponent(Type.GetType(typeName));
+                ((ISerializableOperator)reducerComponent).DeserializeFromJObject(reducerJo);
+                
+                return new ReduceItem()
+                {
+                    paramNames = token["paramNames"].ToObject<List<string>>(),
+                    reducer = reducerComponent,
+                    component = (ComponentIndex)(int)token["component"],
+                    controller = idTransformMap[(int)token["controller"]].GetComponent<MYTYController>()
+                };
+            }).ToList();
+            
+        }
     }
 }

@@ -159,5 +159,14 @@ namespace MYTYKit.MotionAdapters
             });
         }
 
+        public void DeserializeFromJObject(JObject jObject, Dictionary<int, Transform> idTransformMap)
+        {
+            isDamping = (bool)jObject["isDamping"];
+            isStabilizing = (bool)jObject["isStabilizing"];
+            isUseDampedInputToStabilizer = (bool)jObject["isUseDampedInputToStabilizer"];
+            damplingFactor = (float)jObject["dampingFactor"];
+            dampingWindow = (int)jObject["dampingWindow"];
+            stabilizeMethod = (InterpolationMethod) Enum.Parse(typeof(InterpolationMethod), (string)jObject["stabilizeMethod"]);
+        }
     }
 }

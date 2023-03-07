@@ -13,5 +13,6 @@ namespace MYTYKit.MotionAdapters
 
         public void SerializeIntoNewObject(GameObject target, Dictionary<GameObject, GameObject> prefabMapping);
         public JObject SerializeToJObject(Dictionary<Transform, int> transformMap);
+        public void DeserializeFromJObject(JObject jObject, Dictionary<int, Transform> idTransformMap);
     }
 }

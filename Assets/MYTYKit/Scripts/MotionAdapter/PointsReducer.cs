@@ -144,5 +144,30 @@ namespace MYTYKit.MotionAdapters
             baseJo.Merge(thisJo);
             return baseJo;
         }
+
+        public new void DeserializeFromJObject(JObject jObject, Dictionary<int, Transform> idTransformMap)
+        {
+            if (motionTemplateMapper == null)
+            {
+                throw new MYTYException("MotionTemplateMapper should be set up first.");
+            }
+            base.DeserializeFromJObject(jObject, idTransformMap);
+            template = motionTemplateMapper.GetTemplate((string)jObject["templateName"]) as PointsTemplate;
+            indices = jObject["indices"].ToObject<List<int>>();
+            var reducerJo = jObject["reducer"] as JObject;
+            var typeName = typeof(ISerializableOperator).Namespace + "." + (string)reducerJo["type"] + ", "
+                           + typeof(ISerializableOperator).Assembly.GetName().Name;
+            var reducerComponent = (ReduceOperator) gameObject.AddComponent(Type.GetType(typeName));
+            ((ISerializableOperator)reducerComponent).DeserializeFromJObject(reducerJo);
+            configuration = jObject["configuration"].ToArray().Select(token =>
+            {
+                return new MapItem()
+                {
+                    sourceComponent = (ComponentIndex)(int)token["sourceComponent"],
+                    targetComponent = (ComponentIndex)(int)token["targetComponent"],
+                    targetController = idTransformMap[(int)token["targetController"]].GetComponent<MYTYController>()
+                };
+            }).ToList();
+        }
     }
 }

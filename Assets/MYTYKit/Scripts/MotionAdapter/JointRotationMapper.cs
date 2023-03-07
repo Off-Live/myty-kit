@@ -156,5 +156,26 @@ namespace MYTYKit.MotionAdapters
             baseJo.Merge(thisJo);
             return baseJo;
         }
+
+        public new void DeserializeFromJObject(JObject jObject, Dictionary<int, Transform> idTransformMap)
+        {
+            if (motionTemplateMapper == null)
+            {
+                throw new MYTYException("MotionTemplateMapper should be set up first.");
+            }
+            base.DeserializeFromJObject(jObject, idTransformMap);
+            joint = motionTemplateMapper.GetTemplate((string)jObject["jointName"]) as AnchorTemplate;
+            from = (JointVector)Enum.Parse(typeof(JointVector), (string)jObject["from"]);
+            configuration = jObject["configuration"].ToArray().Select(token => new MapItem()
+            {
+                min = (float) token["min"],
+                max = (float) token["max"],
+                isInverted = (bool) token["isInverted"],
+                sourceComponent = (ComponentIndex) (int)token["sourceComponent"],
+                targetComponent = (ComponentIndex) (int)token["targetComponent"],
+                targetController = idTransformMap[(int)token["targetController"]].GetComponent<MYTYController>()
+            }).ToList();
+
+        }
     }
 }

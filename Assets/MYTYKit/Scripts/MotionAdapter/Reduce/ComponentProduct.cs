@@ -57,5 +57,11 @@ namespace MYTYKit.MotionAdapters.Reduce
                 exponents
             });
         }
+
+        public void DeserializeFromJObject(JObject jObject)
+        {
+            scale = jObject["scale"].ToObject<Vector3>();
+            exponents = jObject["exponents"].ToObject<List<float>>();
+        }
     }
 }
