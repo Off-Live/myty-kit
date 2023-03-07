@@ -28,7 +28,7 @@ namespace MYTYKit.Controllers
         string m_lastLabel="";
         void Update()
         {
-            if (spriteObjects == null || labels == null) return;
+            if (labels == null) return;
             
             var selected = "";
             var minDist = float.MaxValue;
@@ -55,23 +55,6 @@ namespace MYTYKit.Controllers
             UpdateLabel(m_lastLabel);
             currentLabel = m_lastLabel;
         }
-
-
-        // public void UpdateLabel()
-        // {
-        //     if (m_lastLabel.Length > 0)
-        //     {
-        //         foreach (var spriteResolver in spriteObjects)
-        //         {
-        //             if (spriteResolver == null) continue;
-        //             var catName = spriteResolver.GetCategory();
-        //
-        //             spriteResolver.SetCategoryAndLabel(catName, m_lastLabel);
-        //
-        //             currentLabel = m_lastLabel;
-        //         }
-        //     }
-        // }
 
         public void SetInput(Vector2 val)
         {

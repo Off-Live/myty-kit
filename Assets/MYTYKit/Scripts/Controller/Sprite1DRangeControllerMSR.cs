@@ -27,7 +27,7 @@ namespace MYTYKit.Controllers{
         string m_lastLabel = "";
         void Update()
         {
-            if (spriteObjects == null || intervals == null) return;
+            if (intervals == null) return;
             if (max < min) return;
             
             float scaledValue = min + (max - min) * value;
@@ -53,22 +53,6 @@ namespace MYTYKit.Controllers{
             UpdateLabel(m_lastLabel);
             currentLabel = m_lastLabel;
         }
-
-        // public void UpdateLabel()
-        // {
-        //
-        //     if (spriteObjects == null) return;
-        //     foreach (var spriteResolver in spriteObjects)
-        //     {
-        //         if (spriteResolver == null) continue;
-        //         if (m_lastLabel.Length > 0)
-        //         {
-        //             spriteResolver.SetCategoryAndLabel(spriteResolver.GetCategory(), m_lastLabel);
-        //             currentLabel = m_lastLabel;
-        //         }
-        //
-        //     }
-        // }
 
         public void SetInput(float val)
         {
