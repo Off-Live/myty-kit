@@ -352,6 +352,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe
         void ProcessPose(NormalizedLandmarkList pose)
         {
             var poseRig = motionSource.GetBridgesInCategory("PoseLandmark");
+            if (poseRig == null) return;
             foreach (var model in poseRig)
             {
                 
@@ -363,6 +364,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe
         void ProcessPoseWorld(LandmarkList pose)
         {
             var poseWorldBridges = motionSource.GetBridgesInCategory("PoseWorldLandmark");
+            if (poseWorldBridges == null) return;
             if (pose.Landmark == null) return;
             poseWorldBridges.ForEach(bridge =>
             {
