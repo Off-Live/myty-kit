@@ -34,7 +34,7 @@ namespace MYTYKit.Controllers{
             var selected = "";
             foreach (var interval in intervals)
             {
-                if (interval.min <= scaledValue && interval.max >= scaledValue)
+                if (interval.min <= scaledValue && interval.max > scaledValue)
                 {
                     selected = interval.label;
                     break;

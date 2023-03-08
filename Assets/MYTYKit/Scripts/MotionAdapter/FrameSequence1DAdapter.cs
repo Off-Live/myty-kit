@@ -31,7 +31,7 @@ namespace MYTYKit.MotionAdapters
             m_input = controller as IComponentWiseInput;
             if (m_input == null) return;
             m_input.SetComponent(m_curValue,0);
-
+            m_curValue = start+ (end - start) / stepCount * 0.5f;
         }
 
         void Update()
@@ -48,34 +48,36 @@ namespace MYTYKit.MotionAdapters
             m_elapsed = 0.0f;
 
             var step = (end - start) / stepCount;
-
+            var halfstep = step * 0.5f;
             if (!m_forward) step *= -1;
             m_curValue += step;
-
-            m_input.SetComponent(m_curValue,0);
-
+            
             if (m_forward)
             {
-                if (Mathf.Abs(m_curValue - end) < 1.0e-6)
+                if (m_curValue>end)
                 {
 
                     if (!repeat) m_stopped = true;
                     else
                     {
-                        if (swing) m_forward = false;
-                        else m_curValue = start;
+                        if (swing)
+                        {
+                            m_forward = false;
+                            m_curValue = end - halfstep - step;
+                        }
+                        else m_curValue = start+halfstep;
                     }
                 }
             }
             else
             {
-                if (Mathf.Abs(m_curValue - start) < 1.0e-6)
+                if (m_curValue < start)
                 {
                     m_forward = true;
+                    m_curValue = start + halfstep*3;
                 }
             }
-
-
+            m_input.SetComponent(m_curValue,0);
         }
 
         public void Deserialize(Dictionary<GameObject, GameObject> prefabMapping)
