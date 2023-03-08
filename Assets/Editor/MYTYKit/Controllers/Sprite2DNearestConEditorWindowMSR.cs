@@ -156,15 +156,19 @@ namespace MYTYKit
 
         void AddSelections()
         {
-            var sprites = Selection.GetFiltered<MYTYSpriteResolver>(SelectionMode.Editable);
+            var newSprites = Selection.GetFiltered<MYTYSpriteResolver>(SelectionMode.Editable);
             var spritesProps = m_conSO.FindProperty("spriteObjects");
             var newSource = new List<GameObject>();
-
-            spritesProps.arraySize = sprites.Length;
-            for (int i = 0; i < sprites.Length; i++)
+            var offset = spritesProps.arraySize;
+            spritesProps.arraySize += newSprites.Length;
+            for (int i = 0; i < newSprites.Length; i++)
             {
-                spritesProps.GetArrayElementAtIndex(i).objectReferenceValue = sprites[i];
-                newSource.Add(sprites[i].gameObject);
+                spritesProps.GetArrayElementAtIndex(offset+i).objectReferenceValue = newSprites[i];
+            }
+
+            for (int i = 0; i < spritesProps.arraySize; i++)
+            {
+                newSource.Add((spritesProps.GetArrayElementAtIndex(i).objectReferenceValue as MYTYSpriteResolver).gameObject);
             }
 
             m_conSO.ApplyModifiedProperties();
