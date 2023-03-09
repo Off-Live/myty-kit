@@ -14,8 +14,6 @@ namespace MYTYKit
 {
     public class Sprite2DNearestConEditorWindowMSR : EditorWindow
     {
-        public VisualTreeAsset UITemplate;
-
         SerializedObject m_conSO;
         bool m_isPressed = false;
         double m_lastClickTime = 0.0f;
@@ -30,7 +28,8 @@ namespace MYTYKit
 
         private void CreateGUI()
         {
-            UITemplate.CloneTree(rootVisualElement);
+            var uiTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/MYTYKit/UI/Sprite2DNearestCon.uxml");
+            uiTemplate.CloneTree(rootVisualElement);
             var selectedGOs = Selection.GetFiltered<Sprite2DNearestControllerMSR>(SelectionMode.Editable);
             var conVE = rootVisualElement.Q<ObjectField>("OBJController");
             var listView = rootVisualElement.Q<ListView>("LSTSpriteGO");

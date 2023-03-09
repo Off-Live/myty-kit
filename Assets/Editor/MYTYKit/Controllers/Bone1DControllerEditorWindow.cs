@@ -12,8 +12,7 @@ namespace MYTYKit
 {
     public class Bone1DControllerEditorWindow : EditorWindow
     {
-        public VisualTreeAsset UITemplate;
-        private SerializedObject _conSO;
+        SerializedObject _conSO;
 
         [MenuItem("MYTY Kit/Controller/Bone 1D Controller", false, 20)]
         public static void ShowController()
@@ -24,7 +23,8 @@ namespace MYTYKit
 
         private void CreateGUI()
         {
-            UITemplate.CloneTree(rootVisualElement);
+            var uiTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/MYTYKit/UI/Bone1DCon.uxml");
+            uiTemplate.CloneTree(rootVisualElement);
             var selectedGOs = Selection.GetFiltered<Bone1DController>(SelectionMode.Editable);
             var conVE = rootVisualElement.Q<ObjectField>("OBJController");
             var listView = rootVisualElement.Q<ListView>("LSTBoneGO");

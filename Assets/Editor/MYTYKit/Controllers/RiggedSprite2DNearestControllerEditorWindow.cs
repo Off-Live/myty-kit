@@ -13,8 +13,6 @@ namespace MYTYKit
 {
     public class RiggedSprite2DNearestControllerEditorWindow : EditorWindow
     {
-        public VisualTreeAsset UITemplate;
-
         SerializedObject m_conSO;
         bool m_isPressed = false;
         double m_lastClickTime = 0.0f;
@@ -28,7 +26,8 @@ namespace MYTYKit
     
         void CreateGUI()
         {
-            UITemplate.CloneTree(rootVisualElement);
+            var uiTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/MYTYKit/UI/RiggedSprite2DNearestCon.uxml");
+            uiTemplate.CloneTree(rootVisualElement);
             var selectedGOs = Selection.GetFiltered<RiggedSprite2DNearestController>(SelectionMode.Editable);
             var conVE = rootVisualElement.Q<ObjectField>("OBJController");
             var listView = rootVisualElement.Q<ListView>("LSTRiggingGO");

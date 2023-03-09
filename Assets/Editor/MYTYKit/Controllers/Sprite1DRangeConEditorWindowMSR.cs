@@ -12,9 +12,6 @@ namespace MYTYKit
 {
     public class Sprite1DRangeConEditorWindowMSR : EditorWindow
     {
-        public VisualTreeAsset UITemplate;
-
-
         private SerializedObject _conSO;
 
         [MenuItem("MYTY Kit/Controller/Sprite 1D Range Controller", false,20)]
@@ -26,7 +23,8 @@ namespace MYTYKit
 
         private void CreateGUI()
         {
-            UITemplate.CloneTree(rootVisualElement);
+            var uiTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/MYTYKit/UI/Sprite1DRangeCon.uxml");
+            uiTemplate.CloneTree(rootVisualElement);
             var selectedGOs = Selection.GetFiltered<Sprite1DRangeControllerMSR>(SelectionMode.Editable);
             var conVE = rootVisualElement.Q<ObjectField>("OBJController");
             var listView = rootVisualElement.Q<ListView>("LSTSpriteGO");
