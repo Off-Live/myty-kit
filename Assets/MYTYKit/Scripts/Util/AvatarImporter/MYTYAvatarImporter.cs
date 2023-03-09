@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.U2D.Animation;
@@ -124,58 +125,7 @@ namespace MYTYKit.AvatarImporter
 
         void SetupMotionAdapter(GameObject root, GameObject motionAdapterGO, GameObject motionTemplateGO)
         {
-            var nativeAdapter = motionAdapterGO.GetComponent<NativeAdapter>();
-            if (nativeAdapter == null) return;
-
-            foreach (var field in nativeAdapter.GetType().GetFields())
-            {
-                if (field.FieldType.IsSubclassOf(typeof(MYTYController)) ||
-                    field.FieldType.IsEquivalentTo(typeof(MYTYController)))
-                {
-                    var prefab = (field.GetValue(nativeAdapter) as MYTYController).gameObject;
-                    var conGO = goMap[prefab];
-                    field.SetValue(nativeAdapter, conGO.GetComponent<MYTYController>());
-                }
-                else if (field.FieldType.IsSubclassOf(typeof(RiggingModel)))
-                {
-                    var prefab = (field.GetValue(nativeAdapter) as RiggingModel).gameObject;
-                    if (motionTemplateGO == null)
-                    {
-
-                        if (!goMap.ContainsKey(prefab))
-                        {
-                            var rootPrefab = prefab;
-                            while (rootPrefab.transform.parent != null)
-                            {
-                                rootPrefab = rootPrefab.transform.parent.gameObject;
-                            }
-
-                            var motionTemplateCloneGO = GameObject.Instantiate(rootPrefab);
-                            motionTemplateCloneGO.name = rootPrefab.name;
-                            motionTemplateCloneGO.transform.parent = root.transform;
-                            BuildMap(rootPrefab, motionTemplateCloneGO);
-                        }
-
-                    }
-                    else
-                    {
-                        if (!goMap.ContainsKey(prefab))
-                        {
-                            var rootPrefab = prefab;
-                            while (rootPrefab.transform.parent != null)
-                            {
-                                rootPrefab = rootPrefab.transform.parent.gameObject;
-                            }
-
-                            BuildMap(rootPrefab, motionTemplateGO);
-                        }
-
-                    }
-
-                    field.SetValue(nativeAdapter, goMap[prefab].GetComponent<RiggingModel>());
-                }
-
-            }
+            throw new Exception("importerV1 has been deprecated!");
         }
 
 
