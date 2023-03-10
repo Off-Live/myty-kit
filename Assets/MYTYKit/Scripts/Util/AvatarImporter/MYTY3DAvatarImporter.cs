@@ -35,7 +35,7 @@ namespace MYTYKit.AvatarImporter
 
         
         
-        public void LoadMainbody(byte[] modelData, string jsonString)
+        public void LoadMainbody(byte[] modelData, string jsonString, Action<GameObject> avatarLoaded)
         {
             if (driver == null)
             {
@@ -75,11 +75,11 @@ namespace MYTYKit.AvatarImporter
                 driver.CheckAndSetupBlendShape(m_avatarRoot);
                 driver.humanoidAvatarRoot = m_avatarRoot;
                 driver.Initialize();
-
+                avatarLoaded.Invoke(m_avatarRoot.gameObject);
             });
         }
 
-        public void LoadTrait(byte[] bytes, string loadName)
+        public void LoadTrait(byte[] bytes, string loadName, Action traitLoaded = null)
         {
             if (m_avatarRoot == null)
             {
@@ -94,6 +94,7 @@ namespace MYTYKit.AvatarImporter
                 driver.binder.Bind(rootBone);
                 driver.CheckAndSetupBlendShape(instance.transform);
                 m_rootBoneMap[instance.transform] = rootBone;
+                traitLoaded?.Invoke();
             });
            
            
