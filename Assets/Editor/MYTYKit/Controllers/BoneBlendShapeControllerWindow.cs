@@ -42,7 +42,6 @@ namespace MYTYKit
         {
             var controller = so.targetObject as BoneBlendShapeController;
             root.Q<Label>().text = controller.blendShapes[bsIndex].name;
-
             root.Q<Slider>().BindProperty(so.FindProperty("blendShapes").GetArrayElementAtIndex(bsIndex)
                 .FindPropertyRelative("weight"));
 
@@ -82,6 +81,7 @@ namespace MYTYKit
             var removeAllBtn = rootVisualElement.Q<Button>("BTNRemoveAll");
             var anchorToggle = rootVisualElement.Q<Toggle>("TGLAnchor");
             var resetBtn = rootVisualElement.Q<Button>("BTNReset");
+            var bsListView = rootVisualElement.Q<ListView>("LSTBlendShape");
 
             addBtn.clicked += OnAdd;
             removeBtn.clicked += OnRemove;
@@ -108,6 +108,10 @@ namespace MYTYKit
                     (e as ObjectField).RemoveFromClassList("deletedObjField");
                 }
             };
+            
+            bsListView.makeItem = BlendShapeUIItemFactory.Build;
+            bsListView.bindItem = (e, i) => { BlendShapeUIItemFactory.Bind(e, m_conSO, i); };
+
 
             conVE.RegisterValueChangedCallback((ChangeEvent<Object> e) =>
             {
@@ -124,12 +128,24 @@ namespace MYTYKit
 
         void InitWithController(BoneBlendShapeController controller)
         {
-            m_conSO = new SerializedObject(controller);
-
             var conVE = rootVisualElement.Q<ObjectField>("OBJController");
             var listView = rootVisualElement.Q<ListView>("LSTRiggingGO");
+            var bsListView = rootVisualElement.Q<ListView>("LSTBlendShape");
             var listSource = new List<GameObject>();
             var anchorToggle = rootVisualElement.Q<Toggle>("TGLAnchor");
+
+            if (controller == null)
+            {
+                anchorToggle.SetValueWithoutNotify(false);
+                listView.itemsSource = listSource;
+                listView.Rebuild();
+                bsListView.itemsSource = new List<BoneBlendShapeController.BlendShapeBasis>();
+                bsListView.Rebuild();
+                UpdatePanelConfig();
+                m_conSO = null;
+                return;
+            }
+            m_conSO = new SerializedObject(controller);
             var targetProps = m_conSO.FindProperty("rigTarget");
 
             for (int i = 0; i < targetProps.arraySize; i++)
@@ -144,7 +160,7 @@ namespace MYTYKit
 
             anchorToggle.SetValueWithoutNotify(controller.blendShapes.Count != 0);
             UpdatePanelConfig();
-
+			if(controller.blendShapes.Count>0) InitBlendShapeUI();
         }
 
         void UpdatePanelConfig()
@@ -159,16 +175,28 @@ namespace MYTYKit
 
         void OnAnchorToggled(ChangeEvent<bool> e)
         {
-            if (m_conSO == null) return;
-            UpdatePanelConfig();
+            var anchorToggle = rootVisualElement.Q<Toggle>("TGLAnchor");
+            if (m_conSO == null)
+            {
+               
+                anchorToggle.SetValueWithoutNotify(e.previousValue);
+                return;
+            }
+            
             if (e.newValue)
             {
                 RegisterAnchor();
             }
             else
             {
-                ClearAnchor();
+                if (!EditorUtility.DisplayDialog("MYTY Kit",
+                        "The blendshape information will be deleted. Do you want to clear Anchor?", "Yes", "No"))
+                    anchorToggle.SetValueWithoutNotify(e.previousValue);
+                else
+                    ClearAnchor();
             }
+            UpdatePanelConfig();
+            
         }
 
         void RegisterAnchor()
@@ -198,13 +226,14 @@ namespace MYTYKit
             }
 
             m_conSO.ApplyModifiedProperties();
+			InitController();
             InitBlendShapeUI();
         }
 
         void ClearAnchor()
         {
             var targetsProp = m_conSO.FindProperty("rigTarget");
-
+            var listView = rootVisualElement.Q<ListView>("LSTBlendShape");
             if (targetsProp.arraySize == 0)
             {
                 return;
@@ -220,8 +249,11 @@ namespace MYTYKit
             }
 
             var originalProp = m_conSO.FindProperty("orgRig");
+            var blendShapeProp = m_conSO.FindProperty("blendShapes");
             originalProp.arraySize = 0;
-
+            blendShapeProp.arraySize = 0;
+            m_conSO.ApplyModifiedProperties();
+           
         }
 
         void OnAdd()
@@ -229,6 +261,7 @@ namespace MYTYKit
             var targetsProp = m_conSO.FindProperty("rigTarget");
             var targets = Selection.GetFiltered<GameObject>(SelectionMode.Editable);
             var offset = targetsProp.arraySize;
+            var controller = m_conSO.targetObject as BoneBlendShapeController;
 
             targetsProp.arraySize += targets.Length;
             for (int i = 0; i < targets.Length; i++)
@@ -259,11 +292,6 @@ namespace MYTYKit
             var willRemove = listView.selectedIndices.ToList();
             var newList = new List<GameObject>();
             if (willRemove.Count == 0) return;
-            // if (!IsPivotEmpty())
-            // {
-            //     EditorUtility.DisplayDialog("MYTY Kit", "Reset all pivots first.", "Ok");
-            //     return;
-            // }
 
             for (int i = 0; i < targetsProp.arraySize; i++)
             {
@@ -287,11 +315,6 @@ namespace MYTYKit
 
         void OnRemoveAll()
         {
-            // if (!IsPivotEmpty())
-            // {
-            //     EditorUtility.DisplayDialog("MYTY Kit", "Reset all pivots first.", "Ok");
-            //     return;
-            // }
             var targetsProp = m_conSO.FindProperty("rigTarget");
             var listView = rootVisualElement.Q<ListView>("LSTRiggingGO");
             targetsProp.arraySize = 0;
@@ -313,11 +336,13 @@ namespace MYTYKit
         {
             var listView = rootVisualElement.Q<ListView>("LSTBlendShape");
             var controller = m_conSO.targetObject as BoneBlendShapeController;
-            listView.makeItem = BlendShapeUIItemFactory.Build;
+            listView.itemsSource = controller.blendShapes;
+            listView.Rebuild();
+        }
 
-            listView.bindItem = (e, i) => { BlendShapeUIItemFactory.Bind(e, m_conSO, i); };
-
-            controller.blendShapes.Clear();
+		void InitController(){
+			var controller = m_conSO.targetObject as BoneBlendShapeController;
+			controller.blendShapes.Clear();
             foreach (var value in Enum.GetValues(typeof(BlendShape)))
             {
                 controller.blendShapes.Add(new BoneBlendShapeController.BlendShapeBasis()
@@ -329,10 +354,9 @@ namespace MYTYKit
             controller.blendShapes.ForEach(item =>
             {
                 item.basis = new();
-                Enumerable.Range(0, controller.rigTarget.Count).ToList().ForEach(idx => item.basis.Add(Vector3.zero));
+                Enumerable.Range(0, controller.rigTarget.Count).ToList().ForEach(idx => item.basis.Add(controller.orgRig[idx].position));
             });
-            listView.itemsSource = controller.blendShapes;
-            listView.Rebuild();
-        }
+            m_conSO.Update();
+		}
     }
 }
