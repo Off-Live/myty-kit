@@ -79,7 +79,7 @@ namespace MYTYKit.AvatarImporter
             });
         }
 
-        public void LoadTrait(byte[] bytes, string loadName, Action traitLoaded)
+        public void LoadTrait(byte[] bytes, string loadName, Action traitLoaded = null)
         {
             if (m_avatarRoot == null)
             {
@@ -94,7 +94,7 @@ namespace MYTYKit.AvatarImporter
                 driver.binder.Bind(rootBone);
                 driver.CheckAndSetupBlendShape(instance.transform);
                 m_rootBoneMap[instance.transform] = rootBone;
-                traitLoaded.Invoke();
+                traitLoaded?.Invoke();
             });
            
            
