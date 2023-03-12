@@ -14,12 +14,13 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.U2D.Animation;
+using Object = UnityEngine.Object;
 
 
 namespace MYTYKit
 {
     
-    public class MASExporter : MonoBehaviour
+    public class MASExporter
     {
 
         static int m_transformID = 0;
@@ -56,12 +57,12 @@ namespace MYTYKit
                 template.spriteLibrary = spriteLibraryAsset;
             });
         
-            var mapper = FindObjectOfType<MotionTemplateMapper>();
+            var mapper = Object.FindObjectOfType<MotionTemplateMapper>();
             
             var templates = selector.templates.Select(template => SerializeTemplate(template));
-            var rootControllers = FindObjectsOfType<RootController>()
+            var rootControllers = Object.FindObjectsOfType<RootController>()
                 .Select(BuildRootController);
-            var adapters = FindObjectsOfType<NativeAdapter>().Select(adapter => (adapter as ISerializableAdapter)).ToArray();
+            var adapters = Object.FindObjectsOfType<NativeAdapter>().Select(adapter => (adapter as ISerializableAdapter)).ToArray();
         
             var exportedJO = JObject.FromObject(new
             {
@@ -211,7 +212,7 @@ namespace MYTYKit
         static Texture2D ExtractCurrentTextureAtlas(Texture2D globalAtlas, SpriteLibraryAsset spriteLibraryAsset,
             out Dictionary<Sprite, SpriteOverrideParameter> spriteDict)
         {
-            var selector = FindObjectOfType<AvatarSelector>();
+            var selector = Object.FindObjectOfType<AvatarSelector>();
             var templateRoot = selector.templates.First().instance.transform.parent;
             var sprites = templateRoot.GetComponentsInChildren<SpriteRenderer>()
                 .Where(renderer => renderer.GetComponent<SpriteSkin>() != null).Select(

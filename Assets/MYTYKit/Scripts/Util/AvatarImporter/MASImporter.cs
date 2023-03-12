@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using MYTYKit.Components;
 using MYTYKit.Controllers;
@@ -18,34 +19,44 @@ namespace MYTYKit.AvatarImporter
 {
     public class MASImporter : MonoBehaviour
     {
-        public List<Transform> rootBones = new();
-
-        // public List<Texture2D> textureAtlases = new();
-        public Texture2D textureAtlas;
+        
         public Transform templateRoot;
         public Transform avatarRoot;
-        public List<Transform> rootControllers = new();
-        public MotionTemplateMapper motionTemplateMapper;
         public MotionSource motionSource;
+        
+        Texture2D m_textureAtlas;
+        List<Transform> m_rootBones = new();
+        List<Transform> m_rootControllers = new();
+        MotionTemplateMapper m_motionTemplateMapper;
         Dictionary<int, Transform> m_transformMap = new();
 
-        public void LoadTemplate(Transform templateRoot)
+        public void LoadCollectionMetadata(string filePath)
         {
             m_transformMap.Clear();
-            rootControllers.Clear();
-            rootBones.Clear();
+            m_rootControllers.Clear();
+            m_rootBones.Clear();
             try
             {
-                var metadataJson = JObject.Parse(File.ReadAllText("Assets/mas_metadata.json"));
+                var jsonText = "";
+                using (var zipArchive = ZipFile.OpenRead(filePath))
+                {
+                    var metadataEntry = zipArchive.GetEntry("collection_mas_metadata.json");
+                    using (var reader = new StreamReader(metadataEntry.Open()))
+                    {
+                        jsonText = reader.ReadToEnd();
+                    }
+                }
+                
+                var metadataJson = JObject.Parse(jsonText);
                 var templates = metadataJson["templates"].ToList();
 
                 templates.ForEach(template =>
                 {
-                    rootBones.Add(LoadSkeleton(template["skeleton"] as JObject, templateRoot));
+                    m_rootBones.Add(LoadSkeleton(template["skeleton"] as JObject, templateRoot));
                 });
 
                 metadataJson["rootControllers"].ToList().ForEach(
-                    rootCon => { rootControllers.Add(LoadRootController(rootCon as JObject, templateRoot)); });
+                    rootCon => { m_rootControllers.Add(LoadRootController(rootCon as JObject, templateRoot)); });
 
                 LoadMotionTemplates(metadataJson["mapper"] as JObject, templateRoot);
 
@@ -61,7 +72,7 @@ namespace MYTYKit.AvatarImporter
                 metadataJson["adapters"].ToList().ForEach(
                     adapter => { LoadMotionAdapter(adapter as JObject, adapterRoot.transform); });
 
-                motionSource.motionTemplateMapperList.Add(motionTemplateMapper);
+                motionSource.motionTemplateMapperList.Add(m_motionTemplateMapper);
                 motionSource.UpdateMotionAndTemplates();
             }
             catch (JsonException e)
@@ -71,15 +82,34 @@ namespace MYTYKit.AvatarImporter
             }
         }
 
-        public void LoadAvatar(string filename, Transform avatarRoot)
+        public void LoadAvatar(string filePath)
         {
-            var avatarJO = JObject.Parse(File.ReadAllText(filename));
+            var jsonText = "";
+            byte[] pngBuffer;
+            using (var zipArchive = ZipFile.OpenRead(filePath))
+            {
+                var filename = Path.GetFileNameWithoutExtension(filePath);
+                var metadataEntry = zipArchive.GetEntry($"{filename}.json");
+                using (var reader = new StreamReader(metadataEntry.Open()))
+                {
+                    jsonText = reader.ReadToEnd();
+                }
+
+                var pngEntry = zipArchive.GetEntry($"{filename}.png");
+                using (var stream = pngEntry.Open())
+                {
+                    pngBuffer = new byte[pngEntry.Length];
+                    stream.Read(pngBuffer, 0, pngBuffer.Length);
+                }
+            }
+            
+            var avatarJO = JObject.Parse(jsonText);
             var templateId = (int)avatarJO["templateId"];
             var id = (string)avatarJO["id"];
 
-            textureAtlas = new Texture2D(2, 2);
-            textureAtlas.LoadImage(File.ReadAllBytes("Assets/1.png"));
-            textureAtlas.Compress(true);
+            m_textureAtlas = new Texture2D(2, 2);
+            m_textureAtlas.LoadImage(pngBuffer);
+            m_textureAtlas.Compress(true);
 
             (avatarJO["spriteRenderers"] as JArray).ToList().ForEach(
                 item =>
@@ -106,13 +136,13 @@ namespace MYTYKit.AvatarImporter
             var useResolver = (bool)spriteRendererJO["useResolver"];
             if (!useResolver)
             {
-                renderer.sprite = DeserializeAndCreateSprite(spritesJA[0] as JObject, textureAtlas);
+                renderer.sprite = DeserializeAndCreateSprite(spritesJA[0] as JObject, m_textureAtlas);
             }
             else
             {
                 var resolver = spriteGO.AddComponent<MYTYSpriteResolverRuntime>();
                 var labels = spriteRendererJO["labels"].ToObject<string[]>();
-                var sprites = spritesJA.Select(elem => DeserializeAndCreateSprite(elem as JObject, textureAtlas))
+                var sprites = spritesJA.Select(elem => DeserializeAndCreateSprite(elem as JObject, m_textureAtlas))
                     .ToArray();
                 labels.Zip(sprites, (label, sprite) => (label, sprite)).ToList().ForEach(pair =>
                 {
@@ -124,7 +154,7 @@ namespace MYTYKit.AvatarImporter
                 m_transformMap[resolverId] = spriteGO.transform;
             }
 
-            skin.Deserialize(spriteRendererJO["spriteSkin"] as JObject, rootBones[templateId].gameObject);
+            skin.Deserialize(spriteRendererJO["spriteSkin"] as JObject, m_rootBones[templateId].gameObject);
             return spriteGO.transform;
         }
 
@@ -194,7 +224,7 @@ namespace MYTYKit.AvatarImporter
 
             var mapper = go.AddComponent<MotionTemplateMapper>();
             mapper.DeserializeFromJObject(jObject);
-            motionTemplateMapper = mapper;
+            m_motionTemplateMapper = mapper;
         }
 
         void LoadMotionAdapter(JObject jObject, Transform parent)
@@ -206,7 +236,7 @@ namespace MYTYKit.AvatarImporter
             var adapter = (NativeAdapter)go.AddComponent(Type.GetType(typeName));
             Debug.Assert(adapter != null);
 
-            adapter.SetMotionTemplateMapper(motionTemplateMapper);
+            adapter.SetMotionTemplateMapper(m_motionTemplateMapper);
             ((ISerializableAdapter)adapter).DeserializeFromJObject(jObject, m_transformMap);
         }
 
@@ -255,23 +285,5 @@ namespace MYTYKit.AvatarImporter
             return sprite;
         }
 
-        // // Start is called before the first frame update
-        // void Start()
-        // {
-        //     var timestamp = Time.realtimeSinceStartup;
-        //     LoadTemplate(templateRoot);
-        //     //LoadAvatar("Assets/9022.json", avatarRoot);
-        //     Debug.Log($"Collection Ready. {Time.realtimeSinceStartup - timestamp} second ");
-        // }
-        //
-        // void Update()
-        // {
-        //     if (Input.GetKeyDown("q"))
-        //     {
-        //         var timestamp = Time.realtimeSinceStartup;
-        //         LoadAvatar("Assets/1.json", avatarRoot);
-        //         Debug.Log($"elapsed time  : {Time.realtimeSinceStartup - timestamp}");
-        //     }
-        // }
     }
 }
