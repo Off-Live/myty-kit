@@ -33,6 +33,8 @@ namespace MYTYKit.Components
             }
         }
         public string id="";
+        
+        public string[] tokenIdArray => m_tokenIdArray;
 
         private GameObject m_activeInstance;
         private SpriteLibraryAsset m_activeSLA;
@@ -42,7 +44,7 @@ namespace MYTYKit.Components
 
         [SerializeField] MYTYAssetScriptableObject m_mytyAssetStorage;
 
-        string[] m_tokenIdList;
+        string[] m_tokenIdArray;
         
         private void Start()
         {
@@ -85,7 +87,7 @@ namespace MYTYKit.Components
         {
             
             m_activeInstance = null;
-            if (m_tokenIdList==null || m_tokenIdList.Length == 0)
+            if (m_tokenIdArray==null || m_tokenIdArray.Length == 0)
             {
                 if(m_mytyAssetStorage!=null) BuildTokenIdList();
                 else return;
@@ -95,14 +97,14 @@ namespace MYTYKit.Components
             
             if (id.Trim()=="")
             {
-                id = m_tokenIdList[0];
+                id = m_tokenIdArray[0];
             }
 
             var index = -1;
             for (int i = 0; i < m_mytyAssetStorage.traits.Count; i++)
             {
                 
-                if (id == m_tokenIdList[i])
+                if (id == m_tokenIdArray[i])
                 {
                     index = i;
                 }
@@ -203,20 +205,20 @@ namespace MYTYKit.Components
             var index = -1;
             if (id.Trim()=="")
             {
-                id = m_tokenIdList[0];
+                id = m_tokenIdArray[0];
             }
             for (int i = 0; i < m_mytyAssetStorage.traits.Count; i++)
             {
                 
-                if (id == m_tokenIdList[i])
+                if (id == m_tokenIdArray[i])
                 {
                     index = i;
                 }
             }
             
-            for (int i = index + 1, count = 0; count < m_tokenIdList.Length; i++, count++)
+            for (int i = index + 1, count = 0; count < m_tokenIdArray.Length; i++, count++)
             {
-                i %= m_tokenIdList.Length;
+                i %= m_tokenIdArray.Length;
                 var traitItem = m_mytyAssetStorage.traits[i];
                 var psbPath = templates[templateIdx].PSBPath;
                 if (traitItem.filename != psbPath) continue;
@@ -225,7 +227,7 @@ namespace MYTYKit.Components
                 {
                     if (path == traitPath || path.StartsWith(traitPath + "/"))
                     {
-                        id = m_tokenIdList[i];
+                        id = m_tokenIdArray[i];
                         found = true;
                     }
                 }
@@ -439,17 +441,17 @@ namespace MYTYKit.Components
 
         void BuildTokenIdList()
         {
-            m_tokenIdList = new string[m_mytyAssetStorage.traits.Count];
+            m_tokenIdArray = new string[m_mytyAssetStorage.traits.Count];
 
             for (var i = 0; i < m_mytyAssetStorage.traits.Count; i++)
             {
                 if (string.IsNullOrEmpty(m_mytyAssetStorage.traits[i].tokenId))
                 {
-                    m_tokenIdList[i] = m_mytyAssetStorage.traits[i].id.ToString();
+                    m_tokenIdArray[i] = m_mytyAssetStorage.traits[i].id.ToString();
                 }
                 else
                 {
-                    m_tokenIdList[i] = m_mytyAssetStorage.traits[i].tokenId;
+                    m_tokenIdArray[i] = m_mytyAssetStorage.traits[i].tokenId;
                 }
                     
             }

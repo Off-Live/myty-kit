@@ -1,11 +1,17 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text.RegularExpressions;
 using MYTYKit.Components;
 using MYTYKit.Controllers;
+using MYTYKit.MotionAdapters;
+using MYTYKit.MotionTemplates;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.U2D.Animation;
 
@@ -18,67 +24,90 @@ namespace MYTYKit
 
         static int m_transformID = 0;
         static Dictionary<Transform, int> m_transformMap;
+        static Dictionary<Sprite, Texture2D> m_spriteTextureMap;
+        const string ExportPath = "Assets/MYTYAsset/MAS";
 
-        // [MenuItem("TestMenu/Refresh")]
-        // public static void Refresh()
-        // {
-        //     var selector = GameObject.FindObjectOfType<AvatarSelector>();
-        //     if (selector == null) return;
-        //     
-        //     selector.templates.Select(template => template.spriteLibrary).ToList().ForEach(asset =>
-        //     {
-        //         
-        //          // var importer = AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(asset));
-        //          // EditorUtility.SetDirty(asset);
-        //          // importer.SaveAndReimport();
-        //          AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(asset),ImportAssetOptions.ForceUpdate);
-        //
-        //     });
-        //     AssetDatabase.Refresh();
-        //
-        // }
-        //
-        // [MenuItem("TestMenu/NewExporter")]
-        // public static void Export()
-        // {
-        //     m_transformID = 0;
-        //     m_transformMap = new();
-        //     EditorSceneManager.OpenScene("Assets/Scene/1.0 scene.unity", OpenSceneMode.Single);
-        //     
-        //     SpriteResolverCleaner.FixAvatarSprite();
-        //     var selector = GameObject.FindObjectOfType<AvatarSelector>();
-        //     if (selector == null) return;
-        //     
-        //     selector.templates.ForEach(template =>
-        //     {
-        //         var psb = AssetDatabase.LoadAssetAtPath<GameObject>(template.PSBPath);
-        //         var tempPath = "Assets/"+template.instance.name + ".asset";
-        //         SpriteLibraryFactory.CreateLibrary(psb, tempPath);
-        //         var spriteLib = template.instance.GetComponent<SpriteLibrary>();
-        //         var spriteLibraryAsset =  AssetDatabase.LoadAssetAtPath<SpriteLibraryAsset>(tempPath);
-        //         spriteLib.spriteLibraryAsset = spriteLibraryAsset;
-        //         template.spriteLibrary = spriteLibraryAsset;
-        //     });
-        //
-        //     var mapper = FindObjectOfType<MotionTemplateMapper>();
-        //     
-        //     var templates = selector.templates.Select(template => SerializeTemplate(template));
-        //     var rootControllers = FindObjectsOfType<RootController>()
-        //         .Select(BuildRootController);
-        //     var adapters = FindObjectsOfType<NativeAdapter>().Select(adapter => (adapter as ISerializableAdapter)).ToArray();
-        //
-        //     var exportedJO = JObject.FromObject(new
-        //     {
-        //         templates,
-        //         rootControllers,
-        //         mapper= mapper.SerializeToJObject(),
-        //         adapters = adapters.Select(adapter => adapter.SerializeToJObject(m_transformMap))
-        //     });
-        //     
-        //     File.WriteAllText("Assets/mas_metadata.json",exportedJO.ToString(Formatting.Indented));
-        //     ExportAvatar(new List<string>(){"1","2","3"},selector);
-        //     
-        // }
+        public static void ExportFromCLI()
+        {
+            if (!Application.isBatchMode)
+            {
+                Debug.LogError("This method can be called from batchmode only.");
+            }
+            m_transformID = 0;
+            m_transformMap = new();
+            m_spriteTextureMap = new();
+            EditorSceneManager.OpenScene(PackageExporter.ScenePath, OpenSceneMode.Single);
+            
+            SpriteResolverCleaner.FixAvatarSprite();
+            var selector = GameObject.FindObjectOfType<AvatarSelector>();
+            if (selector == null) return;
+            selector.Configure();
+
+            var tempSlaPaths = new List<string>();
+            selector.templates.ForEach(template =>
+            {
+                var psb = AssetDatabase.LoadAssetAtPath<GameObject>(template.PSBPath);
+                var tempPath = "Assets/"+template.instance.name + ".asset";
+                tempSlaPaths.Add(tempPath);
+                SpriteLibraryFactory.CreateLibrary(psb, tempPath);
+                var spriteLib = template.instance.GetComponent<SpriteLibrary>();
+                var spriteLibraryAsset =  AssetDatabase.LoadAssetAtPath<SpriteLibraryAsset>(tempPath);
+                spriteLib.spriteLibraryAsset = spriteLibraryAsset;
+                template.spriteLibrary = spriteLibraryAsset;
+            });
+        
+            var mapper = FindObjectOfType<MotionTemplateMapper>();
+            
+            var templates = selector.templates.Select(template => SerializeTemplate(template));
+            var rootControllers = FindObjectsOfType<RootController>()
+                .Select(BuildRootController);
+            var adapters = FindObjectsOfType<NativeAdapter>().Select(adapter => (adapter as ISerializableAdapter)).ToArray();
+        
+            var exportedJO = JObject.FromObject(new
+            {
+                templates,
+                rootControllers,
+                mapper= mapper.SerializeToJObject(),
+                adapters = adapters.Select(adapter => adapter.SerializeToJObject(m_transformMap))
+            });
+
+            Directory.CreateDirectory(ExportPath);
+            var files = Directory.GetFiles(ExportPath);
+            foreach (var file in files)
+            {
+                File.Delete(file);
+            }
+            
+            using (var zipArchive = ZipFile.Open($"{ExportPath}/collection_mas_metadata.zip", ZipArchiveMode.Create))
+            {
+                var dataEntry = zipArchive.CreateEntry("collection_mas_metadata.json");
+                using (var writer = new StreamWriter(dataEntry.Open()))
+                {
+                    writer.Write(exportedJO.ToString(Formatting.Indented));
+                }
+            }
+
+            var commandLineArgs = System.Environment.GetCommandLineArgs();
+            var avatarIdArgIndex = Array.IndexOf(commandLineArgs, "-avatarId");
+
+            var avatarIdList = new List<string>();
+            
+            if (avatarIdArgIndex < 0)
+            {
+                avatarIdList = selector.tokenIdArray.ToList();
+            }
+            else
+            {
+                avatarIdList = commandLineArgs[avatarIdArgIndex + 1].Split(",").ToList();
+            }
+            
+            ExportAvatar(avatarIdList,selector);
+            foreach (var path in tempSlaPaths)
+            {
+                AssetDatabase.DeleteAsset(path);
+            }
+
+        }
 
         static void ExportAvatar(List<string> idList, AvatarSelector selector)
         {
@@ -100,10 +129,9 @@ namespace MYTYKit
                 }
 
                 var spriteLibraryAsset = selector.templates[templateId].spriteLibrary;
-
                 var currentAtlas = ExtractCurrentTextureAtlas(rgbaAtlas, spriteLibraryAsset, out var spriteDict);
-                File.WriteAllBytes($"Assets/{IdToFilename(id)}.png", currentAtlas.EncodeToPNG());
-
+                var filename = ConvertIdToFilename(id);
+                
                 var spriteRenderers = templateRoot.GetComponentsInChildren<SpriteRenderer>()
                     .Where(renderer => renderer.GetComponent<SpriteSkin>() != null).Select(renderer =>
                         SerializeSpriteRenderer(renderer, spriteLibraryAsset, spriteDict)).ToArray();
@@ -113,8 +141,22 @@ namespace MYTYKit
                     templateId, id, spriteRenderers
                 });
 
-                var filename = IdToFilename(id);
-                File.WriteAllText($"Assets/{filename}.json", avatarJO.ToString(Formatting.Indented));
+
+                using (var zipArchive = ZipFile.Open($"{ExportPath}/{filename}.zip", ZipArchiveMode.Create))
+                {
+                    var atlasEntry = zipArchive.CreateEntry($"{filename}.png");
+                    using (var stream = atlasEntry.Open())
+                    {
+                        stream.Write(currentAtlas.EncodeToPNG());
+                    }
+                    
+                    var dataEntry = zipArchive.CreateEntry($"{filename}.json");
+                    using (var writer = new StreamWriter(dataEntry.Open()))
+                    {
+                        writer.Write(avatarJO.ToString(Formatting.Indented));
+                    }
+                }
+                
             });
         }
 
@@ -143,10 +185,22 @@ namespace MYTYKit
             var startY = Mathf.RoundToInt(rect.y);
             var width = Mathf.RoundToInt(rect.width);
             var height = Mathf.RoundToInt(rect.height);
-            var subTexture = new Texture2D(width, height);
-            var pixels = globalAtlas.GetPixels(startX, startY, width, height);
-            subTexture.SetPixels(pixels);
-            subTexture.Apply();
+
+            Texture2D subTexture = null;
+
+            if (m_spriteTextureMap.ContainsKey(sprite))
+            {
+                subTexture = m_spriteTextureMap[sprite];
+            }
+            else
+            {
+                subTexture = new Texture2D(width, height);
+                var pixels = globalAtlas.GetPixels(startX, startY, width, height);
+                subTexture.SetPixels(pixels);
+                subTexture.Apply();
+                m_spriteTextureMap[sprite] = subTexture;
+            }
+            
             var pivot = sprite.pivot;
             var normPivot = new Vector2(pivot.x / rect.width, pivot.y / rect.height);
             var normRect = new Rect(rect.x / globalAtlas.width, rect.y / globalAtlas.height,
@@ -334,7 +388,7 @@ namespace MYTYKit
             return conJo;
         }
 
-        static string IdToFilename(string id)
+        static string ConvertIdToFilename(string id)
         {
             return Regex.Replace(id, "[^a-zA-Z0-9_.-]+", "_", RegexOptions.Compiled);
         }

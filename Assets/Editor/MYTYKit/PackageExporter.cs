@@ -7,8 +7,8 @@ namespace MYTYKit
     
     public class PackageExporter
     {
-        const string ScenePath = "Assets/MYTYAsset/ExportedScene/MYTYAvatarScene.unity";
-        const string PackagePath = "Assets/MYTYAsset/mytyavatar.unitypackage";
+        public const string ScenePath = "Assets/MYTYAsset/ExportedScene/MYTYAvatarScene.unity";
+        public const string PackagePath = "Assets/MYTYAsset/mytyavatar.unitypackage";
         [MenuItem("MYTY Kit/Export to unitypackage",false,2)]
         static void ExportScene()
         {
