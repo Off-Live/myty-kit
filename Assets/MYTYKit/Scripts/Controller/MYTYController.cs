@@ -266,7 +266,7 @@ namespace MYTYKit.Controllers
         {
             return JObject.FromObject(new
             {
-                spriteObjects = spriteObjects.Select(item => tfMap[item.transform]).ToArray(),
+                spriteObjects = spriteObjects.Where(item=>item!=null).Select(item => tfMap[item.transform]).ToArray(),
             });
         }
 
