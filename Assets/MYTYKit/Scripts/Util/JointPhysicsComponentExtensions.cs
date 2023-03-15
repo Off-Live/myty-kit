@@ -56,7 +56,7 @@ namespace MYTYKit
                 hingeJoint2D.useLimits,
                 hingeJoint2D.breakForce,
                 hingeJoint2D.breakTorque,
-                connectedBody = transformMap[hingeJoint2D.connectedBody.transform]
+                connectedBody = hingeJoint2D.connectedBody==null ? -1 : transformMap[hingeJoint2D.connectedBody.transform]
             });
         }
 
@@ -73,7 +73,10 @@ namespace MYTYKit
             hingeJoint2D.useLimits = (bool)jObject["useLimits"];
             hingeJoint2D.breakForce = (float)jObject["breakForce"];
             hingeJoint2D.breakTorque = (float)jObject["breakTorque"];
-            hingeJoint2D.connectedBody = idTransformMap[(int)jObject["connectedBody"]].GetComponent<Rigidbody2D>();
+
+            var id = (int)jObject["connectedBody"];
+            if (id < 0) return;
+            hingeJoint2D.connectedBody = idTransformMap[id].GetComponent<Rigidbody2D>();
         }
         public static JObject SerializeToJObject(this SpringJoint2D springJoint2D, Dictionary<Transform, int> transformMap)
         {
@@ -95,7 +98,7 @@ namespace MYTYKit
                 springJoint2D.dampingRatio,
                 springJoint2D.frequency,
                 springJoint2D.breakForce,
-                connectedBody = transformMap[springJoint2D.connectedBody.transform]
+                connectedBody = springJoint2D.connectedBody==null ? -1 : transformMap[springJoint2D.connectedBody.transform]
             });
         }
         
@@ -111,7 +114,9 @@ namespace MYTYKit
             springJoint2D.dampingRatio = (float)jObject["dampingRatio"];
             springJoint2D.frequency = (float)jObject["frequency"];
             springJoint2D.breakForce = (float)jObject["breakForce"];
-            springJoint2D.connectedBody = idTransformMap[(int)jObject["connectedBody"]].GetComponent<Rigidbody2D>();
+            var id = (int)jObject["connectedBody"];
+            if (id < 0) return; 
+            springJoint2D.connectedBody = idTransformMap[id].GetComponent<Rigidbody2D>();
         }
 
         public static JObject SerializeToJObject(this Rigidbody2D rigidBody2D)
