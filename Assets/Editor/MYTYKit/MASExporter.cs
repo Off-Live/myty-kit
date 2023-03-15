@@ -336,9 +336,12 @@ namespace MYTYKit
         static JObject BuildBoneJson(GameObject go)
         {
             var jsonObject = new JObject();
-            jsonObject["name"] = go.name;
+            
             jsonObject["transform"] = go.transform.Serialize();
             jsonObject["id"] = m_transformID;
+            go.name = go.name + "_ID_" + m_transformID;
+            jsonObject["name"] = go.name;
+            
             m_transformMap[go.transform] = m_transformID;
             m_transformID++;
             var childrenJsonList = Enumerable.Range(0, go.transform.childCount)
