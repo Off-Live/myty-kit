@@ -43,6 +43,7 @@ namespace MYTYKit
             var selector = GameObject.FindObjectOfType<AvatarSelector>();
             if (selector == null) return;
             selector.Configure();
+            selector.PrepareForExporting();
 
             var tempSlaPaths = new List<string>();
             selector.templates.ForEach(template =>
