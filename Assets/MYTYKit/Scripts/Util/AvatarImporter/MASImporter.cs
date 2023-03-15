@@ -53,6 +53,7 @@ namespace MYTYKit.AvatarImporter
                 templates.ForEach(template =>
                 {
                     m_rootBones.Add(LoadSkeleton(template["skeleton"] as JObject, templateRoot));
+                    LoadJointPhysics(template["jointPhysicsComponents"].ToObject<JObject[]>());
                 });
 
                 metadataJson["rootControllers"].ToList().ForEach(
@@ -169,6 +170,30 @@ namespace MYTYKit.AvatarImporter
             var childrenJA = skeleton["children"] as JArray;
             childrenJA.ToList().ForEach(childJson => LoadSkeleton(childJson as JObject, go.transform));
             return go.transform;
+        }
+
+        void LoadJointPhysics(JObject[] physicsComponent)
+        {
+            foreach (var jObject in physicsComponent)
+            {
+                var tf = m_transformMap[(int)jObject["id"]];
+                foreach (var jToken in jObject["unityComponents"].ToArray())
+                {
+                    var componentJo = jToken as JObject;
+                    var typeKey = (string)componentJo["typeKey"];
+                    var typeFullName = (string)componentJo["typeFullName"];
+                    if (JointPhysicsSetting.DeserializeActions.ContainsKey(typeKey))
+                    {
+                        var component = tf.GetComponent(Type.GetType(typeFullName));
+                        if (component == null)
+                        {
+                            component = tf.gameObject.AddComponent(Type.GetType(typeFullName));
+                        }
+
+                        JointPhysicsSetting.DeserializeActions[typeKey](component, componentJo, m_transformMap);
+                    }
+                }
+            }
         }
 
         Transform LoadRootController(JObject rootController, Transform parent)

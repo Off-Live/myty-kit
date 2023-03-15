@@ -281,10 +281,11 @@ namespace MYTYKit
         static JObject SerializeTemplate(AvatarTemplate template)
         {
             var skeleton = BuildBoneJson(template.boneRootObj);
+            var jointPhysicsComponents = BuildJointPhysicsJson(template.boneRootObj.transform);
             BuildResolverTransformMap(template.instance);
             return JObject.FromObject(new
             {
-                skeleton
+                skeleton,jointPhysicsComponents
             });
         }
 
@@ -346,6 +347,30 @@ namespace MYTYKit
             childrenJsonList.ForEach(child => childrenJA.Add(child));
             jsonObject["children"] = childrenJA;
             return jsonObject;
+        }
+
+        static JObject[] BuildJointPhysicsJson(Transform rootBone)
+        {
+            return rootBone.GetComponentsInChildren<Transform>()
+                .Where(tf => JointPhysicsSetting.SerializeActions.Keys.Count(type => tf.GetComponent(type) != null) > 0)
+                .Select(tf =>
+                {
+
+                    return JObject.FromObject(new
+                    {
+                        id = m_transformMap[tf],
+                        unityComponents = JointPhysicsSetting.SerializeActions.Keys
+                            .Where(type => tf.GetComponent(type) != null)
+                            .Select(type =>
+                            {
+                                var component = tf.GetComponent(type);
+                                var componentJo = JointPhysicsSetting.SerializeActions[type](component, m_transformMap);
+                                componentJo["typeFullName"] = type.FullName+","+type.Assembly.GetName().Name;
+                                componentJo["typeKey"] = type.Name;
+                                return componentJo;
+                            })
+                    });
+                }).ToArray();
         }
 
         static void BuildResolverTransformMap(GameObject templateInstanceRoot)
