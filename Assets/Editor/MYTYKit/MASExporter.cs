@@ -477,6 +477,7 @@ namespace MYTYKit
                     while (curr != template.instance.transform)
                     {
                         path = "/" + curr + path;
+                        curr = curr.parent;
                     }
                     path = path.Substring(1);
                     m_traitPathMap[renderer] = (path, idx);
