@@ -32,9 +32,15 @@ namespace MYTYKit
 
         public static void ExportFromCLI()
         {
-            if (!Application.isBatchMode)
+            Export(true);
+        }
+
+        public static void Export(bool fromCLI)
+        {
+            if (fromCLI && !Application.isBatchMode)
             {
                 Debug.LogError("This method can be called from batchmode only.");
+                return;
             }
             m_transformID = 0;
             m_transformMap = new();
@@ -344,7 +350,7 @@ namespace MYTYKit
                 sprites = spritesJA,
                 order = spriteRenderer.sortingOrder,
                 maskInteraction = (int)spriteRenderer.maskInteraction,
-                useInAr = useInARMode
+                useInARMode
             });
 
 
@@ -449,11 +455,25 @@ namespace MYTYKit
                 var headBone = transformList.FirstOrDefault(tf =>
                     PrefabUtility.GetCorrespondingObjectFromSource(tf.gameObject) == item.headBone);
                 m_arTraitList.Add(item.traits);
+
+                var textureWidth = 512;
+                var textureHeight = 512;
+
+                if (item.renderCam.targetTexture != null)
+                {
+                    textureWidth = item.renderCam.targetTexture.width;
+                    textureHeight = item.renderCam.targetTexture.height;
+                }
+                
                 return JObject.FromObject(new
                 {
                     headBone = headBone == null ? -1 : m_transformMap[headBone],
                     isValid = headBone != null && item.isValid,
-                    renderCam = item.renderCam.SerializeToJObject()
+                    renderCam = item.renderCam.SerializeToJObject(),
+                    ARTexture = new
+                    {
+                        textureWidth,textureHeight
+                    }
                 });
             });
 
@@ -476,7 +496,7 @@ namespace MYTYKit
                     var path = "";
                     while (curr != template.instance.transform)
                     {
-                        path = "/" + curr + path;
+                        path = "/" + curr.name + path;
                         curr = curr.parent;
                     }
                     path = path.Substring(1);

@@ -19,17 +19,33 @@ namespace MYTYKit.AvatarImporter
 {
     public class MASImporter : MonoBehaviour
     {
+        class ARDataRuntime
+        {
+            public Transform headBone;
+            public RenderTexture arTexture;
+            public Camera renderCam;
+            public bool isValid;
+        }
         
         public Transform templateRoot;
         public Transform avatarRoot;
         public MotionSource motionSource;
+
+        public bool isAROnly
+        {
+            get => m_isAROnly;
+        }
         
         Texture2D m_textureAtlas;
         List<Transform> m_rootBones = new();
         List<Transform> m_rootControllers = new();
+        List<ARDataRuntime> m_arData = new();
         MotionTemplateMapper m_motionTemplateMapper;
         Dictionary<int, Transform> m_transformMap = new();
+        Dictionary<SpriteRenderer, bool> m_useInARModeMap;
 
+        bool m_isAROnly = false;
+        
         public void LoadCollectionMetadata(string filePath)
         {
             m_transformMap.Clear();
@@ -48,8 +64,14 @@ namespace MYTYKit.AvatarImporter
                 }
                 
                 var metadataJson = JObject.Parse(jsonText);
+                
+                var cameraJo = metadataJson["mainCamera"] as JObject;
+                var cameraGo = new GameObject();
+                cameraGo.name = "MainCamera";
+                cameraGo.transform.parent = templateRoot;
+                cameraGo.AddComponent<Camera>().DeserializeFromJObject(cameraJo);
+                
                 var templates = metadataJson["templates"].ToList();
-
                 templates.ForEach(template =>
                 {
                     m_rootBones.Add(LoadSkeleton(template["skeleton"] as JObject, templateRoot));
@@ -75,6 +97,8 @@ namespace MYTYKit.AvatarImporter
 
                 motionSource.motionTemplateMapperList.Add(m_motionTemplateMapper);
                 motionSource.UpdateMotionAndTemplates();
+                
+                if(metadataJson.ContainsKey("ARFaceData")) LoadARFaceData(metadataJson["ARFaceData"] as JObject, templateRoot);
             }
             catch (JsonException e)
             {
@@ -112,6 +136,8 @@ namespace MYTYKit.AvatarImporter
             m_textureAtlas.LoadImage(pngBuffer);
             m_textureAtlas.Compress(true);
 
+            m_useInARModeMap = new();
+
             (avatarJO["spriteRenderers"] as JArray).ToList().ForEach(
                 item =>
                 {
@@ -122,7 +148,25 @@ namespace MYTYKit.AvatarImporter
             UpdateSpriteControllers();
         }
 
-        public Transform LoadSpriteRenderer(JObject spriteRendererJO, int templateId)
+        public void SetARMode(bool mode)
+        {
+            var renderers = Enumerable.Range(0, avatarRoot.childCount)
+                .Select(id => avatarRoot.transform.GetChild(id).GetComponent<SpriteRenderer>())
+                .ToList();
+            renderers.ForEach(renderer =>
+            {
+                if(!mode) renderer.gameObject.SetActive(true);
+                else
+                {
+                    if (m_useInARModeMap.ContainsKey(renderer))
+                    {
+                        renderer.gameObject.SetActive(m_useInARModeMap[renderer]);
+                    }
+                }
+            });
+        }
+
+        Transform LoadSpriteRenderer(JObject spriteRendererJO, int templateId)
         {
             var spriteGO = new GameObject();
 
@@ -132,7 +176,7 @@ namespace MYTYKit.AvatarImporter
             spriteGO.name = (string)spriteRendererJO["name"];
             renderer.sortingOrder = (int)spriteRendererJO["order"];
             renderer.maskInteraction = (SpriteMaskInteraction)(int)spriteRendererJO["maskInteraction"];
-
+            m_useInARModeMap[renderer] = (bool)spriteRendererJO["useInARMode"];
             var spritesJA = spriteRendererJO["sprites"] as JArray;
             var useResolver = (bool)spriteRendererJO["useResolver"];
             if (!useResolver)
@@ -263,6 +307,30 @@ namespace MYTYKit.AvatarImporter
 
             adapter.SetMotionTemplateMapper(m_motionTemplateMapper);
             ((ISerializableAdapter)adapter).DeserializeFromJObject(jObject, m_transformMap);
+        }
+
+        void LoadARFaceData(JObject jObject, Transform templateRoot)
+        {
+            m_isAROnly = (bool)jObject["AROnly"];
+            m_arData = jObject["items"].ToList().Select((token,idx)=>
+            {
+                
+                var headBone = m_transformMap[(int)token["headBone"]];
+                var cameraGo = new GameObject($"ARRenderCam{idx}");
+                cameraGo.transform.parent = templateRoot;
+                var camera = cameraGo.AddComponent<Camera>();
+                camera.DeserializeFromJObject(token["renderCam"] as JObject);
+                var arTexture = new RenderTexture((int)token["ARTexture"]["textureWidth"],
+                    (int)token["ARTexture"]["textureHeight"], 0, RenderTextureFormat.ARGB32);
+                camera.targetTexture = arTexture;
+                return new ARDataRuntime()
+                {
+                    arTexture = arTexture,
+                    headBone = headBone,
+                    renderCam = camera,
+                    isValid = (bool) token["isValid"]
+                };
+            }).ToList();
         }
 
         Sprite DeserializeAndCreateSprite(JObject spriteJO, Texture2D atlas)
