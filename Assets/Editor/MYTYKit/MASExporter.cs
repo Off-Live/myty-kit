@@ -26,6 +26,8 @@ namespace MYTYKit
         static int m_transformID = 0;
         static Dictionary<Transform, int> m_transformMap;
         static Dictionary<Sprite, Texture2D> m_spriteTextureMap;
+        static List<List<string>> m_arTraitList;
+        static Dictionary<SpriteRenderer, (string path, int templateIndex)> m_traitPathMap;
         const string ExportPath = "Assets/MYTYAsset/MAS";
 
         public static void ExportFromCLI()
@@ -67,12 +69,18 @@ namespace MYTYKit
         
             var exportedJO = JObject.FromObject(new
             {
+                mainCamera = Camera.main.SerializeToJObject(),
                 templates,
                 rootControllers,
                 mapper= mapper.SerializeToJObject(),
-                adapters = adapters.Select(adapter => adapter.SerializeToJObject(m_transformMap))
+                adapters = adapters.Select(adapter => adapter.SerializeToJObject(m_transformMap)),
             });
 
+            var arJson = BuildARMetadata(selector.templates.First().instance.transform.parent);
+            if (arJson != null) exportedJO["ARFaceData"] = arJson;
+            
+            GeneratePathForSpriteRenderers(selector);
+            
             Directory.CreateDirectory(ExportPath);
             var files = Directory.GetFiles(ExportPath);
             foreach (var file in files)
@@ -317,6 +325,14 @@ namespace MYTYKit
                 resolverId = m_transformMap[spriteRenderer.transform];
             }
 
+            var useInARMode = false;
+
+            if (m_arTraitList != null)
+            {
+                var (path, index) = m_traitPathMap[spriteRenderer];
+                useInARMode = m_arTraitList[index].Count(item => path.StartsWith(item+"/") || path==item) > 0;
+            }
+            
             return JObject.FromObject(new
             {
                 useResolver = resolver != null,
@@ -327,7 +343,8 @@ namespace MYTYKit
                 spriteSkin = skinJO,
                 sprites = spritesJA,
                 order = spriteRenderer.sortingOrder,
-                maskInteraction = (int)spriteRenderer.maskInteraction
+                maskInteraction = (int)spriteRenderer.maskInteraction,
+                useInAr = useInARMode
             });
 
 
@@ -416,6 +433,57 @@ namespace MYTYKit
 
             conJo.Merge(childrenJo);
             return conJo;
+        }
+
+        static JObject BuildARMetadata(Transform templateRoot)
+        {
+            var arAsset = AssetDatabase.LoadAssetAtPath<ARFaceAsset>(MYTYUtil.AssetPath + "/ARFaceData.asset");
+            var transformList = templateRoot.GetComponentsInChildren<Transform>().ToList();
+            m_arTraitList = null;
+            
+            if (arAsset == null) return null;
+            m_arTraitList = new List<List<string>>();
+            
+            var items = arAsset.items.Select(item =>
+            {
+                var headBone = transformList.FirstOrDefault(tf =>
+                    PrefabUtility.GetCorrespondingObjectFromSource(tf.gameObject) == item.headBone);
+                m_arTraitList.Add(item.traits);
+                return JObject.FromObject(new
+                {
+                    headBone = headBone == null ? -1 : m_transformMap[headBone],
+                    isValid = headBone != null && item.isValid,
+                    renderCam = item.renderCam.SerializeToJObject()
+                });
+            });
+
+            return JObject.FromObject(new
+            {
+                arAsset.AROnly,
+                items
+            });
+        }
+
+        static void GeneratePathForSpriteRenderers(AvatarSelector selector)
+        {
+            m_traitPathMap = new();
+            var idx = 0;
+            selector.templates.ForEach(template =>
+            {
+                foreach (var renderer in template.instance.GetComponentsInChildren<SpriteRenderer>())
+                {
+                    var curr = renderer.transform;
+                    var path = "";
+                    while (curr != template.instance.transform)
+                    {
+                        path = "/" + curr + path;
+                    }
+                    path = path.Substring(1);
+                    m_traitPathMap[renderer] = (path, idx);
+                }
+
+                idx++;
+            });
         }
 
         static string ConvertIdToFilename(string id)
