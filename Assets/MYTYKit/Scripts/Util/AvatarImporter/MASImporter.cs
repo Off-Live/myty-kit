@@ -176,7 +176,7 @@ namespace MYTYKit.AvatarImporter
         {
             foreach (var id in Enumerable.Range(0,templateRoot.childCount))
             {
-                Destroy(templateRoot.GetChild(id));
+                Destroy(templateRoot.GetChild(id).gameObject);
             }
         }
 
