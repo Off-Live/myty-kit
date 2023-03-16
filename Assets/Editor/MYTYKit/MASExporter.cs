@@ -423,7 +423,7 @@ namespace MYTYKit
                 rootCon.name,
                 children = Enumerable.Range(0, rootCon.transform.childCount)
                     .Select(idx => rootCon.transform.GetChild(idx))
-                    .Where(child => child.GetComponent<MYTYController>() != null)
+                    .Where(child => child.GetComponent<MYTYController>() != null && child.gameObject.activeSelf)
                     .Select(child => BuildControllers(child.GetComponent<MYTYController>()))
             });
         }
@@ -433,7 +433,7 @@ namespace MYTYKit
             var conJo = controller.SerializeToJObject(m_transformMap);
             var children = Enumerable.Range(0, controller.transform.childCount)
                 .Select(idx => controller.transform.GetChild(idx))
-                .Where(child => child.GetComponent<MYTYController>() != null)
+                .Where(child => child.GetComponent<MYTYController>() != null && child.gameObject.activeSelf)
                 .Select(child => BuildControllers(child.GetComponent<MYTYController>()));
 
             m_transformMap[controller.transform] = m_transformID;

@@ -109,7 +109,8 @@ namespace MYTYKit.MotionAdapters
                 repeat,
                 swing,
                 stepCount,
-                unitTime
+                unitTime,
+                name
             });
       
         }
@@ -123,6 +124,7 @@ namespace MYTYKit.MotionAdapters
             stepCount = (int)jObject["stepCount"];
             unitTime = (float)jObject["unitTime"];
             controller = idTransformMap[(int)jObject["controller"]].GetComponent<MYTYController>();
+            name = (string)jObject["name"];
         }
     }
 }
