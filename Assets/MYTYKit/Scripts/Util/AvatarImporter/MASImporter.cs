@@ -35,6 +35,11 @@ namespace MYTYKit.AvatarImporter
         {
             get => m_isAROnly;
         }
+
+        public string currentId
+        {
+            get => m_id;
+        }
         
         Texture2D m_textureAtlas;
         List<Transform> m_rootBones = new();
@@ -45,7 +50,8 @@ namespace MYTYKit.AvatarImporter
         Dictionary<SpriteRenderer, bool> m_useInARModeMap;
 
         bool m_isAROnly = false;
-        
+        int m_templateId;
+        string m_id;
         public void LoadCollectionMetadata(string filePath)
         {
             m_transformMap.Clear();
@@ -130,8 +136,9 @@ namespace MYTYKit.AvatarImporter
             
             var avatarJO = JObject.Parse(jsonText);
             var templateId = (int)avatarJO["templateId"];
-            var id = (string)avatarJO["id"];
+            var m_id = (string)avatarJO["id"];
 
+            m_templateId = templateId;
             m_textureAtlas = new Texture2D(2, 2);
             m_textureAtlas.LoadImage(pngBuffer);
             m_textureAtlas.Compress(true);
@@ -164,6 +171,37 @@ namespace MYTYKit.AvatarImporter
                     }
                 }
             });
+            
+            if(mode) LockController();
+            else UnlockController();
+        }
+
+        void LockController()
+        {
+            var rootBone = m_rootBones[m_templateId];
+            var headBone = m_arData[m_templateId].headBone;
+            var parentBoneList = new List<Transform>();
+            var currBone = headBone;
+            while (currBone != rootBone)
+            {
+                parentBoneList.Add(currBone);
+                currBone = currBone.parent;
+            }
+
+            var rootController = m_rootControllers[m_templateId];
+            
+            rootController.GetComponentsInChildren<BoneController>()
+                .Where(controller => parentBoneList.Count(bone=> controller.rigTarget.Contains(bone.gameObject))>0)
+                .ToList().ForEach(controller=> controller.skip = true);
+        }
+
+        void UnlockController()
+        {
+            var rootController = m_rootControllers[m_templateId];
+            foreach (var controller in rootController.GetComponentsInChildren<BoneController>())
+            {
+                controller.skip = false;
+            }
         }
 
         Transform LoadSpriteRenderer(JObject spriteRendererJO, int templateId)
