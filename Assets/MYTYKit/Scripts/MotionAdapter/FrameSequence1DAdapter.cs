@@ -118,7 +118,7 @@ namespace MYTYKit.MotionAdapters
         {
             start = (float) jObject["start"];
             end = (float)jObject["end"];
-            repeat = (bool)jObject["bool"];
+            repeat = (bool)jObject["repeat"];
             swing = (bool)jObject["swing"];
             stepCount = (int)jObject["stepCount"];
             unitTime = (float)jObject["unitTime"];

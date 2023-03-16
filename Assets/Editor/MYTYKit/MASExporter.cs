@@ -220,6 +220,8 @@ namespace MYTYKit
             
             var pivot = sprite.pivot;
             var normPivot = new Vector2(pivot.x / rect.width, pivot.y / rect.height);
+            if (rect.width <= 1.0e-6) normPivot.x = 0;
+            if (rect.height <= 1.0e-6) normPivot.y = 0;
             var normRect = new Rect(rect.x / globalAtlas.width, rect.y / globalAtlas.height,
                 rect.width / globalAtlas.width, rect.height / globalAtlas.height);
             return (sprite, subTexture, normPivot, normRect);
@@ -277,6 +279,10 @@ namespace MYTYKit
             {
                 var scaleX = tuple.rect.width / atlasWidth / tuple.normRect.width;
                 var scaleY = tuple.rect.height / atlasHeight / tuple.normRect.height;
+
+                if (tuple.normRect.width < 1.0e-6) scaleX = 0;
+                if (tuple.normRect.height < 1.0e-6) scaleY = 0;
+                
                 var offsetX = tuple.rect.x / atlasWidth - tuple.normRect.x * scaleX;
                 var offsetY = tuple.rect.y / atlasHeight - tuple.normRect.y * scaleY;
 
