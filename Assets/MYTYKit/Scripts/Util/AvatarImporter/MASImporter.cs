@@ -30,6 +30,7 @@ namespace MYTYKit.AvatarImporter
         public Transform templateRoot;
         public Transform avatarRoot;
         public MotionSource motionSource;
+        public ShaderMapAsset shaderMap;
 
         public bool isAROnly
         {
@@ -52,6 +53,13 @@ namespace MYTYKit.AvatarImporter
         bool m_isAROnly = false;
         int m_templateId;
         string m_id;
+
+
+        void Start()
+        {
+            shaderMap = Resources.Load<ShaderMapAsset>("ShaderMap");
+        }
+        
         public void LoadCollectionMetadata(string filePath)
         {
             m_transformMap.Clear();
@@ -180,7 +188,7 @@ namespace MYTYKit.AvatarImporter
         {
             var rootBone = m_rootBones[m_templateId];
             var headBone = m_arData[m_templateId].headBone;
-            var parentBoneList = new List<Transform>();
+            var parentBoneList = new List<Transform>(){rootBone};
             var currBone = headBone;
             while (currBone != rootBone)
             {
@@ -214,6 +222,15 @@ namespace MYTYKit.AvatarImporter
             spriteGO.name = (string)spriteRendererJO["name"];
             renderer.sortingOrder = (int)spriteRendererJO["order"];
             renderer.maskInteraction = (SpriteMaskInteraction)(int)spriteRendererJO["maskInteraction"];
+
+            var matName = (string)spriteRendererJO["material"];
+
+            var mapEntry = shaderMap.shaderMapList.FirstOrDefault(item => item.name == matName);
+            if (mapEntry != null)
+            {
+                renderer.material = mapEntry.material;
+            }
+            
             m_useInARModeMap[renderer] = (bool)spriteRendererJO["useInARMode"];
             var spritesJA = spriteRendererJO["sprites"] as JArray;
             var useResolver = (bool)spriteRendererJO["useResolver"];
