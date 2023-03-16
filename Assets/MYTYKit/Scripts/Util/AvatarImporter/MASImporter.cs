@@ -163,6 +163,22 @@ namespace MYTYKit.AvatarImporter
             UpdateSpriteControllers();
         }
 
+        public void UnloadAvatar()
+        {
+            foreach (var spriteRenderer in avatarRoot.GetComponentsInChildren<SpriteRenderer>())
+            {
+                Destroy(spriteRenderer.gameObject);
+            }
+        }
+
+        public void UnloadMetadata()
+        {
+            foreach (var id in Enumerable.Range(0,templateRoot.childCount))
+            {
+                Destroy(templateRoot.GetChild(id));
+            }
+        }
+
         public void SetARMode(bool mode)
         {
             var renderers = Enumerable.Range(0, avatarRoot.childCount)
