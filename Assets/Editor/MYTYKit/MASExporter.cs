@@ -35,7 +35,7 @@ namespace MYTYKit
             Export(true);
         }
 
-        public static void Export(bool fromCLI)
+        public static void Export(bool fromCLI, List<string> idList=null)
         {
             if (fromCLI && !Application.isBatchMode)
             {
@@ -110,7 +110,8 @@ namespace MYTYKit
             
             if (avatarIdArgIndex < 0)
             {
-                avatarIdList = selector.tokenIdArray.ToList();
+                if (idList == null) avatarIdList = selector.tokenIdArray.ToList();
+                else avatarIdList = idList;
             }
             else
             {
