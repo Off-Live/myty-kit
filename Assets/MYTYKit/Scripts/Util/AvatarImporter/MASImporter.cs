@@ -48,8 +48,9 @@ namespace MYTYKit.AvatarImporter
         List<ARDataRuntime> m_arData = new();
         MotionTemplateMapper m_motionTemplateMapper;
         Dictionary<int, Transform> m_transformMap = new();
+        Dictionary<int, Transform> m_avatarTransformMap = new();
         Dictionary<SpriteRenderer, bool> m_useInARModeMap;
-
+        
         bool m_isAROnly = false;
         int m_templateId;
         string m_id;
@@ -150,7 +151,7 @@ namespace MYTYKit.AvatarImporter
             m_textureAtlas = new Texture2D(2, 2);
             m_textureAtlas.LoadImage(pngBuffer);
             m_textureAtlas.Compress(true);
-
+            m_avatarTransformMap = new();
             m_useInARModeMap = new();
 
             (avatarJO["spriteRenderers"] as JArray).ToList().ForEach(
@@ -267,7 +268,7 @@ namespace MYTYKit.AvatarImporter
 
                 resolver.SetLabel(labels[^1]);
                 var resolverId = (int)spriteRendererJO["resolverId"];
-                m_transformMap[resolverId] = spriteGO.transform;
+                m_avatarTransformMap[resolverId] = spriteGO.transform;
             }
 
             skin.Deserialize(spriteRendererJO["spriteSkin"] as JObject, m_rootBones[templateId].gameObject);
@@ -348,7 +349,7 @@ namespace MYTYKit.AvatarImporter
         void UpdateSpriteControllers()
         {
             templateRoot.GetComponentsInChildren<MSRSpriteController>().ToList()
-                .ForEach(controller => controller.UpdateRuntimeResolvers(m_transformMap));
+                .ForEach(controller => controller.UpdateRuntimeResolvers(m_avatarTransformMap));
         }
 
         void LoadMotionTemplates(JObject jObject, Transform parent)
