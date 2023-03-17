@@ -61,7 +61,8 @@ namespace MYTYKit.Components
             }
 
             m_bone = skinner.boneTransforms[0].gameObject;
-
+            renderer.enabled = false;
+            
 #if UNITY_EDITOR
             if (!Application.isEditor) return;
             EditorUtility.SetDirty(gameObject);
