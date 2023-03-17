@@ -12,7 +12,6 @@ namespace MYTYKit
     public class SpriteOverrideParameter
     {
         public Rect rect;
-        public Vector2 pivot;
         public Vector2 uvScale;
         public Vector2 uvOffset;
     }
@@ -41,24 +40,6 @@ namespace MYTYKit
                     overrideRect.y,
                     overrideRect.width,
                     overrideRect.height
-                });
-            }
-
-            if (spriteOverrideParameter == null)
-            {
-                spriteJO["pivot"] = JObject.FromObject(new
-                {
-                    sprite.pivot.x,
-                    sprite.pivot.y
-                });
-            }
-            else
-            {
-                var overridePivot = spriteOverrideParameter.pivot;
-                spriteJO["pivot"] = JObject.FromObject(new
-                {
-                    overridePivot.x,
-                    overridePivot.y
                 });
             }
 

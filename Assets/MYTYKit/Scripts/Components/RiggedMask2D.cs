@@ -1,6 +1,7 @@
 using UnityEngine.U2D.Animation;
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.U2D;
 
 namespace MYTYKit.Components
 {
@@ -10,39 +11,35 @@ namespace MYTYKit.Components
 
         [SerializeField] SpriteMask m_mask;
         [SerializeField] GameObject m_bone;
-
-        Vector3 m_offset;
-        Quaternion m_rotOffset;
-
+        
         SpriteRenderer m_renderer;
 
         // Start is called before the first frame update
         void Start()
         {
             if (m_bone == null) return;
-
-            m_offset = gameObject.transform.position - m_bone.transform.position;
-            m_rotOffset = Quaternion.Inverse(m_bone.transform.rotation);
             m_renderer = GetComponent<SpriteRenderer>();
-
         }
 
         // Update is called once per frame
         void Update()
         {
             if (m_bone == null) return;
-            
             m_mask.sprite = m_renderer.sprite;
-            gameObject.transform.rotation = m_bone.transform.rotation * m_rotOffset;
-            gameObject.transform.position =
-                m_bone.transform.rotation * m_rotOffset * m_offset + m_bone.transform.position;
+            
+            var bindPoses = m_mask.sprite.GetBindPoses();
+            if (bindPoses.Length > 0)
+            {
+                transform.position = m_bone.transform.rotation * bindPoses[0].GetPosition() +
+                                     m_bone.transform.position;
+                transform.rotation =  m_bone.transform.rotation;
+            }
         }
 
         public void Fit()
         {
             var renderer = GetComponent<SpriteRenderer>();
 
-            gameObject.transform.position = renderer.bounds.center;
             m_mask = gameObject.GetComponent<SpriteMask>();
             if (m_mask == null) m_mask = gameObject.AddComponent<SpriteMask>();
             m_mask.sprite = renderer.sprite;

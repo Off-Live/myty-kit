@@ -193,7 +193,7 @@ namespace MYTYKit
             return rgbaAtlas;
         }
 
-        static (Sprite sprite, Texture2D subTexture, Vector2 normPivot, Rect normRect)
+        static (Sprite sprite, Texture2D subTexture, Rect normRect)
             GenerateTupleFromSprite(Sprite sprite, Texture2D globalAtlas)
         {
             Debug.Assert(sprite != null);
@@ -218,13 +218,9 @@ namespace MYTYKit
                 m_spriteTextureMap[sprite] = subTexture;
             }
             
-            var pivot = sprite.pivot;
-            var normPivot = new Vector2(pivot.x / rect.width, pivot.y / rect.height);
-            if (rect.width <= 1.0e-6) normPivot.x = 0;
-            if (rect.height <= 1.0e-6) normPivot.y = 0;
             var normRect = new Rect(rect.x / globalAtlas.width, rect.y / globalAtlas.height,
                 rect.width / globalAtlas.width, rect.height / globalAtlas.height);
-            return (sprite, subTexture, normPivot, normRect);
+            return (sprite, subTexture, normRect);
         }
 
         static Texture2D ExtractCurrentTextureAtlas(Texture2D globalAtlas, SpriteLibraryAsset spriteLibraryAsset,
@@ -266,14 +262,10 @@ namespace MYTYKit
                 width = rect.width * atlasWidth,
                 height = rect.height * atlasHeight
             }).ToArray();
-
-            var normPivots = tuples.Select(tuple => tuple.normPivot).ToArray();
-
-            var pivots = rects.Zip(normPivots, (rect, normPivot) => (rect, normPivot)).Select(tuple =>
-                new Vector2(tuple.normPivot.x * tuple.rect.width, tuple.normPivot.y * tuple.rect.height)).ToArray();
-
-            var mergedTuples = tuples.Zip(rects.Zip(pivots, (rect, pivot) => (rect, pivot)),
-                (tuple, pair) => (tuple.sprite, tuple.normRect, pair.rect, pair.pivot));
+            
+      
+            var mergedTuples = tuples.Zip(rects,
+                (tuple, rect) => (tuple.sprite, tuple.normRect, rect));
 
             spriteDict = mergedTuples.Select(tuple =>
             {
@@ -289,7 +281,6 @@ namespace MYTYKit
                 var param = new SpriteOverrideParameter()
                 {
                     rect = tuple.rect,
-                    pivot = tuple.pivot,
                     uvScale = new Vector2(scaleX, scaleY),
                     uvOffset = new Vector2(offsetX, offsetY)
                 };

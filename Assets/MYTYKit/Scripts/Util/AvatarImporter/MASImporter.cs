@@ -426,7 +426,6 @@ namespace MYTYKit.AvatarImporter
         Sprite DeserializeAndCreateSprite(JObject spriteJO, Texture2D atlas)
         {
             var rect = spriteJO["rect"].ToObject<Rect>();
-            var pivot = spriteJO["pivot"].ToObject<Vector2>();
             var pixelsPerUnit = (float)spriteJO["pixelsPerUnit"];
             var spriteBones = spriteJO["bones"].ToObject<List<SpriteBone>>();
 
@@ -443,7 +442,7 @@ namespace MYTYKit.AvatarImporter
             var uvs = spriteJO["uv"].ToObject<List<Vector2>>();
             var indices = spriteJO["indices"].ToObject<List<ushort>>();
 
-            Sprite sprite = Sprite.Create(atlas, rect, pivot, pixelsPerUnit);
+            Sprite sprite = Sprite.Create(atlas, rect, new Vector2(0.5f,0.5f), pixelsPerUnit);
 
             var bindPoseBuffer = new NativeArray<Matrix4x4>(bindPoses.ToArray(), Allocator.TempJob);
             var posBuffer = new NativeArray<Vector3>(positions.ToArray(), Allocator.TempJob);

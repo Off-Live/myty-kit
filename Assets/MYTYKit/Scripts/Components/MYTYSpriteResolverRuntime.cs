@@ -9,7 +9,8 @@ namespace MYTYKit.Components
     {
         public Sprite sprite;
         public List<string> labels = new();
-    
+        public string currentLabel;
+        
         Dictionary<string, Sprite> m_spriteMap = new();
 
         SpriteRenderer m_renderer; 
@@ -26,6 +27,7 @@ namespace MYTYKit.Components
             if (!m_spriteMap.ContainsKey(label)) return;
             sprite = m_spriteMap[label];
             m_renderer.sprite = sprite;
+            currentLabel = label;
         }
     }
 }
