@@ -26,22 +26,18 @@ namespace MYTYKit.AvatarImporter
             public Camera renderCam;
             public bool isValid;
         }
-        
+
         public Transform templateRoot;
         public Transform avatarRoot;
         public MotionSource motionSource;
         public ShaderMapAsset shaderMap;
 
-        public bool isAROnly
-        {
-            get => m_isAROnly;
-        }
-
-        public string currentId
-        {
-            get => m_id;
-        }
+        public bool isAROnly => m_isAROnly;
+        public string currentId => m_id;
+        public RenderTexture currentARRenderTexture => m_arData.Count == 0 ? null : m_arData[m_templateId].arTexture;
+        public Camera currentARCamera => m_arData.Count == 0 ? null : m_arData[m_templateId].renderCam;
         
+
         Texture2D m_textureAtlas;
         List<Transform> m_rootBones = new();
         List<Transform> m_rootControllers = new();
@@ -270,8 +266,14 @@ namespace MYTYKit.AvatarImporter
                 var resolverId = (int)spriteRendererJO["resolverId"];
                 m_avatarTransformMap[resolverId] = spriteGO.transform;
             }
-
             skin.Deserialize(spriteRendererJO["spriteSkin"] as JObject, m_rootBones[templateId].gameObject);
+            
+            var hasRigged2DMask = (bool)spriteRendererJO["hasRigged2DMask"];
+            if (hasRigged2DMask)
+            {
+                var mask = spriteGO.AddComponent<RiggedMask2D>();
+                mask.Fit();
+            }
             return spriteGO.transform;
         }
 

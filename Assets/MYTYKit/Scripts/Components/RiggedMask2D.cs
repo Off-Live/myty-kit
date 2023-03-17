@@ -14,6 +14,7 @@ namespace MYTYKit.Components
         Vector3 m_offset;
         Quaternion m_rotOffset;
 
+        SpriteRenderer m_renderer;
 
         // Start is called before the first frame update
         void Start()
@@ -22,6 +23,7 @@ namespace MYTYKit.Components
 
             m_offset = gameObject.transform.position - m_bone.transform.position;
             m_rotOffset = Quaternion.Inverse(m_bone.transform.rotation);
+            m_renderer = GetComponent<SpriteRenderer>();
 
         }
 
@@ -29,8 +31,8 @@ namespace MYTYKit.Components
         void Update()
         {
             if (m_bone == null) return;
-            var renderer = GetComponent<SpriteRenderer>();
-            m_mask.sprite = renderer.sprite;
+            
+            m_mask.sprite = m_renderer.sprite;
             gameObject.transform.rotation = m_bone.transform.rotation * m_rotOffset;
             gameObject.transform.position =
                 m_bone.transform.rotation * m_rotOffset * m_offset + m_bone.transform.position;

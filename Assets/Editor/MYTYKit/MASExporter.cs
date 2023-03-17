@@ -345,6 +345,8 @@ namespace MYTYKit
                 var (path, index) = m_traitPathMap[spriteRenderer];
                 useInARMode = m_arTraitList[index].Count(item => path.StartsWith(item+"/") || path==item) > 0;
             }
+
+            var hasRigged2DMask = spriteRenderer.GetComponent<RiggedMask2D>() != null;
             
             return JObject.FromObject(new
             {
@@ -357,7 +359,8 @@ namespace MYTYKit
                 sprites = spritesJA,
                 order = spriteRenderer.sortingOrder,
                 maskInteraction = (int)spriteRenderer.maskInteraction,
-                useInARMode
+                useInARMode,
+                hasRigged2DMask
             });
 
 
