@@ -59,10 +59,10 @@ namespace MYTYKit.AvatarImporter
         
         public void LoadCollectionMetadata(string filePath)
         {
-            LoadCollectionMetadata(ZipFile.OpenRead(filePath));
+            LoadCollectionMetadata(File.ReadAllBytes(filePath));
         }
 
-        public void LoadCollectionMetadata(ZipArchive zipArchive)
+        public void LoadCollectionMetadata(byte[] bytes)
         {
             m_transformMap.Clear();
             m_rootControllers.Clear();
@@ -70,10 +70,16 @@ namespace MYTYKit.AvatarImporter
             try
             {
                 var jsonText = "";
-                var metadataEntry = zipArchive.GetEntry("collection_mas_metadata.json");
-                using (var reader = new StreamReader(metadataEntry.Open()))
+                using (var memoryStream = new MemoryStream(bytes))
                 {
-                    jsonText = reader.ReadToEnd();
+                    using (var zipArchive = new ZipArchive(memoryStream, ZipArchiveMode.Read))
+                    {
+                        var metadataEntry = zipArchive.GetEntry("collection_mas_metadata.json");
+                        using (var reader = new StreamReader(metadataEntry.Open()))
+                        {
+                            jsonText = reader.ReadToEnd();
+                        }
+                    }
                 }
                 
                 var metadataJson = JObject.Parse(jsonText);
@@ -122,25 +128,31 @@ namespace MYTYKit.AvatarImporter
 
         public void LoadAvatar(string filePath)
         {
-            LoadAvatar(ZipFile.OpenRead(filePath), Path.GetFileNameWithoutExtension(filePath));
+            LoadAvatar(File.ReadAllBytes(filePath), Path.GetFileNameWithoutExtension(filePath));
         }
 
-        public void LoadAvatar(ZipArchive zipArchive, string fileName)
+        public void LoadAvatar(byte[] bytes, string fileName)
         {
             var jsonText = "";
             byte[] pngBuffer;
 
-            var metadataEntry = zipArchive.GetEntry($"{fileName}.json");
-            using (var reader = new StreamReader(metadataEntry.Open()))
+            using (var memoryStream = new MemoryStream(bytes))
             {
-                jsonText = reader.ReadToEnd();
-            }
+                using (var zipArchive = new ZipArchive(memoryStream, ZipArchiveMode.Read))
+                {
+                    var metadataEntry = zipArchive.GetEntry($"{fileName}.json");
+                    using (var reader = new StreamReader(metadataEntry.Open()))
+                    {
+                        jsonText = reader.ReadToEnd();
+                    }
 
-            var pngEntry = zipArchive.GetEntry($"{fileName}.png");
-            using (var stream = pngEntry.Open())
-            {
-                pngBuffer = new byte[pngEntry.Length];
-                stream.Read(pngBuffer, 0, pngBuffer.Length);
+                    var pngEntry = zipArchive.GetEntry($"{fileName}.png");
+                    using (var stream = pngEntry.Open())
+                    {
+                        pngBuffer = new byte[pngEntry.Length];
+                        stream.Read(pngBuffer, 0, pngBuffer.Length);
+                    }
+                }
             }
             
             var avatarJO = JObject.Parse(jsonText);
