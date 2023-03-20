@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MYTYKit.MotionAdapters.Interpolation;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace MYTYKit.MotionAdapters
 {
     
-    public abstract class DampingAndStabilizingVec3Adapter : NativeAdapter
+    public abstract class DampingAndStabilizingVec3Adapter : NativeAdapter, ISerializableAdapter
     {
         class HistoryItem
         {
@@ -135,5 +136,39 @@ namespace MYTYKit.MotionAdapters
             return timeDelta / gap;
         }
 
+        public void Deserialize(Dictionary<GameObject, GameObject> prefabMapping)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SerializeIntoNewObject(GameObject target, Dictionary<GameObject, GameObject> prefabMapping)
+        {
+            throw new NotImplementedException();
+        }
+
+        public JObject SerializeToJObject(Dictionary<Transform, int> transformMap)
+        {
+            return JObject.FromObject(new
+            {
+                isDamping,
+                isStabilizing,
+                isUseDampedInputToStabilizer,
+                dampingFactor = damplingFactor,
+                dampingWindow,
+                stabilizeMethod = stabilizeMethod.ToString(),
+                name
+            });
+        }
+
+        public void DeserializeFromJObject(JObject jObject, Dictionary<int, Transform> idTransformMap)
+        {
+            isDamping = (bool)jObject["isDamping"];
+            isStabilizing = (bool)jObject["isStabilizing"];
+            isUseDampedInputToStabilizer = (bool)jObject["isUseDampedInputToStabilizer"];
+            damplingFactor = (float)jObject["dampingFactor"];
+            dampingWindow = (int)jObject["dampingWindow"];
+            stabilizeMethod = (InterpolationMethod) Enum.Parse(typeof(InterpolationMethod), (string)jObject["stabilizeMethod"]);
+            name = (string)jObject["name"];
+        }
     }
 }

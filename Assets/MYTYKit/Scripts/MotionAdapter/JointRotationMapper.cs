@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MYTYKit.Controllers;
 using UnityEngine;
 using MYTYKit.MotionTemplates;
+using Newtonsoft.Json.Linq;
 
 namespace MYTYKit.MotionAdapters
 {
@@ -89,7 +91,7 @@ namespace MYTYKit.MotionAdapters
             
         }
 
-        public void SerializeIntoNewObject(GameObject target, Dictionary<GameObject, GameObject> prefabMapping)
+        public new void SerializeIntoNewObject(GameObject target, Dictionary<GameObject, GameObject> prefabMapping)
         {
             var newAdapter = target.AddComponent<JointRotationMapper>();
             var mtGo = joint.gameObject;
@@ -114,7 +116,7 @@ namespace MYTYKit.MotionAdapters
         }
         
 
-        public void Deserialize(Dictionary<GameObject, GameObject> prefabMapping)
+        public new void Deserialize(Dictionary<GameObject, GameObject> prefabMapping)
         {
             joint = prefabMapping[joint.gameObject].GetComponent<AnchorTemplate>();
             foreach(var item in configuration)
@@ -123,6 +125,57 @@ namespace MYTYKit.MotionAdapters
             }
             
             
+        }
+
+        public new JObject SerializeToJObject(Dictionary<Transform, int> transformMap)
+        {
+            var mapper = FindObjectOfType<MotionTemplateMapper>();
+            if (mapper == null)
+            {
+                throw new MYTYException("MotionTemplateMapper cannot be found.");
+            }
+
+            var jointName = mapper.GetName(joint);
+            Debug.Assert(jointName!=null);
+            var baseJo = base.SerializeToJObject(transformMap);
+            var thisJo = JObject.FromObject(new
+            {
+                jointName,
+                type = "JointRotationMapper",
+                from = from.ToString(),
+                configuration = configuration.Select(item => JObject.FromObject(new
+                {
+                    item.min,
+                    item.max,
+                    item.isInverted,
+                    sourceComponent = (int)item.sourceComponent,
+                    targetComponent = (int)item.targetComponent,
+                    targetController = transformMap[item.targetController.transform]
+                }))
+            });
+            baseJo.Merge(thisJo);
+            return baseJo;
+        }
+
+        public new void DeserializeFromJObject(JObject jObject, Dictionary<int, Transform> idTransformMap)
+        {
+            if (motionTemplateMapper == null)
+            {
+                throw new MYTYException("MotionTemplateMapper should be set up first.");
+            }
+            base.DeserializeFromJObject(jObject, idTransformMap);
+            joint = motionTemplateMapper.GetTemplate((string)jObject["jointName"]) as AnchorTemplate;
+            from = (JointVector)Enum.Parse(typeof(JointVector), (string)jObject["from"]);
+            configuration = jObject["configuration"].ToArray().Select(token => new MapItem()
+            {
+                min = (float) token["min"],
+                max = (float) token["max"],
+                isInverted = (bool) token["isInverted"],
+                sourceComponent = (ComponentIndex) (int)token["sourceComponent"],
+                targetComponent = (ComponentIndex) (int)token["targetComponent"],
+                targetController = idTransformMap[(int)token["targetController"]].GetComponent<MYTYController>()
+            }).ToList();
+
         }
     }
 }

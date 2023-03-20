@@ -2,7 +2,7 @@
   "name": "com.offlive.myty.myty-kit",
   "displayName": "MYTY Kit",
   "description": "Avatar Development Kit for Social Metaverse. https://myty.space/",
-  "version": "1.1.0",
+  "version": "1.1.1-rc2",
   "unity": "2021.3",
   "author": {
     "name": "OFF LIVE PTE. LTD",
@@ -27,5 +27,8 @@
   "homepage": "https://github.com/Off-Live/myty-kit/",
   "documentationUrl": "https://github.com/Off-Live/myty-kit/blob/main/README.md",
   "changelogUrl": "https://github.com/Off-Live/myty-kit/releases",
-  "licensesUrl": "https://github.com/Off-Live/myty-kit/blob/main/LICENSE.md"
+  "licensesUrl": "https://github.com/Off-Live/myty-kit/blob/main/LICENSE.md",
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "3.0.2"
+  }
 }

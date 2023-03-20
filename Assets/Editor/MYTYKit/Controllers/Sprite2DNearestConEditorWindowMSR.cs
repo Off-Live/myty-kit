@@ -14,8 +14,6 @@ namespace MYTYKit
 {
     public class Sprite2DNearestConEditorWindowMSR : EditorWindow
     {
-        public VisualTreeAsset UITemplate;
-
         SerializedObject m_conSO;
         bool m_isPressed = false;
         double m_lastClickTime = 0.0f;
@@ -30,7 +28,8 @@ namespace MYTYKit
 
         private void CreateGUI()
         {
-            UITemplate.CloneTree(rootVisualElement);
+            var uiTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/MYTYKit/UI/Sprite2DNearestCon.uxml");
+            uiTemplate.CloneTree(rootVisualElement);
             var selectedGOs = Selection.GetFiltered<Sprite2DNearestControllerMSR>(SelectionMode.Editable);
             var conVE = rootVisualElement.Q<ObjectField>("OBJController");
             var listView = rootVisualElement.Q<ListView>("LSTSpriteGO");
@@ -156,15 +155,19 @@ namespace MYTYKit
 
         void AddSelections()
         {
-            var sprites = Selection.GetFiltered<MYTYSpriteResolver>(SelectionMode.Editable);
+            var newSprites = Selection.GetFiltered<MYTYSpriteResolver>(SelectionMode.Editable);
             var spritesProps = m_conSO.FindProperty("spriteObjects");
             var newSource = new List<GameObject>();
-
-            spritesProps.arraySize = sprites.Length;
-            for (int i = 0; i < sprites.Length; i++)
+            var offset = spritesProps.arraySize;
+            spritesProps.arraySize += newSprites.Length;
+            for (int i = 0; i < newSprites.Length; i++)
             {
-                spritesProps.GetArrayElementAtIndex(i).objectReferenceValue = sprites[i];
-                newSource.Add(sprites[i].gameObject);
+                spritesProps.GetArrayElementAtIndex(offset+i).objectReferenceValue = newSprites[i];
+            }
+
+            for (int i = 0; i < spritesProps.arraySize; i++)
+            {
+                newSource.Add((spritesProps.GetArrayElementAtIndex(i).objectReferenceValue as MYTYSpriteResolver).gameObject);
             }
 
             m_conSO.ApplyModifiedProperties();

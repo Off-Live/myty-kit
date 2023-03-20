@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.U2D.Animation;
 using UnityEditor;
 using System;
+using System.Linq;
 
 namespace MYTYKit.Components
 {
@@ -33,6 +34,8 @@ namespace MYTYKit.Components
             }
         }
         public string id="";
+        
+        public string[] tokenIdArray => m_tokenIdArray;
 
         private GameObject m_activeInstance;
         private SpriteLibraryAsset m_activeSLA;
@@ -42,7 +45,7 @@ namespace MYTYKit.Components
 
         [SerializeField] MYTYAssetScriptableObject m_mytyAssetStorage;
 
-        string[] m_tokenIdList;
+        string[] m_tokenIdArray;
         
         private void Start()
         {
@@ -85,7 +88,7 @@ namespace MYTYKit.Components
         {
             
             m_activeInstance = null;
-            if (m_tokenIdList==null || m_tokenIdList.Length == 0)
+            if (m_tokenIdArray==null || m_tokenIdArray.Length == 0)
             {
                 if(m_mytyAssetStorage!=null) BuildTokenIdList();
                 else return;
@@ -95,14 +98,14 @@ namespace MYTYKit.Components
             
             if (id.Trim()=="")
             {
-                id = m_tokenIdList[0];
+                id = m_tokenIdArray[0];
             }
 
             var index = -1;
             for (int i = 0; i < m_mytyAssetStorage.traits.Count; i++)
             {
                 
-                if (id == m_tokenIdList[i])
+                if (id == m_tokenIdArray[i])
                 {
                     index = i;
                 }
@@ -203,20 +206,20 @@ namespace MYTYKit.Components
             var index = -1;
             if (id.Trim()=="")
             {
-                id = m_tokenIdList[0];
+                id = m_tokenIdArray[0];
             }
             for (int i = 0; i < m_mytyAssetStorage.traits.Count; i++)
             {
                 
-                if (id == m_tokenIdList[i])
+                if (id == m_tokenIdArray[i])
                 {
                     index = i;
                 }
             }
             
-            for (int i = index + 1, count = 0; count < m_tokenIdList.Length; i++, count++)
+            for (int i = index + 1, count = 0; count < m_tokenIdArray.Length; i++, count++)
             {
-                i %= m_tokenIdList.Length;
+                i %= m_tokenIdArray.Length;
                 var traitItem = m_mytyAssetStorage.traits[i];
                 var psbPath = templates[templateIdx].PSBPath;
                 if (traitItem.filename != psbPath) continue;
@@ -225,7 +228,7 @@ namespace MYTYKit.Components
                 {
                     if (path == traitPath || path.StartsWith(traitPath + "/"))
                     {
-                        id = m_tokenIdList[i];
+                        id = m_tokenIdArray[i];
                         found = true;
                     }
                 }
@@ -338,33 +341,7 @@ namespace MYTYKit.Components
             if (childCount == 0)
             {
                 string catName = "Animation" + key;
-                var labels = m_activeSLA.GetCategoryLabelNames(catName);
-                var labelList = new List<string>();
-
-                foreach (var label in labels)
-                {
-                    labelList.Add(label);
-                }
-
-                if (labelList.Count > 0)
-                {
-                    var resolver = templateNode.GetComponent<SpriteResolver>();
-                    if (resolver == null) resolver = templateNode.AddComponent<SpriteResolver>();
-                    resolver.SetCategoryAndLabel(catName, labelList[labelList.Count - 1]);
-                    var mytySR = templateNode.GetComponent<MYTYSpriteResolver>();
-                    if (mytySR == null) mytySR = templateNode.AddComponent<MYTYSpriteResolver>();
-                    mytySR.spriteLibraryAsset = m_activeSLA;
-#if UNITY_EDITOR
-                    if (Application.isEditor)
-                    {
-                        var so = new SerializedObject(mytySR);
-                        so.FindProperty("m_spriteLibraryAsset").objectReferenceValue = m_activeSLA;
-                        so.ApplyModifiedProperties();
-                    }
-#endif
-
-                    mytySR.SetCategoryAndLabel(catName, labelList[labelList.Count - 1]);
-                }
+                SetupSpriteResolver(templateNode,m_activeSLA,catName);
 
                 if (active)
                 {
@@ -439,20 +416,72 @@ namespace MYTYKit.Components
 
         void BuildTokenIdList()
         {
-            m_tokenIdList = new string[m_mytyAssetStorage.traits.Count];
+            m_tokenIdArray = new string[m_mytyAssetStorage.traits.Count];
 
             for (var i = 0; i < m_mytyAssetStorage.traits.Count; i++)
             {
                 if (string.IsNullOrEmpty(m_mytyAssetStorage.traits[i].tokenId))
                 {
-                    m_tokenIdList[i] = m_mytyAssetStorage.traits[i].id.ToString();
+                    m_tokenIdArray[i] = m_mytyAssetStorage.traits[i].id.ToString();
                 }
                 else
                 {
-                    m_tokenIdList[i] = m_mytyAssetStorage.traits[i].tokenId;
+                    m_tokenIdArray[i] = m_mytyAssetStorage.traits[i].tokenId;
                 }
                     
             }
+        }
+
+        static void SetupSpriteResolver(GameObject gameObject, SpriteLibraryAsset spriteLibraryAsset, string catName)
+        {
+            var labels = spriteLibraryAsset.GetCategoryLabelNames(catName).ToList();
+            
+            if (labels.Count > 0)
+            {
+                var resolver = gameObject.GetComponent<SpriteResolver>();
+                if (resolver == null) resolver = gameObject.AddComponent<SpriteResolver>();
+                resolver.SetCategoryAndLabel(catName, labels[^1]);
+                var mytySR =gameObject.GetComponent<MYTYSpriteResolver>();
+                if (mytySR == null) mytySR = gameObject.AddComponent<MYTYSpriteResolver>();
+                mytySR.spriteLibraryAsset = spriteLibraryAsset;
+#if UNITY_EDITOR
+                if (Application.isEditor)
+                {
+                    var so = new SerializedObject(mytySR);
+                    so.FindProperty("m_spriteLibraryAsset").objectReferenceValue = spriteLibraryAsset;
+                    so.ApplyModifiedProperties();
+                }
+#endif
+
+                mytySR.SetCategoryAndLabel(catName, labels[^1]);
+            }
+
+        }
+        public void PrepareForExporting()
+        {
+            ResetAvatar();
+            
+            templates.ForEach(template =>
+            {
+                template.instance.GetComponentsInChildren<Transform>()
+                    .Where(tf => tf.childCount == 0).ToList()
+                    .ForEach(tf =>
+                    {
+                        var path = "";
+                        var curr = tf;
+                        while (curr != template.instance.transform)
+                        {
+                            path = "/" + curr.name + path;
+                            curr = curr.parent;
+                        }
+
+                        var lowerCasePath = path.ToLower();
+                        if (lowerCasePath.StartsWith("/animation/") || lowerCasePath.StartsWith("/bone")) return;
+
+                        var catName = "Animation" + path;
+                        SetupSpriteResolver(tf.gameObject,template.spriteLibrary,catName);
+                    });
+            });
         }
     }
 }

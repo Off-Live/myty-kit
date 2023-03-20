@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Linq;
 using System.Reflection.Emit;
+using Newtonsoft.Json.Linq;
 
 
 namespace MYTYKit.Controllers
@@ -26,7 +28,7 @@ namespace MYTYKit.Controllers
         string m_lastLabel="";
         void Update()
         {
-            if (spriteObjects == null || labels == null) return;
+            if (labels == null) return;
             
             var selected = "";
             var minDist = float.MaxValue;
@@ -47,21 +49,11 @@ namespace MYTYKit.Controllers
                 UpdateLabel();
             }
         }
-
+        
         public void UpdateLabel()
         {
-            if (m_lastLabel.Length > 0)
-            {
-                foreach (var spriteResolver in spriteObjects)
-                {
-                    if (spriteResolver == null) continue;
-                    var catName = spriteResolver.GetCategory();
-
-                    spriteResolver.SetCategoryAndLabel(catName, m_lastLabel);
-
-                    currentLabel = m_lastLabel;
-                }
-            }
+            UpdateLabel(m_lastLabel);
+            currentLabel = m_lastLabel;
         }
 
         public void SetInput(Vector2 val)
@@ -75,5 +67,42 @@ namespace MYTYKit.Controllers
             this.value[componentIdx] = value;
         }
 
+        public override JObject SerializeToJObject(Dictionary<Transform, int> tfMap)
+        {
+            var baseJo = base.SerializeToJObject(tfMap);
+            baseJo.Merge(JObject.FromObject(new
+            {
+                name,
+                type = GetType().Name,
+                bottomLeft = new
+                {
+                    bottomLeft.x,
+                    bottomLeft.y
+                },
+                topRight = new
+                {
+                    topRight.x,
+                    topRight.y
+                },
+                labels = labels.Select(item => JObject.FromObject(new
+                {
+                    item.label,
+                    point = new
+                    {
+                        item.point.x,
+                        item.point.y
+                    }
+                })).ToArray()
+            }));
+            return baseJo;
+        }
+        public override void DeserializeFromJObject(JObject jObject, Dictionary<int, Transform> idTransformMap)
+        {
+            base.DeserializeFromJObject(jObject, idTransformMap);
+            name = (string)jObject["name"];
+            bottomLeft = jObject["bottomLeft"].ToObject<Vector2>();
+            topRight = jObject["topRight"].ToObject<Vector2>();
+            labels = jObject["labels"].ToObject<List<Label2D>>();
+        }
     }
 }

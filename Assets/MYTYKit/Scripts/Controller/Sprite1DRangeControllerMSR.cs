@@ -4,6 +4,7 @@ using UnityEditor;
 
 using MYTYKit.Components;
 using System;
+using Newtonsoft.Json.Linq;
 
 namespace MYTYKit.Controllers{
     public class Sprite1DRangeControllerMSR : MSRSpriteController, IFloatInput, IComponentWiseInput
@@ -26,14 +27,14 @@ namespace MYTYKit.Controllers{
         string m_lastLabel = "";
         void Update()
         {
-            if (spriteObjects == null || intervals == null) return;
+            if (intervals == null) return;
             if (max < min) return;
             
             float scaledValue = min + (max - min) * value;
             var selected = "";
             foreach (var interval in intervals)
             {
-                if (interval.min <= scaledValue && interval.max >= scaledValue)
+                if (interval.min <= scaledValue && interval.max > scaledValue)
                 {
                     selected = interval.label;
                     break;
@@ -49,18 +50,8 @@ namespace MYTYKit.Controllers{
 
         public void UpdateLabel()
         {
-
-            if (spriteObjects == null) return;
-            foreach (var spriteResolver in spriteObjects)
-            {
-                if (spriteResolver == null) continue;
-                if (m_lastLabel.Length > 0)
-                {
-                    spriteResolver.SetCategoryAndLabel(spriteResolver.GetCategory(), m_lastLabel);
-                    currentLabel = m_lastLabel;
-                }
-
-            }
+            UpdateLabel(m_lastLabel);
+            currentLabel = m_lastLabel;
         }
 
         public void SetInput(float val)
@@ -70,6 +61,29 @@ namespace MYTYKit.Controllers{
         public void SetComponent(float value, int componentIdx)
         {
             this.value = value;
+        }
+
+        public override JObject SerializeToJObject(Dictionary<Transform, int> tfMap)
+        {
+            var baseJo = base.SerializeToJObject(tfMap);
+            baseJo.Merge(JObject.FromObject(new
+            {
+                name,
+                type = GetType().Name,
+                min,
+                max,
+                intervals
+            }));
+            return baseJo;
+        }
+
+        public override void DeserializeFromJObject(JObject jObject, Dictionary<int, Transform> idTransformMap)
+        {
+            base.DeserializeFromJObject(jObject, idTransformMap);
+            name = (string)jObject["name"];
+            min = (float)jObject["min"];
+            max = (float)jObject["max"];
+            intervals = jObject["intervals"].ToObject<List<Interval>>();
         }
     }
 }

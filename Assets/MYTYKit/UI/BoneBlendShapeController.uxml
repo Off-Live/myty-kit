@@ -1,0 +1,21 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Packages/com.offlive.myty.myty-kit/MYTYKit/UI/Bone2DCon.uss?fileID=7433441132597879392&amp;guid=61da35d4500e948e697bd5d8bbd0fb7a&amp;type=3#Bone2DCon" />
+    <ui:ScrollView>
+        <uie:ObjectField label="Controller" name="OBJController" />
+        <ui:VisualElement name="VEBeforeAnchor">
+            <ui:VisualElement style="flex-direction: row; justify-content: center; height: 30px;">
+                <ui:Button text="Add" display-tooltip-when-elided="true" name="BTNAdd" style="width: 32%;" />
+                <ui:Button text="Remove" display-tooltip-when-elided="true" name="BTNRemove" style="width: 32%;" />
+                <ui:Button text="RemoveAll" display-tooltip-when-elided="true" name="BTNRemoveAll" style="width: 32%;" />
+            </ui:VisualElement>
+            <ui:ListView focusable="true" name="LSTRiggingGO" fixed-item-height="15" virtualization-method="DynamicHeight" style="max-height: 200px; min-height: 100px; border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; border-left-color: rgb(87, 87, 87); border-right-color: rgb(87, 87, 87); border-top-color: rgb(87, 87, 87); border-bottom-color: rgb(87, 87, 87);" />
+        </ui:VisualElement>
+        <ui:Toggle label="Anchor" name="TGLAnchor" class="toggleButton" />
+        <ui:VisualElement name="VEAfterAnchor">
+            <ui:VisualElement style="margin-top: 10px;">
+                <ui:Button text="Reset All" display-tooltip-when-elided="true" name="BTNReset" />
+                <ui:ListView focusable="true" name="LSTBlendShape" fixed-item-height="20" virtualization-method="DynamicHeight" style="border-left-color: rgb(87, 87, 87); border-right-color: rgb(87, 87, 87); border-top-color: rgb(87, 87, 87); border-bottom-color: rgb(87, 87, 87); border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; max-height: none;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:ScrollView>
+</ui:UXML>

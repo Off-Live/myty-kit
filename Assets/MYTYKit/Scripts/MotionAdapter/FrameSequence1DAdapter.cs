@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using MYTYKit.Controllers;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace MYTYKit.MotionAdapters
@@ -30,7 +31,7 @@ namespace MYTYKit.MotionAdapters
             m_input = controller as IComponentWiseInput;
             if (m_input == null) return;
             m_input.SetComponent(m_curValue,0);
-
+            m_curValue = start+ (end - start) / stepCount * 0.5f;
         }
 
         void Update()
@@ -47,34 +48,36 @@ namespace MYTYKit.MotionAdapters
             m_elapsed = 0.0f;
 
             var step = (end - start) / stepCount;
-
+            var halfstep = step * 0.5f;
             if (!m_forward) step *= -1;
             m_curValue += step;
-
-            m_input.SetComponent(m_curValue,0);
-
+            
             if (m_forward)
             {
-                if (Mathf.Abs(m_curValue - end) < 1.0e-6)
+                if (m_curValue>end)
                 {
 
                     if (!repeat) m_stopped = true;
                     else
                     {
-                        if (swing) m_forward = false;
-                        else m_curValue = start;
+                        if (swing)
+                        {
+                            m_forward = false;
+                            m_curValue = end - halfstep - step;
+                        }
+                        else m_curValue = start+halfstep;
                     }
                 }
             }
             else
             {
-                if (Mathf.Abs(m_curValue - start) < 1.0e-6)
+                if (m_curValue < start)
                 {
                     m_forward = true;
+                    m_curValue = start + halfstep*3;
                 }
             }
-
-
+            m_input.SetComponent(m_curValue,0);
         }
 
         public void Deserialize(Dictionary<GameObject, GameObject> prefabMapping)
@@ -93,6 +96,35 @@ namespace MYTYKit.MotionAdapters
             newAdapter.swing = swing;
             newAdapter.stepCount = stepCount;
             newAdapter.unitTime = unitTime;
+        }
+
+        public JObject SerializeToJObject(Dictionary<Transform, int> transformMap)
+        {
+            return JObject.FromObject(new
+            {
+                type = "FrameSequence1DAdapter",
+                controller = transformMap[controller.transform],
+                start,
+                end,
+                repeat,
+                swing,
+                stepCount,
+                unitTime,
+                name
+            });
+      
+        }
+
+        public void DeserializeFromJObject(JObject jObject, Dictionary<int, Transform> idTransformMap)
+        {
+            start = (float) jObject["start"];
+            end = (float)jObject["end"];
+            repeat = (bool)jObject["repeat"];
+            swing = (bool)jObject["swing"];
+            stepCount = (int)jObject["stepCount"];
+            unitTime = (float)jObject["unitTime"];
+            controller = idTransformMap[(int)jObject["controller"]].GetComponent<MYTYController>();
+            name = (string)jObject["name"];
         }
     }
 }

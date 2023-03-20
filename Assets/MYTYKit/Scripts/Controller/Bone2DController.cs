@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -183,6 +185,36 @@ namespace MYTYKit.Controllers
         {
             if (componentIdx >= 2 || componentIdx < 0) return;
             controlPosition[componentIdx] = value;
+        }
+        
+        public override JObject SerializeToJObject(Dictionary<Transform, int> tfMap)
+        {
+            var baseJo =  base.SerializeToJObject(tfMap);
+            var jo = JObject.FromObject(new
+            {
+                name,
+                type = GetType().Name,
+                xScale,
+                yScale,
+                xmaxRig = xmaxRig.Select(item => item.SerializeToJObject()).ToArray(),
+                xminRig = xminRig.Select(item => item.SerializeToJObject()).ToArray(),
+                ymaxRig = ymaxRig.Select(item => item.SerializeToJObject()).ToArray(),
+                yminRig = yminRig.Select(item => item.SerializeToJObject()).ToArray()
+
+            });
+            baseJo.Merge(jo);
+            return baseJo;
+        }
+        public override void DeserializeFromJObject(JObject jObject, Dictionary<int, Transform> idTransformMap)
+        {
+            base.DeserializeFromJObject(jObject, idTransformMap);
+            name = (string)jObject["name"];
+            xScale = (float)jObject["xScale"];
+            yScale = (float)jObject["yScale"];
+            xmaxRig = jObject["xmaxRig"].ToObject<List<RiggingEntity>>();
+            xminRig = jObject["xminRig"].ToObject<List<RiggingEntity>>();
+            ymaxRig = jObject["ymaxRig"].ToObject<List<RiggingEntity>>();
+            yminRig = jObject["yminRig"].ToObject<List<RiggingEntity>>();
         }
     }
 }

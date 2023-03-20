@@ -2,7 +2,9 @@ using UnityEngine;
 using UnityEditor;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MYTYKit.Components;
+using Newtonsoft.Json.Linq;
 using UnityEngine.U2D.Animation;
 
 namespace MYTYKit.Controllers
@@ -13,13 +15,39 @@ namespace MYTYKit.Controllers
         public Vector3 position;
         public Quaternion rotation;
         public Vector3 scale;
-
+        public JObject SerializeToJObject()
+        {
+            return JObject.FromObject(new
+            {
+                position = new
+                {
+                    position.x,
+                    position.y,
+                    position.z
+                },
+                rotation = new
+                {
+                    rotation.x,
+                    rotation.y,
+                    rotation.z,
+                    rotation.w
+                },
+                scale = new
+                {
+                    scale.x,
+                    scale.y,
+                    scale.z,
+                }
+            });
+        }
     }
-
+    [DisallowMultipleComponent]
     public abstract class MYTYController : MonoBehaviour
     {
         public abstract void PrepareToSave();
         public abstract void PostprocessAfterLoad(Dictionary<GameObject, GameObject> objMap);
+        public abstract JObject SerializeToJObject(Dictionary<Transform,int> tfMap);
+        public abstract void DeserializeFromJObject(JObject jObject, Dictionary<int, Transform> idTransformMap);
     }
 
     public abstract class BoneController : MYTYController
@@ -133,6 +161,23 @@ namespace MYTYKit.Controllers
             return diffList;
 
         }
+
+        public override JObject SerializeToJObject(Dictionary<Transform,int> tfMap)
+        {
+            return JObject.FromObject(new
+            {
+                rigTarget = rigTarget.Select(item => tfMap[item.transform]).ToArray(),
+                orgRig = orgRig.Select(item => item.SerializeToJObject()),
+                skip
+            });
+        }
+
+        public override void DeserializeFromJObject(JObject jObject, Dictionary<int, Transform> idTransformMap)
+        {
+            rigTarget = jObject["rigTarget"].ToObject<List<int>>().Select(id => idTransformMap[id].gameObject).ToList();
+            orgRig = jObject["orgRig"].ToObject<List<RiggingEntity>>().ToList();
+            skip = (bool)jObject["skip"];
+        }
     }
 
     public abstract class SpriteController : MYTYController
@@ -168,11 +213,23 @@ namespace MYTYKit.Controllers
             }
 #endif
         }
+
+        public override JObject SerializeToJObject(Dictionary<Transform, int> tfMap)
+        {
+            return JObject.FromObject(new
+            {
+                spriteObjects = spriteObjects.Select(item => tfMap[item.transform]).ToArray(),
+            });
+        }
     }
 
     public abstract class MSRSpriteController : MYTYController
     {
         public List<MYTYSpriteResolver> spriteObjects;
+        public bool isRuntimeMode = false;
+
+        List<int> m_resolverIds;
+        List<MYTYSpriteResolverRuntime> m_spriteResolverRuntimes = new();
         public override void PrepareToSave()
         {
 #if UNITY_EDITOR
@@ -204,6 +261,48 @@ namespace MYTYKit.Controllers
                 so.ApplyModifiedProperties();
             }
 #endif
+        }
+        public override JObject SerializeToJObject(Dictionary<Transform, int> tfMap)
+        {
+            return JObject.FromObject(new
+            {
+                spriteObjects = spriteObjects.Where(item=>item!=null).Select(item => tfMap[item.transform]).ToArray(),
+            });
+        }
+
+        public override void DeserializeFromJObject(JObject jObject, Dictionary<int, Transform> idTransformMap)
+        {
+            //Sprite resolvers is not determined when the template is loaded, so we will not use idTransformMap here.
+            m_resolverIds = jObject["spriteObjects"].ToObject<List<int>>();
+        }
+
+        public void UpdateLabel(string label)
+        {
+            if (label?.Length == 0) return;
+
+            if (spriteObjects != null)
+            {
+                spriteObjects.Where(item => item != null).ToList()
+                    .ForEach(resolver => resolver.SetCategoryAndLabel(resolver.GetCategory(), label));
+            }
+
+            if (isRuntimeMode)
+            {
+                m_spriteResolverRuntimes.Where(item=>item!=null)
+                    .ToList().ForEach(resolver=>resolver.SetLabel(label));
+            }
+        }
+
+        public void UpdateRuntimeResolvers(Dictionary<int, Transform> idTransformMap)
+        {
+            m_spriteResolverRuntimes =
+                m_resolverIds.Select(id =>
+                {
+                    if (idTransformMap.ContainsKey(id))
+                        return idTransformMap[id].GetComponent<MYTYSpriteResolverRuntime>();
+                    return null;
+                }).ToList();
+            isRuntimeMode = true;
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using MYTYKit.Controllers;
 using MYTYKit.MotionTemplates;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace MYTYKit.MotionAdapters
@@ -28,5 +29,6 @@ namespace MYTYKit.MotionAdapters
         {
             anchor.SetUpdateCallback(TemplateUpdated);
         }
+        
     }
 }

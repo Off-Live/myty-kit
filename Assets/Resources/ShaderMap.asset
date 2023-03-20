@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5347bbb7c27c9e841a5f87ca8d377739, type: 3}
+  m_Name: ShaderMap
+  m_EditorClassIdentifier: 
+  shaderMapList:
+  - name: SpriteHardLight
+    material: {fileID: 2100000, guid: 4b5b4fc2870769448ac61866dea63fca, type: 2}
+  - name: SpriteMultiply
+    material: {fileID: 2100000, guid: c3fd76f411d88b84bba49fe896f88512, type: 2}
+  - name: SpriteScreen
+    material: {fileID: 2100000, guid: 9d464a86d9a94304d875715a6ee3b0f9, type: 2}
+  - name: SpriteSoftLight
+    material: {fileID: 2100000, guid: cf07fd4bf31f3b14c9090cfaa129b9ea, type: 2}
+  - name: SpriteExclusion
+    material: {fileID: 2100000, guid: 999c6960136304244afec29a51efb269, type: 2}

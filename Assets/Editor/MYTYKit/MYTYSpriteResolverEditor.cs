@@ -10,8 +10,6 @@ namespace MYTYKit
     [CustomEditor(typeof(MYTYSpriteResolver))]
     public class MYTYSpriteResolverEditor : UnityEditor.Editor
     {
-        [SerializeField]
-        private StyleSheet uss;
         public override VisualElement CreateInspectorGUI()
         {
             var rootElem = new VisualElement();
@@ -19,6 +17,7 @@ namespace MYTYKit
             var categoryField = new DropdownField();
             var labelDropDownField = new DropdownField();
             var imageArea = new Image();
+            var uss = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/MYTYKit/UI/common.uss");
             rootElem.styleSheets.Add(uss);
             slaField.BindProperty(serializedObject.FindProperty("m_spriteLibraryAsset"));
             categoryField.label = "Category";

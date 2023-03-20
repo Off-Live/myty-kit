@@ -11,6 +11,7 @@ namespace MYTYKit
         const string MotionTemplatePath = "Assets/MYTYKit/MotionTemplate/DefaultMotionTemplate.prefab";
         const string MotionSourcePath = "Assets/MYTYKit/MotionTemplate/Motion Source Samples/MediapipeMotionPack.prefab";
         const string AnimationControllerPath = "Assets/MYTYKit/Animation/DefaultAnimationController.controller"; 
+
         [MenuItem("MYTY Kit/Create Mocap Object(Mediapipe)", false, 41)]
         public static void CreateMediapipeObjects()
         {
@@ -25,6 +26,7 @@ namespace MYTYKit
             var motionSource = msGo.GetComponentInChildren<MotionSource>();
             motionSource.motionTemplateMapperList = new() { mapper };
         }
+
 
         [MenuItem("MYTY Kit/Setup 3D Avatar Exporter to Scene", false, 41)]
         public static void CreateAvatarExporterPipeline()
@@ -75,6 +77,5 @@ namespace MYTYKit
         }
         
     }
-    
     
 }

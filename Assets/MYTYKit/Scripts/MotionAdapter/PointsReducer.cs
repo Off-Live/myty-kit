@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MYTYKit.Controllers;
 using MYTYKit.MotionAdapters.Reduce;
 using UnityEngine;
 using MYTYKit.MotionTemplates;
+using Newtonsoft.Json.Linq;
 
 namespace MYTYKit.MotionAdapters
 {
@@ -18,7 +20,7 @@ namespace MYTYKit.MotionAdapters
         }
         
         public PointsTemplate template;
-        public List<int> indices;
+        public List<int> indices = new();
         public ReduceOperator reducer;
         
         public List<MapItem> configuration = new();
@@ -82,7 +84,7 @@ namespace MYTYKit.MotionAdapters
             }
         }
 
-        public void SerializeIntoNewObject(GameObject target, Dictionary<GameObject, GameObject> prefabMapping)
+        public new void SerializeIntoNewObject(GameObject target, Dictionary<GameObject, GameObject> prefabMapping)
         {
             var newAdapter = target.AddComponent<PointsReducer>();
             var mtGo = template.gameObject;
@@ -106,13 +108,66 @@ namespace MYTYKit.MotionAdapters
         }
         
 
-        public void Deserialize(Dictionary<GameObject, GameObject> prefabMapping)
+        public new void Deserialize(Dictionary<GameObject, GameObject> prefabMapping)
         {
             template = prefabMapping[template.gameObject].GetComponent<PointsTemplate>();
             foreach(var item in configuration)
             {
                 item.targetController = prefabMapping[item.targetController.gameObject].GetComponent<MYTYController>();
             }
+        }
+
+        public new JObject SerializeToJObject(Dictionary<Transform, int> transformMap)
+        {
+            var mapper = FindObjectOfType<MotionTemplateMapper>();
+            if (mapper == null)
+            {
+                throw new MYTYException("MotionTemplateMapper cannot be found.");
+            }
+            var templateName = mapper.GetName(template); 
+            Debug.Assert(templateName!=null);
+            var baseJo = base.SerializeToJObject(transformMap);
+            var thisJo = JObject.FromObject(new
+            {
+                type = "PointsReducer",
+                templateName,
+                indices,
+                reducer = (reducer as ISerializableOperator).SerializeToJObject(),
+                configuration = configuration.Select(item => JObject.FromObject(new
+                {
+                    sourceComponent = (int)item.sourceComponent,
+                    targetComponent = (int)item.targetComponent,
+                    targetController = transformMap[item.targetController.transform]
+                }))
+            });
+            
+            baseJo.Merge(thisJo);
+            return baseJo;
+        }
+
+        public new void DeserializeFromJObject(JObject jObject, Dictionary<int, Transform> idTransformMap)
+        {
+            if (motionTemplateMapper == null)
+            {
+                throw new MYTYException("MotionTemplateMapper should be set up first.");
+            }
+            base.DeserializeFromJObject(jObject, idTransformMap);
+            template = motionTemplateMapper.GetTemplate((string)jObject["templateName"]) as PointsTemplate;
+            indices = jObject["indices"].ToObject<List<int>>();
+            var reducerJo = jObject["reducer"] as JObject;
+            var typeName = typeof(ISerializableOperator).Namespace + "." + (string)reducerJo["type"] + ", "
+                           + typeof(ISerializableOperator).Assembly.GetName().Name;
+            var reducerComponent = (ReduceOperator) gameObject.AddComponent(Type.GetType(typeName));
+            ((ISerializableOperator)reducerComponent).DeserializeFromJObject(reducerJo);
+            configuration = jObject["configuration"].ToArray().Select(token =>
+            {
+                return new MapItem()
+                {
+                    sourceComponent = (ComponentIndex)(int)token["sourceComponent"],
+                    targetComponent = (ComponentIndex)(int)token["targetComponent"],
+                    targetController = idTransformMap[(int)token["targetController"]].GetComponent<MYTYController>()
+                };
+            }).ToList();
         }
     }
 }

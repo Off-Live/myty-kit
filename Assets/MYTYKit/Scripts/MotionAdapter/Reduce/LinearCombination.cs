@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace MYTYKit.MotionAdapters.Reduce
@@ -37,5 +38,34 @@ namespace MYTYKit.MotionAdapters.Reduce
             newOperator.weights = new List<float>(weights);
             return newOperator;
         }
+
+        public JObject SerializeToJObject()
+        {
+            return JObject.FromObject(new
+            {
+                type = "LinearCombination",
+                scale = new
+                {
+                    scale.x,
+                    scale.y,
+                    scale.z
+                },
+                offset = new
+                {
+                    offset.x,
+                    offset.y,
+                    offset.z
+                },
+                weights
+            });
+        }
+
+        public void DeserializeFromJObject(JObject jObject)
+        {
+            scale = jObject["scale"].ToObject<Vector3>();
+            offset = jObject["offset"].ToObject<Vector3>();
+            weights = jObject["weights"].ToObject<List<float>>();
+        }
     }
+
 }

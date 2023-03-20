@@ -11,8 +11,6 @@ namespace MYTYKit
 {
     public class Bone2DControllerEditorWindow : EditorWindow
     {
-        public VisualTreeAsset UITemplate;
-
         bool m_isPressed = false;
         SerializedObject m_conSO;
 
@@ -25,7 +23,8 @@ namespace MYTYKit
 
         private void CreateGUI()
         {
-            UITemplate.CloneTree(rootVisualElement);
+            var uiTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/MYTYKit/UI/Bone2DCon.uxml");
+            uiTemplate.CloneTree(rootVisualElement);
             var selectedObjs = Selection.GetFiltered<Bone2DController>(SelectionMode.Editable);
             var fcObjField = rootVisualElement.Q<ObjectField>("Bone2DController");
             var listView = rootVisualElement.Q<ListView>("TargetList");
