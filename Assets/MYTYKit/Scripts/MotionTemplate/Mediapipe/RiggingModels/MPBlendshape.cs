@@ -44,7 +44,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe.Model
             foreach (var motionTemplate in templateList)
             {
                 var template = (ParametricTemplate)motionTemplate;
-                
+                blendShape.ForEach(item => template.SetValue(item.name,item.value));
                 template.NotifyUpdate();
             }
             

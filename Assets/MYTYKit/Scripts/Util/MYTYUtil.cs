@@ -1,5 +1,7 @@
 using System.IO;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEditor;
 
@@ -15,7 +17,7 @@ namespace MYTYKit
         public static readonly string MotionAdaptersJson = "motions.json";
         public static readonly string RootControllers = "rootCons.json";
         public static readonly string AssetPath = "Assets/MYTYAsset/ImportedAvatarAssets";
-
+        public static readonly string MetadataPath = "Assets/MYTYAsset/ExportedMetadata";
 
         public static void BuildAssetPath(string path)
         {
@@ -100,5 +102,13 @@ namespace MYTYKit
             return curr;
         }
 
+    }
+
+    public static class TransformExtension
+    {
+        public static List<Transform> GetChildrenList(this Transform tf)
+        {
+            return Enumerable.Range(0, tf.childCount).Select(idx => tf.GetChild(idx)).ToList();
+        }
     }
 }

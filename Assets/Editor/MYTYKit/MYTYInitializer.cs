@@ -35,7 +35,7 @@ namespace MYTYKit
         static void SceneLoadedCallback(Scene scene, Scene mode)
         {
             BoneControllerStorage.Save();
-            Debug.Log("Rig storage save called far scene loaded event");
+            Debug.Log("Rig storage save called for scene loaded event");
         }
         static void CopyKitFiles()
         {

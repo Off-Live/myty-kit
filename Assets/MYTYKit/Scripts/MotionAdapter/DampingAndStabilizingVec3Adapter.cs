@@ -19,7 +19,7 @@ namespace MYTYKit.MotionAdapters
         public bool isStabilizing = true;
         public bool isUseDampedInputToStabilizer = false;
         
-        public float damplingFactor = 2;
+        public float dampingFactor = 2;
         public int dampingWindow = 6;
 
         public InterpolationMethod stabilizeMethod = InterpolationMethod.BezierInterpolation;
@@ -67,14 +67,14 @@ namespace MYTYKit.MotionAdapters
             if(m_history[slotIdx].Count>dampingWindow) m_history[slotIdx].RemoveAt(0);
             if (isDamping)
             {
-                float curFactor = 1.0f/damplingFactor;
+                float curFactor = 1.0f/dampingFactor;
                 m_dampedValue[slotIdx] = Vector3.zero;
                 float totalWeight = 0.0f;
                 for (var i = m_history[slotIdx].Count - 1; i >= 0; i--)
                 {
                     m_dampedValue[slotIdx]+=m_history[slotIdx][i].value * curFactor;
                     totalWeight += curFactor;
-                    curFactor /= damplingFactor;
+                    curFactor /= dampingFactor;
                 }
                 m_dampedValue[slotIdx] /= totalWeight;
             }

@@ -352,6 +352,7 @@ namespace MYTYKit.MotionTemplates.Mediapipe
         void ProcessPose(NormalizedLandmarkList pose)
         {
             var poseRig = motionSource.GetBridgesInCategory("PoseLandmark");
+            if (pose.Landmark == null) return;
             if (poseRig == null) return;
             foreach (var model in poseRig)
             {

@@ -1783,7 +1783,7 @@ MonoBehaviour:
     - {fileID: 9212716866503492905}
     - {fileID: 9212716865784166302}
     - {fileID: 9212716866145742962}
-  - name: PoseLandmark
+  - name: PoseWorldLandmark
     bridges:
     - {fileID: 9212716867129430691}
     - {fileID: 9212716865176072395}
@@ -1892,6 +1892,8 @@ MonoBehaviour:
     templateBridge: {fileID: 9212716865176072395}
   - name: Head
     templateBridge: {fileID: 9212716866925650113}
+  - name: BlendShape
+    templateBridge: {fileID: 935134401001776285}
   motionTemplateMapperList: []
 --- !u!1 &9212716866713915966
 GameObject:
