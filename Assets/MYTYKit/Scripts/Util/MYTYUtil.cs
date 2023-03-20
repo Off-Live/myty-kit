@@ -104,7 +104,7 @@ namespace MYTYKit
 
     }
 
-    public static class TransformExtension
+    public static partial class TransformExtension
     {
         public static List<Transform> GetChildrenList(this Transform tf)
         {

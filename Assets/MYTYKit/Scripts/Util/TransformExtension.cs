@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace MYTYKit
 {
-    public static class TransformExtension
+    public static partial class TransformExtension
     {
 
         public static JObject Serialize(this Transform tf)

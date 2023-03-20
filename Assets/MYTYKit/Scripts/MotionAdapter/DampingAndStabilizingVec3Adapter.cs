@@ -153,7 +153,7 @@ namespace MYTYKit.MotionAdapters
                 isDamping,
                 isStabilizing,
                 isUseDampedInputToStabilizer,
-                dampingFactor = damplingFactor,
+                dampingFactor,
                 dampingWindow,
                 stabilizeMethod = stabilizeMethod.ToString(),
                 name
@@ -165,7 +165,7 @@ namespace MYTYKit.MotionAdapters
             isDamping = (bool)jObject["isDamping"];
             isStabilizing = (bool)jObject["isStabilizing"];
             isUseDampedInputToStabilizer = (bool)jObject["isUseDampedInputToStabilizer"];
-            damplingFactor = (float)jObject["dampingFactor"];
+            dampingFactor = (float)jObject["dampingFactor"];
             dampingWindow = (int)jObject["dampingWindow"];
             stabilizeMethod = (InterpolationMethod) Enum.Parse(typeof(InterpolationMethod), (string)jObject["stabilizeMethod"]);
             name = (string)jObject["name"];
