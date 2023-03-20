@@ -444,7 +444,7 @@ namespace MYTYKit
 
         static JObject BuildARMetadata(Transform templateRoot)
         {
-            var arAsset = AssetDatabase.LoadAssetAtPath<ARFaceAsset>(MYTYUtil.AssetPath + "/ARFaceData.asset");
+            var arAsset = AssetDatabase.LoadAssetAtPath<ARFaceAsset>(MYTYPath.AssetPath + "/ARFaceData.asset");
             var transformList = templateRoot.GetComponentsInChildren<Transform>().ToList();
             m_arTraitList = null;
             

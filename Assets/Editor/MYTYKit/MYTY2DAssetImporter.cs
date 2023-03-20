@@ -64,10 +64,10 @@ namespace MYTYKit
             var info = new FileInfo(path);
             m_traitPath = "";
         
-            if (Directory.Exists(MYTYUtil.AssetPath))
+            if (Directory.Exists(MYTYPath.AssetPath))
             {
                 var reply = EditorUtility.DisplayDialog("Import Avatar Asset", "To proceed, the previous MYTY Avatar asset will be deleted.", "Proceed", "Calcel");
-                if (reply) Directory.Delete(MYTYUtil.AssetPath, true);
+                if (reply) Directory.Delete(MYTYPath.AssetPath, true);
                 else return;
             }
         
@@ -75,7 +75,8 @@ namespace MYTYKit
             rootVisualElement.Q<TextField>("TXTTraitFile").value = path;
             m_traitPath = info.DirectoryName;
 
-            MYTYUtil.BuildAssetPath(MYTYUtil.AssetPath);
+            Directory.CreateDirectory(MYTYPath.AssetPath);
+            
             ProcessTraitText(File.ReadAllText(path));
             rootVisualElement.Q("PANPhotoshop").RemoveFromClassList("hide");
             rootVisualElement.Q("PANBtn").RemoveFromClassList("hide");
@@ -111,7 +112,7 @@ namespace MYTYKit
             foreach (var filename in fileSet)
             {
                 var fileinfo = new FileInfo(filename);
-                var templateAssetPath = MYTYUtil.AssetPath + "/" + fileinfo.Name;
+                var templateAssetPath = MYTYPath.AssetPath + "/" + fileinfo.Name;
                 if (!File.Exists(templateAssetPath))
                 {
                     File.Copy(filename, templateAssetPath);
@@ -127,7 +128,7 @@ namespace MYTYKit
             }
 
             var assetSCO = ScriptableObject.CreateInstance<MYTYAssetScriptableObject>();
-            AssetDatabase.CreateAsset(assetSCO, MYTYUtil.AssetPath + "/" + "MYTYAssetData.asset");
+            AssetDatabase.CreateAsset(assetSCO, MYTYPath.AssetPath + "/" + "MYTYAssetData.asset");
 
             assetSCO.traits = new();
             foreach (var trait in m_traits)

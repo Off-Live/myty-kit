@@ -13,15 +13,13 @@ namespace MYTYKit.Components
         [SerializeField] GameObject m_bone;
         
         SpriteRenderer m_renderer;
-
-        // Start is called before the first frame update
+        
         void Start()
         {
             if (m_bone == null) return;
             m_renderer = GetComponent<SpriteRenderer>();
         }
-
-        // Update is called once per frame
+        
         void Update()
         {
             if (m_bone == null) return;

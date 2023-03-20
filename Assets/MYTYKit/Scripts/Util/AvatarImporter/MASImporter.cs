@@ -29,20 +29,21 @@ namespace MYTYKit.AvatarImporter
 
         public Transform templateRoot;
         public Transform avatarRoot;
-        public MotionSource motionSource;
-        public ShaderMapAsset shaderMap;
+        public MotionTemplateMapper motionTemplateMapper;
+        
 
         public bool isAROnly => m_isAROnly;
         public string currentId => m_id;
         public RenderTexture currentARRenderTexture => m_arData.Count == 0 ? null : m_arData[m_templateId].arTexture;
         public Camera currentARCamera => m_arData.Count == 0 ? null : m_arData[m_templateId].renderCam;
         
-
+        
+        ShaderMapAsset m_shaderMap;
         Texture2D m_textureAtlas;
         List<Transform> m_rootBones = new();
         List<Transform> m_rootControllers = new();
         List<ARDataRuntime> m_arData = new();
-        MotionTemplateMapper m_motionTemplateMapper;
+        
         Dictionary<int, Transform> m_transformMap = new();
         Dictionary<int, Transform> m_avatarTransformMap = new();
         Dictionary<SpriteRenderer, bool> m_useInARModeMap;
@@ -54,7 +55,7 @@ namespace MYTYKit.AvatarImporter
 
         void Start()
         {
-            shaderMap = Resources.Load<ShaderMapAsset>("ShaderMap");
+            m_shaderMap = Resources.Load<ShaderMapAsset>("ShaderMap");
         }
         
         public void LoadCollectionMetadata(string filePath)
@@ -114,8 +115,8 @@ namespace MYTYKit.AvatarImporter
                 metadataJson["adapters"].ToList().ForEach(
                     adapter => { LoadMotionAdapter(adapter as JObject, adapterRoot.transform); });
 
-                motionSource.motionTemplateMapperList.Add(m_motionTemplateMapper);
-                motionSource.UpdateMotionAndTemplates();
+                // motionSource.motionTemplateMapperList.Add(m_motionTemplateMapper);
+                // motionSource.UpdateMotionAndTemplates();
                 
                 if(metadataJson.ContainsKey("ARFaceData")) LoadARFaceData(metadataJson["ARFaceData"] as JObject, templateRoot);
             }
@@ -254,7 +255,7 @@ namespace MYTYKit.AvatarImporter
 
             var matName = (string)spriteRendererJO["material"];
 
-            var mapEntry = shaderMap.shaderMapList.FirstOrDefault(item => item.name == matName);
+            var mapEntry = m_shaderMap.shaderMapList.FirstOrDefault(item => item.name == matName);
             if (mapEntry != null)
             {
                 renderer.material = mapEntry.material;
@@ -383,7 +384,7 @@ namespace MYTYKit.AvatarImporter
 
             var mapper = go.AddComponent<MotionTemplateMapper>();
             mapper.DeserializeFromJObject(jObject);
-            m_motionTemplateMapper = mapper;
+            motionTemplateMapper = mapper;
         }
 
         void LoadMotionAdapter(JObject jObject, Transform parent)
@@ -395,7 +396,7 @@ namespace MYTYKit.AvatarImporter
             var adapter = (NativeAdapter)go.AddComponent(Type.GetType(typeName));
             Debug.Assert(adapter != null);
 
-            adapter.SetMotionTemplateMapper(m_motionTemplateMapper);
+            adapter.SetMotionTemplateMapper(motionTemplateMapper);
             ((ISerializableAdapter)adapter).DeserializeFromJObject(jObject, m_transformMap);
         }
 

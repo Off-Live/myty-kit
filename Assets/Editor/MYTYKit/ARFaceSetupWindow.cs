@@ -114,7 +114,7 @@ namespace MYTYKit
                 isTemplateSetup[i] = false;
             }
 
-            var asset = AssetDatabase.LoadAssetAtPath<ARFaceAsset>(MYTYUtil.AssetPath + "/ARFaceData.asset");
+            var asset = AssetDatabase.LoadAssetAtPath<ARFaceAsset>(MYTYPath.AssetPath + "/ARFaceData.asset");
             if (asset != null)
             {
                 Debug.Assert(asset.items.Length == isTemplateSetup.Length);
@@ -152,15 +152,15 @@ namespace MYTYKit
                 return;
             }
 
-            var asset = AssetDatabase.LoadAssetAtPath<ARFaceAsset>(MYTYUtil.AssetPath + "/ARFaceData.asset");
+            var asset = AssetDatabase.LoadAssetAtPath<ARFaceAsset>(MYTYPath.AssetPath + "/ARFaceData.asset");
             if (asset == null)
             {
                 var assetSco = CreateInstance<ARFaceAsset>();
-                AssetDatabase.CreateAsset(assetSco, MYTYUtil.AssetPath + "/ARFaceData.asset");
+                AssetDatabase.CreateAsset(assetSco, MYTYPath.AssetPath + "/ARFaceData.asset");
                 assetSco.items = new ARFaceItem[selector.templates.Count];
                 EditorUtility.SetDirty(assetSco);
                 AssetDatabase.SaveAssets();
-                asset = AssetDatabase.LoadAssetAtPath<ARFaceAsset>(MYTYUtil.AssetPath + "/ARFaceData.asset");
+                asset = AssetDatabase.LoadAssetAtPath<ARFaceAsset>(MYTYPath.AssetPath + "/ARFaceData.asset");
             }
 
             templateProp.value = selector.templates[index].instance;
@@ -279,7 +279,7 @@ namespace MYTYKit
             if (renderCam != null)
             {
                 if (PrefabUtility.IsPartOfPrefabAsset(renderCam)) savedCamFab = renderCam.gameObject;
-                else savedCamFab = PrefabUtility.SaveAsPrefabAsset(renderCam.gameObject, MYTYUtil.AssetPath + "/" + camName);
+                else savedCamFab = PrefabUtility.SaveAsPrefabAsset(renderCam.gameObject, MYTYPath.AssetPath + "/" + camName);
             }
 
             asset.items[index].isValid = true;

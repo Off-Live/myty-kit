@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace MYTYKit
 {
-    public static partial class TransformExtension
+    public static class TransformExtension
     {
 
         public static JObject Serialize(this Transform tf)
@@ -57,6 +58,10 @@ namespace MYTYKit
                 (float)scale["x"],
                 (float)scale["y"],
                 (float)scale["z"]);
+        }
+        public static List<Transform> GetChildrenList(this Transform tf)
+        {
+            return Enumerable.Range(0, tf.childCount).Select(idx => tf.GetChild(idx)).ToList();
         }
 
     }

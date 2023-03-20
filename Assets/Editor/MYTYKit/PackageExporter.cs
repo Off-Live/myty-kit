@@ -16,7 +16,7 @@ namespace MYTYKit
             AssetDatabase.CopyAsset(EditorSceneManager.GetActiveScene().path,
                 ScenePath);
             AssetDatabase.Refresh();
-            AssetDatabase.ExportPackage(new [] {ScenePath, MYTYUtil.AssetPath+"/ARFaceData.asset"},PackagePath , ExportPackageOptions.IncludeDependencies | ExportPackageOptions.Recurse);    
+            AssetDatabase.ExportPackage(new [] {ScenePath, MYTYPath.AssetPath+"/ARFaceData.asset"},PackagePath , ExportPackageOptions.IncludeDependencies | ExportPackageOptions.Recurse);    
         }
     }
 
