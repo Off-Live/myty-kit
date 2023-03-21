@@ -10,16 +10,19 @@ namespace MYTYKit
     public class MYTYInitializer
     {
         
-        const string KitPath = "Packages/com.offlive.myty.myty-kit/MYTYKit";
-        const string StreamingAssetsPath = "Packages/com.offlive.myty.myty-kit/StreamingAssets";
+        
         static MYTYInitializer()
         {
             Debug.Log("MYTYKit Start Up");
             UnityEditor.SceneManagement.EditorSceneManager.sceneOpened += SceneOpenedCallback;
             UnityEditor.SceneManagement.EditorSceneManager.activeSceneChangedInEditMode += SceneLoadedCallback;
-            var kitFullPath = Path.GetFullPath(KitPath);
-            if (!Directory.Exists(kitFullPath)) return;
-            CopyKitFiles();
+            MotionAdapterPaletteEditor.CreateAsset();
+            // var kitFullPath = Path.GetFullPath(MYTYPath.KitPath);
+            // if (!Directory.Exists(kitFullPath)) return;
+            //
+            //
+            
+            //CopyKitFiles();
             //CopyStreamingAssets();
             
         }
@@ -40,10 +43,10 @@ namespace MYTYKit
         static void CopyKitFiles()
         {
             var kitAssetPath = "Assets/MYTYKit";
-            var kitFullPath = Path.GetFullPath(KitPath);
+            var kitFullPath = Path.GetFullPath(MYTYPath.KitPath);
             var subAssetDir = new string[]
             {
-                "CmdTools","LayerEffect","MotionAdapter","MotionTemplate","UI"
+                "CmdTools","LayerEffect","UI"
             };
 
             foreach (var dir in subAssetDir)
@@ -54,7 +57,7 @@ namespace MYTYKit
 
         static void CopyStreamingAssets()
         {
-            var saFullPath = Path.GetFullPath(StreamingAssetsPath);
+            var saFullPath = Path.GetFullPath(MYTYPath.StreamingAssetsPath);
             RecursiveCopy(saFullPath, Application.streamingAssetsPath);
         }
 

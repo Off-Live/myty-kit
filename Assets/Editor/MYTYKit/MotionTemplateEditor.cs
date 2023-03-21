@@ -3,11 +3,14 @@ using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 using MYTYKit.MotionTemplates;
+using UnityEngine;
 
 namespace MYTYKit
 {
+    
+    
     [CustomEditor(typeof(MotionTemplateMapper))]
-    public class MotionTemplateEditor:UnityEditor.Editor
+    public class MotionTemplateEditor:Editor
     {
         public override VisualElement CreateInspectorGUI()
         {
@@ -27,5 +30,20 @@ namespace MYTYKit
             root.Add(button);
             return root;
         }
+
+        [MenuItem("MYTY Kit/Create Default Motion Template", false, 25)]
+        static void CreateMotionTemplate()
+        {
+            var mtAsset = AssetDatabase.LoadAssetAtPath<MotionTemplateAsset>(MYTYPath.MotionTemplateAssetPath);
+            if (mtAsset == null)
+                AssetDatabase.CopyAsset(MYTYPath.MotionTemplatePackagePath, MYTYPath.MotionTemplateAssetPath);
+            
+            mtAsset = AssetDatabase.LoadAssetAtPath<MotionTemplateAsset>(MYTYPath.MotionTemplateAssetPath);
+            Debug.Assert(mtAsset!=null);
+
+            var go = Instantiate(mtAsset.motionTemplateObject);
+            go.name = "DefaultMotionTemplate";
+        }
     }
+    
 }

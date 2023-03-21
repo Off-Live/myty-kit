@@ -17,7 +17,16 @@ namespace MYTYKit
         public static readonly string LayerToolPathWindows =
             "Assets/MYTYKit/CmdTools/LayerTool/.extracted/Windows/export_layer_effect_win/export_layer_effect_win.exe";
 
-        public static readonly string EffectListPath = "Assets/MYTYKit/LayerEffect/LayerEffectList.asset";
+        public static readonly string EffectListPath = "Assets/MYTYKit/Prefabs/LayerEffectList.asset";
+        public static readonly string EffectListPackagePath = "Packages/com.offlive.myty.myty-kit/MYTYKit/Prefabs/LayerEffectList.asset";
+        public static readonly string MotionAdapterPalettePath = "Assets/MYTYKit/Prefabs/MotionAdapterPalette.asset";
+        public static readonly string MotionTemplateAssetPath = "Assets/MYTYKit/Prefabs/MotionTemplateAsset.asset";
+
+        public static readonly string MotionTemplatePackagePath =
+            "Packages/com.offlive.myty.myty-kit/MYTYKit/Prefabs/MotionTemplateAsset.asset";
         
+        public static readonly string KitPath = "Packages/com.offlive.myty.myty-kit/MYTYKit";
+        public static readonly string StreamingAssetsPath = "Packages/com.offlive.myty.myty-kit/StreamingAssets";
+
     }
 }

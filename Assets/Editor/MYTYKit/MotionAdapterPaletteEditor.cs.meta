@@ -1,0 +1,25 @@
+fileFormatVersion: 2
+guid: f6878b176068545958ad643fc71ac8a3
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - boneRotate2d: {fileID: 6440040375073862658, guid: 6d235dce0931949f1811173a0b123bc6, type: 3}
+  - boneTiltOrPosition: {fileID: 7362317071367523777, guid: 4d7c76f9d25c3449195c5e6ddbec0349, type: 3}
+  - boneEyeBlink: {fileID: 5931315316622680501, guid: 7dd30f0018be544c7b36aa2cb49cef6c, type: 3}
+  - boneEyeBlinkAll: {fileID: 6139304255591125810, guid: 731ce1652f0d04976bab49f793b9158e, type: 3}
+  - boneEyeBrow: {fileID: 118524654549135199, guid: d6fdcdd3ff19e4621914c259f5cdd729, type: 3}
+  - boneEyeBrowAll: {fileID: 2892359304281539670, guid: 2fc570221c5b54f1e9935d9e3f174d84, type: 3}
+  - boneLeftPupil: {fileID: 2298223387128515509, guid: 1addeed9fb09648e28cbc89ee24a316b, type: 3}
+  - boneRightPupil: {fileID: 6950495027199400249, guid: 4eb86b33b29154ec79785d427483dba7, type: 3}
+  - bonePupilAll: {fileID: 5266373339813922101, guid: 07f54b3c259204b71a00d054bb0beaa9, type: 3}
+  - spriteEyeBlink: {fileID: 5931315316622680501, guid: 0b36d4815d26e4da0b954bb79379420a, type: 3}
+  - spriteEyeBlinkAll: {fileID: 6139304255591125810, guid: 96a3b7eef7e1e4959a4124f050d3ae87, type: 3}
+  - spriteEyeBrow: {fileID: 118524654549135199, guid: 63edf0ee814c344a5b0b6ff23a7dd7ad, type: 3}
+  - spriteEyeBrowAll: {fileID: 2892359304281539670, guid: 9b70a0989b9dc4ff6b9213892cd629a5, type: 3}
+  - spriteMouth: {fileID: 8670603408630390504, guid: 18d9eecd12f8f48728f905b733a8a325, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

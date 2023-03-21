@@ -12,8 +12,7 @@ namespace MYTYKit
         public Material material;
     }
 
-
-    [CreateAssetMenu(fileName = "LayerEffectList", menuName = "ScriptableObjects/LayerEffectList", order = 1)]
+    
     public class LayerEffectList : ScriptableObject
     {
         public List<LayerEffectEntry> layerEffects;

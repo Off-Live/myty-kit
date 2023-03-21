@@ -32,10 +32,18 @@ namespace MYTYKit
         {
             
             var worker = new BackgroundWorker();
-            
+
             if (m_effects == null)
+            {
                 m_effects = AssetDatabase.LoadAssetAtPath<LayerEffectList>(
                     MYTYPath.EffectListPath);
+                if (m_effects == null)
+                {
+                    AssetDatabase.CopyAsset(MYTYPath.EffectListPackagePath, MYTYPath.EffectListPath);
+                    m_effects = AssetDatabase.LoadAssetAtPath<LayerEffectList>(
+                        MYTYPath.EffectListPath);
+                }
+            }
 
 
             Debug.Log("processor " + SystemInfo.processorType);
