@@ -17,12 +17,12 @@ namespace MYTYKit
             UnityEditor.SceneManagement.EditorSceneManager.sceneOpened += SceneOpenedCallback;
             UnityEditor.SceneManagement.EditorSceneManager.activeSceneChangedInEditMode += SceneLoadedCallback;
             MotionAdapterPaletteEditor.CreateAsset();
-            // var kitFullPath = Path.GetFullPath(MYTYPath.KitPath);
-            // if (!Directory.Exists(kitFullPath)) return;
-            //
-            //
+            var kitFullPath = Path.GetFullPath(MYTYPath.KitPath);
+            if (!Directory.Exists(kitFullPath)) return;
             
-            //CopyKitFiles();
+            
+            
+            CopyKitFiles();
             //CopyStreamingAssets();
             
         }
@@ -46,7 +46,7 @@ namespace MYTYKit
             var kitFullPath = Path.GetFullPath(MYTYPath.KitPath);
             var subAssetDir = new string[]
             {
-                "CmdTools","LayerEffect","UI"
+                "CmdTools","UI"
             };
 
             foreach (var dir in subAssetDir)
