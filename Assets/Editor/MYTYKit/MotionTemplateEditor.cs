@@ -32,7 +32,7 @@ namespace MYTYKit
         }
 
         [MenuItem("MYTY Kit/Create Default Motion Template", false, 25)]
-        static void CreateMotionTemplate()
+        public static void CreateMotionTemplate()
         {
             var mtAsset = AssetDatabase.LoadAssetAtPath<MotionTemplateAsset>(MYTYPath.MotionTemplateAssetPath);
             if (mtAsset == null)

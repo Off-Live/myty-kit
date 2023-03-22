@@ -69,7 +69,7 @@ namespace MYTYKit
             valueSlider.RegisterValueChangedCallback((ChangeEvent<float> e) =>
             {
                 var con = _conSO.targetObject as Sprite1DRangeControllerMSR;
-                con.UpdateLabel();
+                con.Update();
             });
 
             rootVisualElement.Q<Button>("BTNAutoSetup").clicked += AutoSetup;

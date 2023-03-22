@@ -26,7 +26,7 @@ namespace MYTYKit.Controllers
         [SerializeField] private string currentLabel;
 
         string m_lastLabel="";
-        void Update()
+        public void Update()
         {
             if (labels == null) return;
             

@@ -395,7 +395,7 @@ namespace MYTYKit
         {
             if (m_conSO == null) return;
             var controller = m_conSO.targetObject as Sprite2DNearestControllerMSR;
-            controller.UpdateLabel();
+            controller.Update();
         }
 
         void OnClickPivotList()

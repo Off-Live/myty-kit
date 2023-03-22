@@ -25,7 +25,7 @@ namespace MYTYKit.Controllers{
         [SerializeField] private string currentLabel;
 
         string m_lastLabel = "";
-        void Update()
+        public void Update()
         {
             if (intervals == null) return;
             if (max < min) return;
