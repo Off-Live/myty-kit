@@ -173,6 +173,7 @@ namespace MYTYKit
                         writer.Write(avatarJO.ToString(Formatting.Indented));
                     }
                 }
+                Object.DestroyImmediate(currentAtlas);
                 
             });
         }
