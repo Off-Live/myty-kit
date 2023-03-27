@@ -22,14 +22,24 @@ namespace MYTYKit
             UITemplate.CloneTree(rootVisualElement);
             maxSize = new Vector2(300, 120);
             minSize = maxSize;
-
             var versionField = rootVisualElement.Q<Label>("LBLVersion");
+            versionField.text = GetVersion();
+
+        }
+        
+        public static string GetVersion()
+        {
             var packageJson = Path.GetFullPath("Packages/com.offlive.myty.myty-kit/package.json");
+            if (!File.Exists(packageJson)) packageJson = Path.GetFullPath("Assets/package.json");
             var jsonText= File.ReadAllText(packageJson);
             var json = JObject.Parse(jsonText);
-            var versionStr = (string)json["version"];
-            versionField.text = versionStr;
+            return (string)json["version"];
+            
+        }
 
+        public static string GetProductFileName()
+        {
+            return $"{Application.productName}_Kit_v{GetVersion()}";
         }
     }
 }

@@ -24,8 +24,8 @@ namespace MYTYKit
         BuildTarget[] m_buildPlatform =
             { BuildTarget.StandaloneOSX, BuildTarget.iOS, BuildTarget.Android, BuildTarget.WebGL };
 
-        readonly string[] m_platforms = { "Standalone(Mac/Win)", "iOS", "Android", "WebGL" };
-        readonly string[] m_bundleSurfix = { "_standalone", "_ios", "_android", "_webgl" };
+        readonly string[] m_platforms = {"WebGL" };
+        readonly string[] m_bundleSurfix = { "_webgl" };
 
         const string ImportSig= "MYTYAvatarImporterV2";
 
@@ -56,9 +56,12 @@ namespace MYTYKit
             var controllerListView = rootVisualElement.Q<ListView>("LSTController");
             var maListView = rootVisualElement.Q<ListView>("LSTMotionAdapter");
             var platformGroup = rootVisualElement.Q<GroupBox>("GRPPlatform");
+            var filenameField = rootVisualElement.Q<TextField>("TXTFilename");
             var supportedPlatform = GetInfoAboutSupportedPlatform();
+
+            filenameField.value = About.GetProductFileName();
+            
             SetupARUI();
-        
             for (int i = 0; i < m_platforms.Length; i++)
             {
                 var toggle = new Toggle();
@@ -236,10 +239,11 @@ namespace MYTYKit
                 {
                     if (platformSelection[i])
                     {
-                        buildMap[0].assetBundleName = filename + m_bundleSurfix[i];
+                        var bundleFilename = filename + m_bundleSurfix[i] + ".assetbundle";
+                        buildMap[0].assetBundleName = bundleFilename;
                         BuildPipeline.BuildAssetBundles(MYTYPath.BundlePath, buildMap, BuildAssetBundleOptions.None,
                             m_buildPlatform[i]);
-                        zip.CreateEntryFromFile(MYTYPath.BundlePath + "/" + filename + m_bundleSurfix[i], filename+m_bundleSurfix[i]);
+                        zip.CreateEntryFromFile(MYTYPath.BundlePath + "/" + bundleFilename, bundleFilename);
                     }
                 }
             }

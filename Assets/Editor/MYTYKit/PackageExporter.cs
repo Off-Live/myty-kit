@@ -8,7 +8,7 @@ namespace MYTYKit
     public class PackageExporter
     {
         public const string ScenePath = "Assets/MYTYAsset/ExportedScene/MYTYAvatarScene.unity";
-        public const string PackagePath = "Assets/MYTYAsset/mytyavatar.unitypackage";
+        public const string PackagePath = "Assets/MYTYAsset/";
         [MenuItem("MYTY Kit/Export to unitypackage",false,2)]
         static void ExportScene()
         {
@@ -16,7 +16,7 @@ namespace MYTYKit
             AssetDatabase.CopyAsset(EditorSceneManager.GetActiveScene().path,
                 ScenePath);
             AssetDatabase.Refresh();
-            AssetDatabase.ExportPackage(new [] {ScenePath, MYTYPath.AssetPath+"/ARFaceData.asset"},PackagePath , ExportPackageOptions.IncludeDependencies | ExportPackageOptions.Recurse);    
+            AssetDatabase.ExportPackage(new [] {ScenePath, MYTYPath.AssetPath+"/ARFaceData.asset"},PackagePath+About.GetProductFileName()+".unitypackage" , ExportPackageOptions.IncludeDependencies | ExportPackageOptions.Recurse);    
         }
     }
 
