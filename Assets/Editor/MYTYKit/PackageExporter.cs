@@ -1,6 +1,7 @@
 using System.IO;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEngine;
 
 namespace MYTYKit
 {
@@ -12,11 +13,17 @@ namespace MYTYKit
         [MenuItem("MYTY Kit/Export to unitypackage",false,2)]
         static void ExportScene()
         {
+            var currentScenePath = EditorSceneManager.GetActiveScene().path;
+            
             Directory.CreateDirectory(Path.GetDirectoryName(ScenePath));
-            AssetDatabase.CopyAsset(EditorSceneManager.GetActiveScene().path,
-                ScenePath);
+            AssetDatabase.CopyAsset(currentScenePath, ScenePath);
             AssetDatabase.Refresh();
-            AssetDatabase.ExportPackage(new [] {ScenePath, MYTYPath.AssetPath+"/ARFaceData.asset"},PackagePath+About.GetProductFileName()+".unitypackage" , ExportPackageOptions.IncludeDependencies | ExportPackageOptions.Recurse);    
+            var exportedScene = EditorSceneManager.OpenScene(ScenePath);
+            var mediapipeExtension = GameObject.Find("MediapipeMotionPack");
+            if(mediapipeExtension!=null) Object.DestroyImmediate(mediapipeExtension);
+            EditorSceneManager.SaveScene(exportedScene);
+            AssetDatabase.ExportPackage(new [] {ScenePath, MYTYPath.AssetPath+"/ARFaceData.asset"},PackagePath+About.GetProductFileName()+".unitypackage" , ExportPackageOptions.IncludeDependencies | ExportPackageOptions.Recurse);
+            EditorSceneManager.OpenScene(currentScenePath);    
         }
     }
 
