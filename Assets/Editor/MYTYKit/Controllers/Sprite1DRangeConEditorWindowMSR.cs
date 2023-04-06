@@ -68,7 +68,10 @@ namespace MYTYKit
 
             valueSlider.RegisterValueChangedCallback((ChangeEvent<float> e) =>
             {
+                if (_conSO == null) return;
                 var con = _conSO.targetObject as Sprite1DRangeControllerMSR;
+                valueSlider.highValue = con.max;
+                valueSlider.lowValue = con.min;
                 con.Update();
             });
 

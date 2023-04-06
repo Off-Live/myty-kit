@@ -30,11 +30,10 @@ namespace MYTYKit.Controllers{
             if (intervals == null) return;
             if (max < min) return;
             
-            float scaledValue = min + (max - min) * value;
             var selected = "";
             foreach (var interval in intervals)
             {
-                if (interval.min <= scaledValue && interval.max > scaledValue)
+                if (interval.min <= value && interval.max > value)
                 {
                     selected = interval.label;
                     break;
