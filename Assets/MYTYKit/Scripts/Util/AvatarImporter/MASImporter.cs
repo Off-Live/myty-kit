@@ -428,7 +428,21 @@ namespace MYTYKit.AvatarImporter
         {
             var rect = spriteJO["rect"].ToObject<Rect>();
             var pixelsPerUnit = (float)spriteJO["pixelsPerUnit"];
-            var spriteBones = spriteJO["bones"].ToObject<List<SpriteBone>>();
+            var spriteBones = spriteJO["bones"].ToArray().Select(token =>
+            {
+                return new SpriteBone()
+                {
+                    name = (string)token["name"],
+                    color = new Color32((byte)token["color"]["r"], (byte)token["color"]["g"], (byte)token["color"]["b"],
+                        (byte)token["color"]["a"]),
+                    length = (float)token["length"],
+                    position = new Vector3((float)token["position"]["x"], (float)token["position"]["y"],
+                        (float)token["position"]["z"]),
+                    rotation = new Quaternion((float)token["rotation"]["x"], (float)token["rotation"]["y"],
+                        (float)token["rotation"]["z"], (float)token["rotation"]["w"]),
+                    parentId = (int)token["parentId"]
+                };
+            }).ToList();
 
             var bindPoses = spriteJO["bindPose"].ToList().Select(token =>
             {
@@ -439,7 +453,21 @@ namespace MYTYKit.AvatarImporter
             }).ToList();
 
             var positions = spriteJO["position"].ToObject<List<Vector3>>();
-            var boneWeights = spriteJO["boneWeight"].ToObject<List<BoneWeight>>();
+            var boneWeights = spriteJO["boneWeight"].Select(token =>
+            {
+                return new BoneWeight()
+                {
+                    weight0 = (float)token["weight0"],
+                    weight1 = (float)token["weight1"],
+                    weight2 = (float)token["weight2"],
+                    weight3 = (float)token["weight3"],
+                    boneIndex0 = (int)token["boneIndex0"],
+                    boneIndex1 = (int)token["boneIndex1"],
+                    boneIndex2 = (int)token["boneIndex2"],
+                    boneIndex3 = (int)token["boneIndex3"]
+
+                };
+            }).ToList();
             var uvs = spriteJO["uv"].ToObject<List<Vector2>>();
             var indices = spriteJO["indices"].ToObject<List<ushort>>();
 
