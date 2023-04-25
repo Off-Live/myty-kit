@@ -83,7 +83,41 @@ namespace MYTYKit
             });
 
             var arJson = BuildARMetadata(selector.templates.First().instance.transform.parent);
+            var arOnly = false;
+            
             if (arJson != null) exportedJO["ARFaceData"] = arJson;
+            else
+            {
+                arOnly = (bool) arJson["AROnly"];
+            }
+
+            var tagArray = new JArray();
+            
+            if (arOnly || arJson!=null)
+            {
+                tagArray.Add(JObject.FromObject(new
+                {
+                    category = "supported_mode",
+                    value = "head_only"
+                }));
+            }
+
+            if (!arOnly)
+            {
+                tagArray.Add(JObject.FromObject(new
+                {
+                    category = "supported_mode",
+                    value = "full_body"
+                }));
+            }
+            
+            tagArray.Add(JObject.FromObject(new
+            {
+                category = "asset_type",
+                value = "2d"
+            }));
+
+            exportedJO["tag"] = tagArray;
             
             GeneratePathForSpriteRenderers(selector);
             
