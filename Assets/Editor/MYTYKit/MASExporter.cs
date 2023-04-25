@@ -133,7 +133,7 @@ namespace MYTYKit
                 File.Delete(file);
             }
             
-            using (var zipArchive = ZipFile.Open($"{ExportPath}/collection_mas_metadata.zip", ZipArchiveMode.Create))
+            using (var zipArchive = ZipFile.Open($"{ExportPath}/collection_mas_metadata.mytyc", ZipArchiveMode.Create))
             {
                 var dataEntry = zipArchive.CreateEntry("collection_mas_metadata.json");
                 using (var writer = new StreamWriter(dataEntry.Open()))
@@ -207,7 +207,7 @@ namespace MYTYKit
                 });
 
 
-                using (var zipArchive = ZipFile.Open($"{ExportPath}/{filename}.zip", ZipArchiveMode.Create))
+                using (var zipArchive = ZipFile.Open($"{ExportPath}/{filename}.myty", ZipArchiveMode.Create))
                 {
                     var atlasEntry = zipArchive.CreateEntry($"{filename}.png");
                     using (var stream = atlasEntry.Open())
