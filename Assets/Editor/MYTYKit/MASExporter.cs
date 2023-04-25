@@ -35,7 +35,12 @@ namespace MYTYKit
             Export(true);
         }
 
-        public static void Export(bool fromCLI, List<string> idList=null)
+        public static void UpdateCollectionMetadata()
+        {
+            Export(true, null, true);
+        }
+
+        public static void Export(bool fromCLI, List<string> idList=null, bool metadataOnly = false)
         {
             if (fromCLI && !Application.isBatchMode)
             {
@@ -135,6 +140,15 @@ namespace MYTYKit
                 {
                     writer.Write(exportedJO.ToString(Formatting.Indented));
                 }
+            }
+
+            if (metadataOnly)
+            {
+                foreach (var path in tempSlaPaths)
+                {
+                    AssetDatabase.DeleteAsset(path);
+                }
+                return;
             }
 
             var commandLineArgs = System.Environment.GetCommandLineArgs();
