@@ -31,7 +31,7 @@ namespace MYTYKit.AvatarImporter.MASUtil
                 if (curTs - resumeTs > timeout)
                 {
                     yield return null;
-                    resumeTs = curTs;
+                    resumeTs = Time.realtimeSinceStartup;
                 }
                 switch (jsonReader.TokenType)
                 {

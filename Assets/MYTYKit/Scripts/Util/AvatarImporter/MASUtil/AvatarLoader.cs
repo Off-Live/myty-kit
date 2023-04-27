@@ -38,7 +38,7 @@ namespace MYTYKit.AvatarImporter
             if (currentTs - m_spriteRendererResumeTs > timeout)
             {
                 yield return null;
-                m_spriteRendererResumeTs = currentTs;
+                m_spriteRendererResumeTs = Time.realtimeSinceStartup;
             }
             
             m_useInARModeMap[renderer] = (bool)spriteRendererJO["useInARMode"];
@@ -87,7 +87,7 @@ namespace MYTYKit.AvatarImporter
             if (currentTs - m_spriteRendererResumeTs > timeout)
             {
                 yield return null;
-                m_spriteRendererResumeTs = currentTs;
+                m_spriteRendererResumeTs = Time.realtimeSinceStartup;
             }
 
             var rect = spriteJO["rect"].ToObject<Rect>();

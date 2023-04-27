@@ -20,7 +20,7 @@ namespace MYTYKit.AvatarImporter
             if (currentTs - m_skeletonResumeTs > timeout)
             {
                 yield return null;
-                m_skeletonResumeTs = currentTs;
+                m_skeletonResumeTs = Time.realtimeSinceStartup;
             }
             go.name = (string)skeleton["name"];
             go.transform.Deserialize(skeleton["transform"] as JObject);
@@ -50,7 +50,7 @@ namespace MYTYKit.AvatarImporter
                     if (currentTs - resumeTs > timeout)
                     {
                         yield return null;
-                        resumeTs = currentTs;
+                        resumeTs = Time.realtimeSinceStartup;
                     }
                     var componentJo = jToken as JObject;
                     var typeKey = (string)componentJo["typeKey"];
@@ -89,7 +89,7 @@ namespace MYTYKit.AvatarImporter
             if (currentTs - m_controllerResumeTs > timeout)
             {
                 yield return null;
-                m_controllerResumeTs = currentTs;
+                m_controllerResumeTs = Time.realtimeSinceStartup;
             }
             var typeString = (string)controller["type"];
             var assemName = typeof(MYTYController).Assembly.GetName().Name;

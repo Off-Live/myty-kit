@@ -60,7 +60,6 @@ namespace MYTYKit.AvatarImporter
 
         public IEnumerator LoadCollectionMetadata(byte[] bytes, float timeout = 0.005f, Action onComplete = null)
         {
-            var initTimestamp = Time.realtimeSinceStartup;
             m_transformMap.Clear();
             m_rootControllers.Clear();
             m_rootBones.Clear();
@@ -127,7 +126,7 @@ namespace MYTYKit.AvatarImporter
                 if (currentTs - adapterResumeTs > timeout)
                 {
                     yield return null;
-                    adapterResumeTs = currentTs;
+                    adapterResumeTs = Time.realtimeSinceStartup;
                 }
             }
 
