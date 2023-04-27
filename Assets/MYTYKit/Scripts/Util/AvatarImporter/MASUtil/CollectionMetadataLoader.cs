@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using MYTYKit.Controllers;
 using MYTYKit.MotionAdapters;
@@ -161,6 +162,34 @@ namespace MYTYKit.AvatarImporter
                     isValid = (bool) token["isValid"]
                 };
             }).ToList();
+        }
+
+        void LockController()
+        {
+            var rootBone = m_rootBones[m_templateId];
+            var headBone = m_arData[m_templateId].headBone;
+            var parentBoneList = new List<Transform>(){rootBone};
+            var currBone = headBone;
+            while (currBone != rootBone)
+            {
+                parentBoneList.Add(currBone);
+                currBone = currBone.parent;
+            }
+
+            var rootController = m_rootControllers[m_templateId];
+            
+            rootController.GetComponentsInChildren<BoneController>()
+                .Where(controller => parentBoneList.Count(bone=> controller.rigTarget.Contains(bone.gameObject))>0)
+                .ToList().ForEach(controller=> controller.skip = true);
+        }
+
+        void UnlockController()
+        {
+            var rootController = m_rootControllers[m_templateId];
+            foreach (var controller in rootController.GetComponentsInChildren<BoneController>())
+            {
+                controller.skip = false;
+            }
         }
     }
 }

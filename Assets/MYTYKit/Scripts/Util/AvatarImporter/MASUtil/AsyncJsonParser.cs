@@ -17,7 +17,7 @@ namespace MYTYKit.AvatarImporter.MASUtil
         }
         JObject m_parsedObject;
 
-        JObject parsedObject => m_parsedObject;
+        public JObject parsedObject => m_parsedObject;
 
         public IEnumerator Parse(string text, float timeout)
         {

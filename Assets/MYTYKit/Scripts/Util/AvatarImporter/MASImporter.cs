@@ -53,7 +53,7 @@ namespace MYTYKit.AvatarImporter
         string m_id;
 
 
-        void Start()
+        void Awake()
         {
             m_shaderMap = Resources.Load<ShaderMapAsset>("ShaderMap");
         }
