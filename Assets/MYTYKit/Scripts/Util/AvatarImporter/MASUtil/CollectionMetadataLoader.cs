@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using MYTYKit.AvatarImporter.MASUtil;
 using MYTYKit.Controllers;
 using MYTYKit.MotionAdapters;
 using MYTYKit.MotionTemplates;
@@ -14,7 +15,7 @@ namespace MYTYKit.AvatarImporter
     {
         float m_skeletonResumeTs = 0.0f;
         float m_controllerResumeTs = 0.0f;
-        IEnumerator LoadSkeleton(JObject skeleton, Transform go, float timeout)
+        IEnumerator LoadSkeleton(JObject skeleton, GameObject go, float timeout)
         {
             var currentTs = Time.realtimeSinceStartup;
             if (currentTs - m_skeletonResumeTs > timeout)
@@ -22,17 +23,22 @@ namespace MYTYKit.AvatarImporter
                 yield return null;
                 m_skeletonResumeTs = Time.realtimeSinceStartup;
             }
+            
             go.name = (string)skeleton["name"];
             go.transform.Deserialize(skeleton["transform"] as JObject);
-            m_transformMap[(int)skeleton["id"]] = go.transform;
-
+            
+            var objId = (int)skeleton["id"];
+            var tag = go.AddComponent<MASTransformIdTag>();
+            tag.id = objId;
+            m_transformMap[objId] = go.transform;
+            
             var childrenJA = skeleton["children"] as JArray;
             var childCount = childrenJA.Count;
             for (int i = 0; i < childCount; i++)
             {
                 var childGo = new GameObject();
                 childGo.transform.parent = go.transform;
-                yield return LoadSkeleton(childrenJA[i] as JObject, childGo.transform, timeout);
+                yield return LoadSkeleton(childrenJA[i] as JObject, childGo, timeout);
             }
             
         }
@@ -100,7 +106,11 @@ namespace MYTYKit.AvatarImporter
             var component = go.AddComponent(Type.GetType(qualifiedType)) as MYTYController;
             Debug.Assert(component != null);
             component.DeserializeFromJObject(controller, m_transformMap);
-            m_transformMap[(int)controller["id"]] = go.transform;
+
+            var objId = (int)controller["id"];
+            var tag = go.AddComponent<MASTransformIdTag>();
+            tag.id = objId;
+            m_transformMap[objId] = go.transform;
 
             foreach (var child in controller["children"])
             {

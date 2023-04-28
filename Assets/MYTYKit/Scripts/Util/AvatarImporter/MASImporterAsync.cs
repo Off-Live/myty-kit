@@ -30,8 +30,7 @@ namespace MYTYKit.AvatarImporter
         public string currentId => m_id;
         public RenderTexture currentARRenderTexture => m_arData.Count == 0 ? null : m_arData[m_templateId].arTexture;
         public Camera currentARCamera => m_arData.Count == 0 ? null : m_arData[m_templateId].renderCam;
-        
-        
+
         ShaderMapAsset m_shaderMap;
         Texture2D m_textureAtlas;
         List<Transform> m_rootBones = new();
@@ -41,17 +40,19 @@ namespace MYTYKit.AvatarImporter
         Dictionary<int, Transform> m_transformMap = new();
         Dictionary<int, Transform> m_avatarTransformMap = new();
         Dictionary<SpriteRenderer, bool> m_useInARModeMap;
+
+        JObject m_collectionMetadataJson;
         
         bool m_isAROnly = false;
         int m_templateId;
         string m_id;
 
-       
-
         void Awake()
         {
             m_shaderMap = Resources.Load<ShaderMapAsset>("ShaderMap");
         }
+
+        
         
         public IEnumerator LoadCollectionMetadata(string filePath, float timeout = 0.005f, Action onComplete=null)
         {
@@ -80,34 +81,38 @@ namespace MYTYKit.AvatarImporter
             var parser = new AsyncJsonParser();
             yield return parser.Parse(jsonText, timeout);
             
-            var metadataJson = parser.parsedObject;
+            m_collectionMetadataJson = parser.parsedObject;
 
-            var cameraJo = metadataJson["mainCamera"] as JObject;
+            var cameraJo = m_collectionMetadataJson["mainCamera"] as JObject;
             var cameraGo = new GameObject();
             cameraGo.name = "MainCamera";
             cameraGo.transform.parent = templateRoot;
             cameraGo.AddComponent<Camera>().DeserializeFromJObject(cameraJo);
 
-            foreach (var template in metadataJson["templates"])
+            foreach (var template in m_collectionMetadataJson["templates"])
             {
 
                 var rootBone = new GameObject();
+                var tag = rootBone.AddComponent<MASTransformIdTag>();
+                tag.tag = "RootBone";
                 rootBone.transform.parent = templateRoot;
                 m_skeletonResumeTs = Time.realtimeSinceStartup;
-                yield return LoadSkeleton(template["skeleton"] as JObject, rootBone.transform, timeout);
+                yield return LoadSkeleton(template["skeleton"] as JObject, rootBone, timeout);
                 m_rootBones.Add(rootBone.transform);
                 yield return LoadJointPhysics(template["jointPhysicsComponents"].ToObject<JObject[]>(), timeout);
             }
 
-            foreach (var rootCon in metadataJson["rootControllers"])
+            foreach (var rootCon in m_collectionMetadataJson["rootControllers"])
             {
                 var rootConGo = new GameObject();
+                var tag = rootConGo.AddComponent<MASTransformIdTag>();
+                tag.tag = "RootController";
                 rootConGo.transform.parent = templateRoot;
                 yield return LoadRootController(rootCon as JObject, rootConGo, timeout);
                 m_rootControllers.Add(rootConGo.transform);
             }
 
-            yield return LoadMotionTemplates(metadataJson["mapper"] as JObject, templateRoot);
+            yield return LoadMotionTemplates(m_collectionMetadataJson["mapper"] as JObject, templateRoot);
 
             var adapterRoot = new GameObject()
             {
@@ -119,7 +124,7 @@ namespace MYTYKit.AvatarImporter
             };
 
             var adapterResumeTs = Time.realtimeSinceStartup;
-            foreach (var adapter in metadataJson["adapters"])
+            foreach (var adapter in m_collectionMetadataJson["adapters"])
             {
                 LoadMotionAdapter(adapter as JObject, adapterRoot.transform);
                 var currentTs = Time.realtimeSinceStartup;
@@ -130,14 +135,47 @@ namespace MYTYKit.AvatarImporter
                 }
             }
 
-            metadataJson["adapters"].ToList().ForEach(
+            m_collectionMetadataJson["adapters"].ToList().ForEach(
                 adapter => { LoadMotionAdapter(adapter as JObject, adapterRoot.transform); });
 
-            if (metadataJson.ContainsKey("ARFaceData"))
-                LoadARFaceData(metadataJson["ARFaceData"] as JObject, templateRoot);
+            if (m_collectionMetadataJson.ContainsKey("ARFaceData"))
+                LoadARFaceData(m_collectionMetadataJson["ARFaceData"] as JObject, templateRoot);
+            
             
             if(onComplete!=null) onComplete.Invoke();
 
+        }
+        
+        public void CloneTemplate(GameObject srcTemplateGo, JObject arData=null)
+        {
+            var templateGo = Instantiate(srcTemplateGo);
+            templateRoot = templateGo.transform;
+            templateRoot.parent = transform;
+            m_rootBones = templateRoot.GetComponentsInChildren<MASTransformIdTag>()
+                .Where(tag=> tag.tag=="RootBone")
+                .Select(tag=>tag.transform).ToList();
+            m_rootControllers = templateRoot.GetComponentsInChildren<MASTransformIdTag>()
+                .Where(tag => tag.tag == "RootController")
+                .Select(tag => tag.transform).ToList();
+
+            m_transformMap = new();
+            foreach (var tag in templateRoot.GetComponentsInChildren<MASTransformIdTag>())
+            {
+                if (tag.id >= 0)
+                {
+                    m_transformMap[tag.id] = tag.transform;
+                }
+            }
+
+            if (arData != null)
+            {
+                LoadARFaceData(arData,templateRoot);
+            }
+        }
+
+        public JObject ExtractARMetadata()
+        { 
+            return m_collectionMetadataJson["ARFaceData"] as JObject;
         }
 
         public void UnloadMetadata()
