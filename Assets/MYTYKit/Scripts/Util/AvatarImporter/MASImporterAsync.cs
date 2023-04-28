@@ -88,28 +88,32 @@ namespace MYTYKit.AvatarImporter
             cameraGo.name = "MainCamera";
             cameraGo.transform.parent = templateRoot;
             cameraGo.AddComponent<Camera>().DeserializeFromJObject(cameraJo);
-
+            
+            var index = 0;
+            
             foreach (var template in m_collectionMetadataJson["templates"])
             {
 
                 var rootBone = new GameObject();
-                var tag = rootBone.AddComponent<MASTransformIdTag>();
-                tag.tag = "RootBone";
                 rootBone.transform.parent = templateRoot;
                 m_skeletonResumeTs = Time.realtimeSinceStartup;
                 yield return LoadSkeleton(template["skeleton"] as JObject, rootBone, timeout);
+                rootBone.GetComponent<MASTransformIdTag>().tag = $"RootBone_{index}";
                 m_rootBones.Add(rootBone.transform);
                 yield return LoadJointPhysics(template["jointPhysicsComponents"].ToObject<JObject[]>(), timeout);
+                index++;
             }
 
+            index = 0;
             foreach (var rootCon in m_collectionMetadataJson["rootControllers"])
             {
                 var rootConGo = new GameObject();
                 var tag = rootConGo.AddComponent<MASTransformIdTag>();
-                tag.tag = "RootController";
+                tag.tag = $"RootController_{index}";
                 rootConGo.transform.parent = templateRoot;
                 yield return LoadRootController(rootCon as JObject, rootConGo, timeout);
                 m_rootControllers.Add(rootConGo.transform);
+                index++;
             }
 
             yield return LoadMotionTemplates(m_collectionMetadataJson["mapper"] as JObject, templateRoot);
@@ -152,11 +156,29 @@ namespace MYTYKit.AvatarImporter
             templateRoot = templateGo.transform;
             templateRoot.parent = transform;
             m_rootBones = templateRoot.GetComponentsInChildren<MASTransformIdTag>()
-                .Where(tag=> tag.tag=="RootBone")
+                .Where(tag=> tag.tag.StartsWith("RootBone"))
                 .Select(tag=>tag.transform).ToList();
+            m_rootBones.Sort((p1, p2) =>
+                {
+                    var t1 = p1.GetComponent<MASTransformIdTag>();
+                    var t2 = p2.GetComponent<MASTransformIdTag>();
+                    var prefixLen = "RootBone_".Length;
+                    var id1 = int.Parse(t1.tag.Substring(prefixLen));
+                    var id2 = int.Parse(t2.tag.Substring(prefixLen));
+                    return id1.CompareTo(id2);
+                });
             m_rootControllers = templateRoot.GetComponentsInChildren<MASTransformIdTag>()
-                .Where(tag => tag.tag == "RootController")
+                .Where(tag => tag.tag.StartsWith("RootController"))
                 .Select(tag => tag.transform).ToList();
+            m_rootControllers.Sort((p1, p2) =>
+            {
+                var t1 = p1.GetComponent<MASTransformIdTag>();
+                var t2 = p2.GetComponent<MASTransformIdTag>();
+                var prefixLen = "RootController_".Length;
+                var id1 = int.Parse(t1.tag.Substring(prefixLen));
+                var id2 = int.Parse(t2.tag.Substring(prefixLen));
+                return id1.CompareTo(id2);
+            });
 
             m_transformMap = new();
             foreach (var tag in templateRoot.GetComponentsInChildren<MASTransformIdTag>())
