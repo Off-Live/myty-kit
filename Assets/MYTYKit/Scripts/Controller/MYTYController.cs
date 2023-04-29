@@ -228,7 +228,8 @@ namespace MYTYKit.Controllers
         public List<MYTYSpriteResolver> spriteObjects;
         public bool isRuntimeMode = false;
 
-        List<int> m_resolverIds;
+        public List<int> resolverIds { get; set; }
+
         List<MYTYSpriteResolverRuntime> m_spriteResolverRuntimes = new();
         public override void PrepareToSave()
         {
@@ -273,7 +274,7 @@ namespace MYTYKit.Controllers
         public override void DeserializeFromJObject(JObject jObject, Dictionary<int, Transform> idTransformMap)
         {
             //Sprite resolvers is not determined when the template is loaded, so we will not use idTransformMap here.
-            m_resolverIds = jObject["spriteObjects"].ToObject<List<int>>();
+            resolverIds = jObject["spriteObjects"].ToObject<List<int>>();
         }
 
         public void UpdateLabel(string label)
@@ -296,7 +297,7 @@ namespace MYTYKit.Controllers
         public void UpdateRuntimeResolvers(Dictionary<int, Transform> idTransformMap)
         {
             m_spriteResolverRuntimes =
-                m_resolverIds.Select(id =>
+                resolverIds.Select(id =>
                 {
                     if (idTransformMap.ContainsKey(id))
                         return idTransformMap[id].GetComponent<MYTYSpriteResolverRuntime>();

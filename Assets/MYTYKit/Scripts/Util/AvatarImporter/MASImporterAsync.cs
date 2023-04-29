@@ -156,11 +156,12 @@ namespace MYTYKit.AvatarImporter
         {
             var templateGo = Instantiate(srcTemplateGo);
             templateRoot = templateGo.transform;
+            templateRoot.parent = transform;
             templateRoot.localPosition=Vector3.zero;
             templateRoot.localRotation=Quaternion.identity;
-            templateRoot.parent = transform;
-            m_rootBones = templateRoot.GetComponentsInChildren<MASTransformIdTag>()
-                .Where(tag=> tag.tag.StartsWith("RootBone"))
+
+            var clonedTaggedObjects = templateRoot.GetComponentsInChildren<MASTransformIdTag>();
+            m_rootBones = clonedTaggedObjects.Where(tag=> tag.tag.StartsWith("RootBone"))
                 .Select(tag=>tag.transform).ToList();
             m_rootBones.Sort((p1, p2) =>
                 {
@@ -171,9 +172,10 @@ namespace MYTYKit.AvatarImporter
                     var id2 = int.Parse(t2.tag.Substring(prefixLen));
                     return id1.CompareTo(id2);
                 });
-            m_rootControllers = templateRoot.GetComponentsInChildren<MASTransformIdTag>()
-                .Where(tag => tag.tag.StartsWith("RootController"))
+            
+            m_rootControllers = clonedTaggedObjects.Where(tag => tag.tag.StartsWith("RootController"))
                 .Select(tag => tag.transform).ToList();
+            
             m_rootControllers.Sort((p1, p2) =>
             {
                 var t1 = p1.GetComponent<MASTransformIdTag>();
@@ -183,6 +185,24 @@ namespace MYTYKit.AvatarImporter
                 var id2 = int.Parse(t2.tag.Substring(prefixLen));
                 return id1.CompareTo(id2);
             });
+            
+            m_rootControllers.ForEach(rootCon =>
+            {
+                rootCon.GetComponent<RootController>().RefreshBoneList();
+            });
+
+            var clonedSpriteTagPairs = clonedTaggedObjects.Select(tag => (tag,spriteCon: tag.GetComponent<MSRSpriteController>()))
+                .Where(pair => pair.spriteCon != null);
+            var srcSpriteCon = srcTemplateGo.GetComponentsInChildren<MSRSpriteController>();
+            
+            foreach (var pair in clonedSpriteTagPairs)
+            {
+                var id = pair.tag.id;
+                var srcCon = srcSpriteCon.FirstOrDefault(con => con.GetComponent<MASTransformIdTag>().id == id);
+                Debug.Assert(srcCon!=null);
+                Debug.Log($"con name {srcCon.name} {srcCon.resolverIds}");
+                if(srcCon.resolverIds!=null) pair.spriteCon.resolverIds = srcCon.resolverIds.ToList();
+            }
 
             m_transformMap = new();
             foreach (var tag in templateRoot.GetComponentsInChildren<MASTransformIdTag>())
@@ -193,6 +213,14 @@ namespace MYTYKit.AvatarImporter
                 }
             }
 
+            motionTemplateMapper = templateRoot.GetComponentInChildren<MotionTemplateMapper>();
+            foreach (var camera in templateRoot.GetComponentsInChildren<Camera>())
+            {
+                if (camera.name.StartsWith("ARRenderCam"))
+                {
+                    Destroy(camera.gameObject);
+                }
+            }
             if (arData != null)
             {
                 LoadARFaceData(arData,templateRoot);
