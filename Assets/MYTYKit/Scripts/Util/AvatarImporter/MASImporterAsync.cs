@@ -200,7 +200,6 @@ namespace MYTYKit.AvatarImporter
                 var id = pair.tag.id;
                 var srcCon = srcSpriteCon.FirstOrDefault(con => con.GetComponent<MASTransformIdTag>().id == id);
                 Debug.Assert(srcCon!=null);
-                Debug.Log($"con name {srcCon.name} {srcCon.resolverIds}");
                 if(srcCon.resolverIds!=null) pair.spriteCon.resolverIds = srcCon.resolverIds.ToList();
             }
 
