@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using MYTYKit.AvatarImporter.MASUtil;
+using MYTYKit.Controllers;
 using MYTYKit.MotionTemplates;
 using UnityEngine;
 using Newtonsoft.Json.Linq;
@@ -112,6 +113,7 @@ namespace MYTYKit.AvatarImporter
                 tag.tag = $"RootController_{index}";
                 rootConGo.transform.parent = templateRoot;
                 yield return LoadRootController(rootCon as JObject, rootConGo, timeout);
+                rootConGo.GetComponent<RootController>().RefreshBoneList();
                 m_rootControllers.Add(rootConGo.transform);
                 index++;
             }
@@ -154,6 +156,8 @@ namespace MYTYKit.AvatarImporter
         {
             var templateGo = Instantiate(srcTemplateGo);
             templateRoot = templateGo.transform;
+            templateRoot.localPosition=Vector3.zero;
+            templateRoot.localRotation=Quaternion.identity;
             templateRoot.parent = transform;
             m_rootBones = templateRoot.GetComponentsInChildren<MASTransformIdTag>()
                 .Where(tag=> tag.tag.StartsWith("RootBone"))
