@@ -15,6 +15,8 @@ namespace MYTYKit.Controllers
         {
             public string name;
             public float weight = 0.0f;
+            public bool active = false;
+            public bool assigned = false;
             public List<Vector3> basis;
         }
 
@@ -22,13 +24,11 @@ namespace MYTYKit.Controllers
 
         List<Vector3> m_diffBuffer;
 
-        // Start is called before the first frame update
         void Start()
         {
 
         }
-
-        // Update is called once per frame
+        
         void Update()
         {
             m_diffBuffer = CalcBlendShape();
@@ -66,7 +66,10 @@ namespace MYTYKit.Controllers
 
             return blendShapes.Select(bs =>
                 orgRig.Zip(bs.basis, (origin, basis) => (origin, basis))
-                    .Select(pair => bs.weight * (pair.basis - pair.origin.position))
+                    .Select(pair =>
+                    { 
+                        return bs.active ? bs.weight * (pair.basis - pair.origin.position) : Vector3.zero;
+                    })
             ).Aggregate((acc, next) =>
                 acc.Zip(next, (a, b) => (a, b))
                     .Select(pair =>
