@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MathNet.Numerics;
 using MYTYKit.Controllers;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace MYTYKit.Controllers
@@ -75,6 +76,51 @@ namespace MYTYKit.Controllers
                     .Select(pair =>
                         pair.a + pair.b)).ToList();
 
+        }
+
+        public override JObject SerializeToJObject(Dictionary<Transform, int> tfMap)
+        {
+            var baseJo = base.SerializeToJObject(tfMap);
+            var jo = JObject.FromObject(new
+            {
+                name,
+                type = GetType().Name,
+                blendShapes = blendShapes.Select( basis => JObject.FromObject(new
+                {
+                    basis.name,
+                    basis.active,
+                    basis.assigned,
+                    basis = basis.basis.Select(item => JObject.FromObject(new
+                    {
+                        item.x,
+                        item.y,
+                        item.z
+                    }))
+                }))
+            });
+            baseJo.Merge(jo);
+            return baseJo;
+        }
+
+        public override void DeserializeFromJObject(JObject jObject, Dictionary<int, Transform> idTransformMap)
+        {
+            base.DeserializeFromJObject(jObject, idTransformMap);
+            name = (string)jObject["name"];
+            blendShapes = (jObject["blendShapes"] as JArray).Select(token =>
+            {
+                var basisJo = token as JObject;
+                return new BlendShapeBasis()
+                {
+                    name = (string)basisJo["name"],
+                    active = (bool)basisJo["active"],
+                    assigned = (bool)basisJo["assigned"],
+                    basis = (basisJo["basis"] as JArray).Select(item =>
+                    {
+                        var itemJo = item as JObject;
+                        return new Vector3((float)itemJo["x"], (float)itemJo["y"], (float)itemJo["z"]);
+                    }).ToList()
+                };
+            }).ToList();
         }
     }
 }
