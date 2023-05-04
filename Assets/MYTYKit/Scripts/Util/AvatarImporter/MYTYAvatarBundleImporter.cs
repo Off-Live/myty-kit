@@ -195,10 +195,10 @@ namespace MYTYKit.AvatarImporter
                 BuildMap(prefabInstance, psb);
                 template.instance = psb;
                 psb.transform.parent = root.transform;
-                var splReq = bundle.LoadAssetAsync<SpriteLibraryAsset>(templateInfo.spriteLibrary);
-                yield return splReq;
+                // var splReq = bundle.LoadAssetAsync<SpriteLibraryAsset>(templateInfo.spriteLibrary);
+                // yield return splReq;
 
-                template.spriteLibrary = splReq.asset as SpriteLibraryAsset;
+                template.spriteLibrary = SpriteLibraryFactoryRuntime.CreateLibraryRuntime(psb);//splReq.asset as SpriteLibraryAsset;
 
                 int boneIdx = template.instance.transform.childCount - 1;
                 if (boneIdx >= 0)
