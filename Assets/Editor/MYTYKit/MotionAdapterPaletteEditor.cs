@@ -26,10 +26,12 @@ namespace MYTYKit
         public GameObject spriteEyeBrow;
         public GameObject spriteEyeBrowAll;
         public GameObject spriteMouth;
+        public GameObject blendshape;
         
         
         List<GameObject> m_boneAdapters;
         List<GameObject> m_spriteAdapters;
+        List<GameObject> m_blendshapes;
         
         public static void CreateAsset()
         {
@@ -46,17 +48,21 @@ namespace MYTYKit
             
             var boneFoldOut = new Foldout();
             var spriteFoldOut = new Foldout();
+            var bsFoldOut = new Foldout();
 
             boneFoldOut.text = "Bone";
             spriteFoldOut.text = "Sprite";
+            bsFoldOut.text = "Blendshape";
             
             PrepareAdapterLists();
             
             m_boneAdapters.ForEach(item=>BuildFoldOut(boneFoldOut,item));
             m_spriteAdapters.ForEach(item=>BuildFoldOut(spriteFoldOut,item));
+            m_blendshapes.ForEach(item=>BuildFoldOut(bsFoldOut, item));
             
             root.Add(boneFoldOut);
             root.Add(spriteFoldOut);
+            root.Add(bsFoldOut);
 
             return root;
         }
@@ -83,6 +89,11 @@ namespace MYTYKit
             m_spriteAdapters = new()
             {
                 spriteEyeBlink, spriteEyeBlinkAll, spriteEyeBrow, spriteEyeBrowAll, spriteMouth
+            };
+
+            m_blendshapes = new()
+            {
+                blendshape
             };
         }
 

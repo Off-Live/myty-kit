@@ -18,6 +18,7 @@ MonoImporter:
   - spriteEyeBrow: {fileID: 118524654549135199, guid: 63edf0ee814c344a5b0b6ff23a7dd7ad, type: 3}
   - spriteEyeBrowAll: {fileID: 2892359304281539670, guid: 9b70a0989b9dc4ff6b9213892cd629a5, type: 3}
   - spriteMouth: {fileID: 8670603408630390504, guid: 18d9eecd12f8f48728f905b733a8a325, type: 3}
+  - blendshape: {fileID: 3377611351485620364, guid: c7b1c32774f2145da91eb41de705fb6f, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
