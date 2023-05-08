@@ -20,7 +20,8 @@ namespace MYTYKit.MotionAdapters
         {
             foreach (var basis in controller.blendShapes)
             {
-                var weight = template.GetValue(basis.name);
+                var key = basis.name[0].ToString().ToLower() + basis.name.Substring(1);   
+                var weight = template.GetValue(key);
                 basis.weight = weight;
             }
         }
