@@ -22,7 +22,7 @@ namespace MYTYKit
             var mediapipeExtension = GameObject.Find("MediapipeMotionPack");
             if(mediapipeExtension!=null) Object.DestroyImmediate(mediapipeExtension);
             EditorSceneManager.SaveScene(exportedScene);
-            AssetDatabase.ExportPackage(new [] {ScenePath, MYTYPath.AssetPath+"/ARFaceData.asset"},PackagePath+About.GetProductFileName()+".unitypackage" , ExportPackageOptions.IncludeDependencies | ExportPackageOptions.Recurse);
+            AssetDatabase.ExportPackage(new [] {ScenePath, MYTYPath.AssetPath},PackagePath+About.GetProductFileName()+".unitypackage" , ExportPackageOptions.Recurse);
             EditorSceneManager.OpenScene(currentScenePath);    
         }
     }
