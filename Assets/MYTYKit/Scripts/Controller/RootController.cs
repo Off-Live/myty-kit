@@ -44,6 +44,12 @@ namespace MYTYKit.Controllers
             FindControllers(controllers, gameObject);
             return controllers;
         }
+        
+        public void RefreshBoneList()
+        {
+            _bones.Clear();
+            FindControllers<BoneController>(_bones, gameObject);
+        }
 
         void FindControllers<T>(List<T> conList, GameObject node)
         {
