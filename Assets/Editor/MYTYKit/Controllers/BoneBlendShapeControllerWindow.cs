@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization.Formatters;
 using MYTYKit.Components;
 using MYTYKit.Controllers;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine.XR;
 using Object = UnityEngine.Object;
 
 namespace MYTYKit
@@ -20,39 +22,76 @@ namespace MYTYKit
             rootElement.style.flexDirection = FlexDirection.Row;
             rootElement.style.paddingLeft = 3;
             rootElement.style.paddingRight = 3;
+            
             var nameField = new Label();
             nameField.style.flexGrow = 1;
             nameField.style.width = 100;
             nameField.style.unityTextAlign = TextAnchor.MiddleLeft;
+            nameField.style.color = new Color(200, 200, 200);
+
             var slider = new Slider();
             slider.lowValue = 0.0f;
             slider.highValue = 1.0f;
             slider.value = 0.0f;
             slider.style.flexGrow = 4;
             var setButton = new Button();
-            setButton.text = "Set Pose";
-            setButton.style.flexGrow = 1;
+            setButton.text = "Set";
+            setButton.name = "BTNSet";
+            setButton.style.width = 50;
+            
+            var check = new Toggle();
+            check.name = "TGLActive";
+            check.label = "";
+            check.labelElement.style.display = DisplayStyle.None;
+            check.visible = false;
+            
+            
+            var buttonPanel = new VisualElement();
+            buttonPanel.style.flexGrow = 0.5f;
+            buttonPanel.style.flexDirection = FlexDirection.Row;
+            buttonPanel.style.minWidth = 70;
+
+            buttonPanel.Add(setButton);
+            buttonPanel.Add(check);
+            
             rootElement.Add(nameField);
             rootElement.Add(slider);
-            rootElement.Add(setButton);
+            rootElement.Add(buttonPanel);
+        
+            
             return rootElement;
         }
 
         public static void Bind(VisualElement root, SerializedObject so, int bsIndex)
         {
             var controller = so.targetObject as BoneBlendShapeController;
-            root.Q<Label>().text = controller.blendShapes[bsIndex].name;
+            var bsLabel = root.Q<Label>();
+            bsLabel.text = controller.blendShapes[bsIndex].name;
+            bsLabel.style.color = controller.blendShapes[bsIndex].assigned ? Color.green : new Color(200, 200, 200);
+            
             root.Q<Slider>().BindProperty(so.FindProperty("blendShapes").GetArrayElementAtIndex(bsIndex)
                 .FindPropertyRelative("weight"));
 
             root.Q<Slider>().RegisterValueChangedCallback(evt => { controller.UpdateInEditor(); });
 
-            root.Q<Button>().clicked += () =>
+            var setBtn = root.Q<Button>("BTNSet");
+            var check = root.Q<Toggle>("TGLActive");
+
+            check.visible = controller.blendShapes[bsIndex].assigned;
+            check.BindProperty(so.FindProperty("blendShapes").GetArrayElementAtIndex(bsIndex)
+                .FindPropertyRelative("active"));
+            
+            setBtn.clicked += () =>
             {
                 controller.blendShapes[bsIndex].basis =
                     controller.rigTarget.Select(target => target.transform.localPosition).ToList();
                 controller.blendShapes.ForEach(item => item.weight = 0.0f);
                 controller.blendShapes[bsIndex].weight = 1.0f;
+                controller.blendShapes[bsIndex].active = true;
+                controller.blendShapes[bsIndex].assigned = true;
+                check.visible = true;
+                bsLabel.style.color = Color.green;
+                Debug.Log("setpose");
             };
 
         }
@@ -185,6 +224,14 @@ namespace MYTYKit
             
             if (e.newValue)
             {
+                if (CheckDuplicatedBone())
+                {
+                    EditorUtility.DisplayDialog("MYTY Kit",
+                        "Some target bones are rigged to other blendshape controller already.","Ok");
+                    anchorToggle.SetValueWithoutNotify(e.previousValue);
+                    return;
+                }
+                
                 RegisterAnchor();
             }
             else
@@ -199,6 +246,18 @@ namespace MYTYKit
             
         }
 
+        bool CheckDuplicatedBone()
+        {
+            var targetCon = m_conSO.targetObject as BoneBlendShapeController;
+            var controllers = FindObjectsOfType<BoneBlendShapeController>().Where(item => item != targetCon);
+            if (!controllers.Any()) return false;
+
+            var item = targetCon.rigTarget.FirstOrDefault(target => controllers.Any(con => con.rigTarget.Contains(target)));
+            if (item == null) return false;
+            Debug.LogError($"Bone blendshape controller doesn't allow the duplicated bones. duplicated bone : {item.name}");
+            return true;
+        }
+        
         void RegisterAnchor()
         {
             var anchorToggle = rootVisualElement.Q<Toggle>("TGLAnchor");
